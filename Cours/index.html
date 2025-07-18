@@ -39,12 +39,12 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* CHANGEMENT CLÉ : La couleur de fond est maintenant sur HTML, le corps s'adapte */
+    /* Le fond et la couleur du texte sont gérés par HTML */
     html {
       font-family: var(--font);
-      background: var(--bg); /* Utilise la variable CSS pour le fond */
-      color: var(--text-color); /* Utilise la variable CSS pour le texte */
-      transition: background 0.3s ease, color 0.3s ease; /* Ajout d'une transition pour le thème */
+      background: var(--bg);
+      color: var(--text-color);
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     body {
@@ -55,7 +55,8 @@
       align-items: center;
       min-height: 100vh;
       position: relative;
-      overflow-x: hidden; /* Empêche le débordement horizontal */
+      overflow-x: hidden;
+      /* Suppression de la propriété 'background' ici */
     }
 
     header {
@@ -65,11 +66,11 @@
       border-radius: 0 0 var(--radius) var(--radius);
       box-shadow: var(--shadow);
       text-align: center;
-      color: var(--header-text); /* Utilise la variable CSS pour le texte d'en-tête */
+      color: var(--header-text);
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: background 0.3s ease, color 0.3s ease; /* Ajout d'une transition pour le thème */
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     header h1 {
@@ -99,14 +100,14 @@
     }
 
     .module {
-      background: var(--card-bg); /* Utilise la variable CSS pour le fond des modules */
+      background: var(--card-bg);
       backdrop-filter: blur(var(--blur));
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 24px 18px;
       margin: 22px 0;
       text-align: center;
-      transition: background 0.3s ease, box-shadow 0.3s ease; /* Ajout d'une transition pour le thème */
+      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
 
     .module h3 {
@@ -117,7 +118,7 @@
       gap: 10px;
       margin: 0 0 16px;
       color: var(--primary);
-      transition: color 0.3s ease; /* Ajout d'une transition pour le thème */
+      transition: color 0.3s ease;
     }
 
     .button-group {
@@ -137,7 +138,7 @@
       font-weight: 600;
       box-shadow: var(--shadow);
       cursor: pointer;
-      transition: filter 0.2s, transform 0.2s, background 0.3s ease; /* Ajout d'une transition pour le thème */
+      transition: filter 0.2s, transform 0.2s, background 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
