@@ -1,26 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <link rel="manifest" href="/manifest.json">
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js').then(registration => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }, err => {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    });
-  }
-</script>
+  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Your Dental Guide</title>
-  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/phosphor-icons"></script>
-  
   <style>
     :root { --primary: #4f8cff; --accent: #18a689; --danger: #ff647c; --success: #5ec576; --bg: #f6faff; --card-bg: rgba(255, 255, 255, 0.75); --blur: 12px; --radius: 18px; --font: 'Inter', sans-serif; --shadow: 0 6px 30px rgba(79, 140, 255, 0.09), 0 1.5px 6px rgba(79, 140, 255, 0.08); }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -39,14 +25,9 @@
   </style>
 </head>
 <body>
-
   <header>
-    <h1>
-      <i class="ph ph-tooth"></i>
-      <span>Your Dental Guide</span>
-    </h1>
+    <h1><i class="ph ph-tooth"></i><span>Your Dental Guide</span></h1>
   </header>
-
   <div class="content">
     <div class="module">
       <h3><i class="ph ph-tooth"></i> Médecine Dentaire</h3>
@@ -59,12 +40,37 @@
     <div class="module">
       <h3>Options</h3>
       <div class="button-group">
-        <a href="mailto:dentaireoranmoy@gmail.com" class="btn">
-          <i class="ph ph-envelope"></i> Nous Contacter
-        </a>
+        <a href="mailto:dentaireoranmoy@gmail.com" class="btn"><i class="ph ph-envelope"></i> Nous Contacter</a>
+        <button type="button" id="install-button" class="btn" style="display: none;">
+          <i class="ph ph-download-simple"></i> Installer l'application
+        </button>
       </div>
     </div>
   </div>
-
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').then(registration => { // Chemin corrigé
+          console.log('ServiceWorker registration successful');
+        }, err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+    let deferredPrompt;
+    const installButton = document.getElementById('install-button');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installButton.style.display = 'flex';
+    });
+    installButton.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+        installButton.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
