@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dental-guide-v2'; // J'ai changé la version pour forcer la mise à jour
+const CACHE_NAME = 'dental-guide-v3'; // J'ai changé la version pour forcer la mise à jour
 const urlsToCache = [
   './',
   'index.html',
