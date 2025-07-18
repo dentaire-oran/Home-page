@@ -10,7 +10,7 @@
   <link rel="manifest" href="./manifest.json">
   
   <style>
-    /* Votre CSS reste identique */
+    /* Votre CSS reste exactement le même */
     :root {
       --primary: #4f8cff;
       --accent: #18a689;
@@ -68,11 +68,16 @@
     <div class="module">
       <h3><i class="ph ph-first-aid-kit"></i> Médecine</h3>
     </div>
+    
     <div class="module">
       <h3>Options</h3>
       <div class="button-group">
-        <a href="mailto:dentaireoranmoy@gmail.com" class="btn"><i class="ph ph-envelope"></i> Me Contacter</a>
-        <button type="button" id="install-button" class="btn" style="display: none;"><i class="ph ph-download-simple"></i> Installer l'application</button>
+        <a href="mailto:dentaireoranmoy@gmail.com" class="btn">
+          <i class="ph ph-envelope"></i> Me Contacter
+        </a>
+        <button type="button" id="install-button" class="btn" style="display: none;">
+          <i class="ph ph-download-simple"></i> Installer l'application
+        </button>
       </div>
     </div>
   </div>
@@ -97,34 +102,42 @@
 
   <script>
     if ('serviceWorker' in navigator) {
-      // Chemin relatif vers le service worker
       navigator.serviceWorker.register('./service-worker.js')
-        .then(reg => console.log('Service Worker enregistré.', reg))
-        .catch(err => console.error('Erreur Service Worker:', err));
+        .then(() => console.log('Service Worker enregistré avec succès.'))
+        .catch(error => console.log('Erreur d\'enregistrement du Service Worker:', error));
     }
 
     let deferredPrompt;
     const installButton = document.getElementById('install-button');
 
     window.addEventListener('beforeinstallprompt', (e) => {
+      // Empêche le navigateur d'afficher sa propre invite d'installation
       e.preventDefault();
+      // Stocke l'événement pour pouvoir le déclencher plus tard
       deferredPrompt = e;
-      installButton.style.display = 'flex'; // Affiche le bouton
+      // Affiche votre bouton d'installation personnalisé
+      installButton.style.display = 'flex';
     });
 
     installButton.addEventListener('click', async () => {
+      // Vérifie si l'événement d'installation a été capturé
       if (deferredPrompt) {
+        // Affiche l'invite d'installation
         deferredPrompt.prompt();
+        // Attend le choix de l'utilisateur
         const { outcome } = await deferredPrompt.userChoice;
-        console.log(`Action de l'utilisateur: ${outcome}`);
+        // L'événement ne peut être utilisé qu'une seule fois
         deferredPrompt = null;
-        installButton.style.display = 'none'; // Cache le bouton après usage
+        // Cache le bouton, que l'utilisateur ait installé ou non
+        installButton.style.display = 'none';
       }
     });
 
     window.addEventListener('appinstalled', () => {
+      // Cache le bouton si l'application est installée par un autre moyen
+      installButton.style.display = 'none';
       deferredPrompt = null;
-      console.log('PWA installée avec succès');
+      console.log('PWA installée avec succès!');
     });
   </script>
 
