@@ -1,9 +1,9 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calculateur 2e Année Dentaire</title>
+  <title>Moyenne 2ème Année - Your Dental Guide</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/phosphor-icons"></script>
   <style>
@@ -19,6 +19,21 @@
       --radius: 18px;
       --font: 'Inter', sans-serif;
       --shadow: 0 6px 30px rgba(79, 140, 255, 0.09), 0 1.5px 6px rgba(79, 140, 255, 0.08);
+      --text-color: #222;
+      --header-text: #fff;
+    }
+
+    [data-theme="dark"] {
+      --primary: #7aa6ff;
+      --accent: #2ec4a1;
+      --danger: #ff647c;
+      --success: #5ec576;
+      --warning: #d4a017;
+      --bg: #1a1a2e;
+      --card-bg: rgba(40, 40, 60, 0.85);
+      --text-color: #e0e0e0;
+      --shadow: 0 6px 30px rgba(0, 0, 0, 0.3), 0 1.5px 6px rgba(0, 0, 0, 0.2);
+      --header-text: #e0e0e0;
     }
 
     * {
@@ -26,16 +41,22 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
+    html {
       font-family: var(--font);
-      background: linear-gradient(120deg, #e0eafc, #cfdef3);
+      background: var(--bg);
+      color: var(--text-color);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body {
       margin: 0;
       padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: #222;
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
     }
 
     header {
@@ -45,7 +66,8 @@
       border-radius: 0 0 var(--radius) var(--radius);
       box-shadow: var(--shadow);
       text-align: center;
-      color: #fff;
+      color: var(--header-text);
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     header h1 {
@@ -75,7 +97,7 @@
       box-shadow: var(--shadow);
       padding: 18px;
       margin: 18px 0;
-      transition: transform 0.25s ease-in-out;
+      transition: transform 0.25s ease-in-out, background 0.3s ease, box-shadow 0.3s ease;
     }
 
     .module:hover {
@@ -89,6 +111,7 @@
       gap: 8px;
       margin: 0 0 12px;
       color: var(--primary);
+      transition: color 0.3s ease;
     }
 
     .fields label {
@@ -105,7 +128,7 @@
       border-radius: 14px;
       width: 95px;
       transition: all 0.3s ease;
-      background: #fff;
+      background: var(--card-bg);
       outline: none;
       -webkit-tap-highlight-color: transparent;
     }
@@ -158,7 +181,7 @@
       font-weight: 600;
       box-shadow: var(--shadow);
       cursor: pointer;
-      transition: filter 0.2s, transform 0.2s;
+      transition: filter 0.2s, transform 0.2s, background 0.3s ease;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -166,8 +189,13 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .btn:active { transform: scale(0.96); }
-    .btn:focus { filter: brightness(1.1); }
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn:focus {
+      filter: brightness(1.1);
+    }
 
     .alert {
       border-radius: var(--radius);
@@ -179,23 +207,42 @@
       align-items: center;
       gap: 10px;
       box-shadow: var(--shadow);
-      background: white;
+      background: var(--card-bg);
+      color: var(--text-color);
     }
 
-    .alert.success { background: var(--success); color: #fff; }
-    .alert.warning { background: var(--warning); color: #7d5a00; }
-    .alert.danger { background: var(--danger); color: #fff; }
-
-    ul { margin: 6px 0 0 20px; padding: 0; }
-
-    @media (max-width: 600px) {
-      .content { max-width: 98vw; }
-      .fields input[type="number"], .manual-moyenne-input { width: 80vw; max-width: 99px; }
-      .actions { flex-direction: column; gap: 8px; }
+    .alert.success {
+      background: var(--success);
+      color: #fff;
     }
 
-    .moyenne-module { margin-top: 3px; font-size: 0.97em; color: #2d3e50; font-style: italic; }
-    .result { margin-top: 30px; font-size: 1.1em; font-weight: bold; }
+    .alert.warning {
+      background: var(--warning);
+      color: var(--text-color);
+    }
+
+    .alert.danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    ul {
+      margin: 6px 0 0 20px;
+      padding: 0;
+    }
+
+    .moyenne-module {
+      margin-top: 3px;
+      font-size: 0.97em;
+      color: var(--text-color);
+      font-style: italic;
+    }
+
+    .result {
+      margin-top: 30px;
+      font-size: 1.1em;
+      font-weight: bold;
+    }
 
     #resultat {
       opacity: 0;
@@ -203,6 +250,7 @@
       pointer-events: none;
       transition: opacity 0.55s cubic-bezier(.39,.58,.57,1.01), transform 0.55s cubic-bezier(.39,.58,.57,1.01);
     }
+
     #resultat.show-result {
       opacity: 1;
       transform: translateY(0) scale(1);
@@ -238,17 +286,45 @@
     .notification.fade-out {
       animation: fadeOutDown 0.4s ease-in forwards;
     }
-    
-    @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
 
-    .notification.success { background: var(--success); }
-    .notification.warning { background: var(--danger); }
+    @keyframes slideInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOutDown {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(20px); }
+    }
+
+    .notification.success {
+      background: var(--success);
+    }
+
+    .notification.warning {
+      background: var(--danger);
+    }
+
+    @media (max-width: 600px) {
+      .content {
+        max-width: 98vw;
+      }
+
+      .fields input[type="number"],
+      .manual-moyenne-input {
+        width: 80vw;
+        max-width: 99px;
+      }
+
+      .actions {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1><i class="ph ph-tooth"></i> Calculateur 2<sup>ème</sup> Année Dentaire</h1>
+    <h1><i class="ph ph-tooth"></i> Moyenne 2<sup>ème</sup> Année</h1>
   </header>
   <div class="content">
     <form id="form"></form>
@@ -259,10 +335,20 @@
     </div>
     <div class="result" id="resultat"></div>
   </div>
-
   <div id="notification-container"></div>
-
   <script>
+    // Appliquer le thème depuis localStorage
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+
+    // Service Worker pour PWA (ajouté pour cohérence avec la page d'accueil)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js');
+      });
+    }
+
     const modules = [
       { nom: "OCE", coef: 5, emd1: true, emd2: true, td: false, tp: true, icon: "ph ph-seal" },
       { nom: "Prothèse", coef: 5, emd1: true, emd2: true, td: false, tp: true, icon: "ph ph-puzzle-piece" },
@@ -350,9 +436,9 @@
           const emd2Value = mod.emd2 ? document.getElementById(`${i}_emd2`)?.value.replace(',', '.') : null;
           const tdValue = mod.td ? document.getElementById(`${i}_td`)?.value.replace(',', '.') : null;
           const tpValue = mod.tp ? document.getElementById(`${i}_tp`)?.value.replace(',', '.') : null;
-          
+
           if ((emd1Value && emd1Value.trim() !== '') || (emd2Value && emd2Value.trim() !== '') || (tdValue && tdValue.trim() !== '') || (tpValue && tpValue.trim() !== '')) {
-              isModuleFilled = true;
+            isModuleFilled = true;
           }
 
           const emd1 = emd1Value ? parseFloat(emd1Value) : NaN;
@@ -368,12 +454,12 @@
             totalPondere += emd2;
             totalCoefsModule += 1;
           }
-          
+
           if (tdValue && !isNaN(parseFloat(tdValue))) {
             totalPondere += parseFloat(tdValue);
             totalCoefsModule += 1;
           }
-          
+
           if (tpValue && !isNaN(parseFloat(tpValue))) {
             totalPondere += parseFloat(tpValue) * 2;
             totalCoefsModule += 2;
@@ -383,36 +469,36 @@
         }
 
         document.getElementById(`${i}moyennemodule`).textContent = isModuleFilled ? `Moyenne : ${moyenneModule.toFixed(2)}` : 'Moyenne : --';
-        
+
         if (isModuleFilled) {
-            if (moyenneModule < 5) modulesMoinsDe5.push(mod.nom);
-            else if (moyenneModule < 10) modulesMoinsDe10.push(mod.nom);
-            
-            totalPoints += moyenneModule * mod.coef;
-            totalCoefsAnnee += mod.coef;
+          if (moyenneModule < 5) modulesMoinsDe5.push(mod.nom);
+          else if (moyenneModule < 10) modulesMoinsDe10.push(mod.nom);
+
+          totalPoints += moyenneModule * mod.coef;
+          totalCoefsAnnee += mod.coef;
         }
       });
 
       const moyenneGen = totalCoefsAnnee > 0 ? (totalPoints / totalCoefsAnnee).toFixed(3) : 0;
       const resultatDiv = document.getElementById("resultat");
       resultatDiv.classList.remove("show-result");
-      
+
       let htmlResultat = `<div class="alert"><i class="ph ph-equals"></i> Moyenne générale : <strong>${moyenneGen}</strong></div>`;
 
       if (moyenneGen >= 10 && modulesMoinsDe5.length === 0) {
         htmlResultat += `<div class="alert success"><i class="ph ph-medal"></i> Félicitations 🎉, année validée.</div>`;
       } else {
-          if (moyenneGen < 10) {
-              htmlResultat += `<div class="alert danger"><i class="ph ph-warning"></i> Année non validée (moyenne < 10).</div>`;
-          }
-          if (modulesMoinsDe5.length > 0) {
-              htmlResultat += `<div class="alert danger"><i class="ph ph-warning"></i> Rattrapage obligatoire pour note(s) < 5 : <ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-          }
-          if (modulesMoinsDe10.length > 0) {
-              htmlResultat += `<div class="alert warning"><i class="ph ph-list"></i> Modules à compenser (note entre 5 et 10) : <ul>${modulesMoinsDe10.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-          }
+        if (moyenneGen < 10) {
+          htmlResultat += `<div class="alert danger"><i class="ph ph-warning"></i> Année non validée (moyenne < 10).</div>`;
+        }
+        if (modulesMoinsDe5.length > 0) {
+          htmlResultat += `<div class="alert danger"><i class="ph ph-warning"></i> Rattrapage obligatoire pour note(s) < 5 : <ul>${modulesMoinsDe5.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+        }
+        if (modulesMoinsDe10.length > 0) {
+          htmlResultat += `<div class="alert warning"><i class="ph ph-list"></i> Modules à compenser (note entre 5 et 10) : <ul>${modulesMoinsDe10.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+        }
       }
-      
+
       resultatDiv.innerHTML = htmlResultat;
       void resultatDiv.offsetWidth;
       setTimeout(() => resultatDiv.classList.add("show-result"), 20);
@@ -435,19 +521,18 @@
     function loadResults() {
       const savedData = localStorage.getItem("annee2_results");
       if (!savedData) {
-          showNotification("Aucune donnée enregistrée trouvée.", 'warning');
-          return;
+        showNotification("Aucune donnée enregistrée trouvée.", 'warning');
+        return;
       }
       let data = JSON.parse(savedData);
       modules.forEach((mod, i) => {
-          document.getElementById(`${i}manualmoyenne_cb`).checked = data[`${i}manualmoyennecb`] || false;
-          document.getElementById(`${i}manualmoyenne`).value = data[`${i}manualmoyenne`] || "";
-          if (mod.emd1) document.getElementById(`${i}_emd1`).value = data[`${i}emd1`] || "";
-          if (mod.emd2) document.getElementById(`${i}_emd2`).value = data[`${i}emd2`] || "";
-          if (mod.td) document.getElementById(`${i}_td`).value = data[`${i}td`] || "";
-          if (mod.tp) document.getElementById(`${i}_tp`).value = data[`${i}tp`] || "";
-          
-          toggleManualMoyenne(i);
+        document.getElementById(`${i}manualmoyenne_cb`).checked = data[`${i}manualmoyennecb`] || false;
+        document.getElementById(`${i}manualmoyenne`).value = data[`${i}manualmoyenne`] || "";
+        if (mod.emd1) document.getElementById(`${i}_emd1`).value = data[`${i}emd1`] || "";
+        if (mod.emd2) document.getElementById(`${i}_emd2`).value = data[`${i}emd2`] || "";
+        if (mod.td) document.getElementById(`${i}_td`).value = data[`${i}td`] || "";
+        if (mod.tp) document.getElementById(`${i}_tp`).value = data[`${i}tp`] || "";
+        toggleManualMoyenne(i);
       });
       calculer();
       showNotification("Résultats chargés avec succès !", 'success');
@@ -457,14 +542,10 @@
       const container = document.getElementById('notification-container');
       const notif = document.createElement('div');
       notif.className = `notification ${type}`;
-      
       let iconClass = 'ph-check-circle';
       if (type === 'warning') iconClass = 'ph-warning-circle';
-
       notif.innerHTML = `<i class="ph ${iconClass}"></i> ${message}`;
-      
       container.appendChild(notif);
-      
       setTimeout(() => {
         notif.classList.add('fade-out');
         notif.addEventListener('animationend', () => {
@@ -477,4 +558,3 @@
   </script>
 </body>
 </html>
- 
