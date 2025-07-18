@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="fr">
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="fr" data-theme="light">
 <head>
   <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8" />
@@ -8,25 +8,191 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/phosphor-icons"></script>
   <style>
-    :root { --primary: #4f8cff; --accent: #18a689; --danger: #ff647c; --success: #5ec576; --bg: #f6faff; --card-bg: rgba(255, 255, 255, 0.75); --blur: 12px; --radius: 18px; --font: 'Inter', sans-serif; --shadow: 0 6px 30px rgba(79, 140, 255, 0.09), 0 1.5px 6px rgba(79, 140, 255, 0.08); }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: var(--font); background: linear-gradient(120deg, #e0eafc, #cfdef3); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; color: #222; min-height: 100vh; }
-    header { width: 100%; padding: 24px 0; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--shadow); text-align: center; color: #fff; display: flex; justify-content: center; align-items: center; }
-    header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: 1px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    :root {
+      --primary: #4f8cff;
+      --accent: #18a689;
+      --danger: #ff647c;
+      --success: #5ec576;
+      --bg: #f6faff;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --blur: 12px;
+      --radius: 18px;
+      --font: 'Inter', sans-serif;
+      --shadow: 0 6px 30px rgba(79, 140, 255, 0.09), 0 1.5px 6px rgba(79, 140, 255, 0.08);
+      --text-color: #222;
+      --header-text: #fff;
+    }
+
+    [data-theme="dark"] {
+      --primary: #7aa6ff;
+      --accent: #2ec4a1;
+      --bg: #1a1a2e;
+      --card-bg: rgba(40, 40, 60, 0.85);
+      --text-color: #e0e0e0;
+      --shadow: 0 6px 30px rgba(0, 0, 0, 0.3), 0 1.5px 6px rgba(0, 0, 0, 0.2);
+      --header-text: #e0e0e0;
+    }
+    
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* CHANGEMENT CLÉ : La couleur de fond est maintenant sur HTML */
+    html {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text-color);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden; /* Empêche le débordement horizontal */
+    }
+
+    header {
+      width: 100%;
+      padding: 24px 16px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      color: var(--header-text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      transition: background 0.3s ease;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-grow: 1;
+      text-align: center;
+    }
+
     header h1 i { font-size: 2.5rem; }
-    .content { width: 100%; max-width: 520px; margin-top: 28px; padding: 0 12px 32px; animation: fadeInUp 0.6s ease-out; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .module { background: var(--card-bg); backdrop-filter: blur(var(--blur)); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 18px; margin: 22px 0; text-align: center; }
-    .module h3 { font-size: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 0 16px; color: var(--primary); }
-    .button-group { display: flex; flex-direction: column; gap: 14px; align-items: center; }
-    .btn { background: linear-gradient(90deg, var(--primary), var(--accent)); color: white; border: none; border-radius: var(--radius); padding: 14px 24px; font-size: 1.1em; font-weight: 600; box-shadow: var(--shadow); cursor: pointer; transition: filter 0.2s, transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; width: 80%; max-width: 320px; text-decoration: none; }
+
+    .content {
+      width: 100%;
+      max-width: 520px;
+      margin-top: 28px;
+      padding: 0 12px 32px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .module {
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px 18px;
+      margin: 22px 0;
+      text-align: center;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .module h3 {
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 0 16px;
+      color: var(--primary);
+      transition: color 0.3s ease;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .btn {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px 24px;
+      font-size: 1.1em;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.2s, background 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      outline: none;
+      width: 80%;
+      max-width: 320px;
+      text-decoration: none;
+    }
+
     .btn:active { transform: scale(0.96); }
     .btn:hover { filter: brightness(1.1); }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      cursor: pointer;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      overflow: hidden;
+      transition: transform 0.3s ease, background 0.3s ease;
+      z-index: 1001;
+      position: relative;
+    }
+
+    .theme-toggle i {
+      font-size: 1.8rem;
+      color: var(--header-text);
+      z-index: 2;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .theme-toggle:active i.ph-sun, .theme-toggle:active i.ph-moon { transform: scale(0.9) rotate(360deg); }
+
+    [data-theme="dark"] .theme-toggle .ph-sun { display: none; }
+    [data-theme="dark"] .theme-toggle .ph-moon { display: inline; opacity: 1; }
+    .theme-toggle .ph-moon { display: none; opacity: 0; }
+    [data-theme="light"] .theme-toggle .ph-moon { display: none; }
+    [data-theme="light"] .theme-toggle .ph-sun { display: inline; opacity: 1; }
+
+    ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
   </style>
 </head>
 <body>
   <header>
     <h1><i class="ph ph-tooth"></i><span>Your Dental Guide</span></h1>
+    <button class="theme-toggle" aria-label="Toggle theme">
+      <i class="ph ph-sun"></i>
+      <i class="ph ph-moon"></i>
+    </button>
   </header>
   <div class="content">
     <div class="module">
@@ -47,30 +213,78 @@
       </div>
     </div>
   </div>
+  
   <script>
+    // Le JavaScript reste identique, il est déjà correct.
+    const html = document.documentElement;
+    const toggleButton = document.querySelector('.theme-toggle');
+
+    const toggleTheme = () => {
+        const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    };
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+
+    toggleButton.addEventListener('click', (e) => {
+        if (!document.startViewTransition) {
+            toggleTheme();
+            return;
+        }
+
+        const x = e.clientX;
+        const y = e.clientY;
+        const endRadius = Math.hypot(
+            Math.max(x, window.innerWidth - x),
+            Math.max(y, window.innerHeight - y)
+        );
+
+        const transition = document.startViewTransition(() => {
+            toggleTheme();
+        });
+
+        transition.ready.then(() => {
+            document.documentElement.animate(
+                {
+                    clipPath: [
+                        `circle(0px at ${x}px ${y}px)`,
+                        `circle(${endRadius}px at ${x}px ${y}px)`
+                    ]
+                },
+                {
+                    duration: 450,
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                    pseudoElement: '::view-transition-new(root)'
+                }
+            );
+        });
+    });
+
+    // --- Reste du code pour PWA ---
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js').then(registration => { // Chemin corrigé
-          console.log('ServiceWorker registration successful');
-        }, err => {
-          console.log('ServiceWorker registration failed: ', err);
-        });
+        navigator.serviceWorker.register('service-worker.js');
       });
     }
+
     let deferredPrompt;
     const installButton = document.getElementById('install-button');
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installButton.style.display = 'flex';
-    });
-    installButton.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt = null;
-        installButton.style.display = 'none';
-      }
-    });
+    if (installButton) {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installButton.style.display = 'flex';
+      });
+      installButton.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt = null;
+          installButton.style.display = 'none';
+        }
+      });
+    }
   </script>
 </body>
 </html>
