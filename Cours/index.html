@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,182 +14,54 @@
       --accent: #18a689;
       --danger: #ff647c;
       --success: #5ec576;
-      --bg: #f6faff; /* Couleur de fond pour le thème clair */
+      --bg: #f6faff;
       --card-bg: rgba(255, 255, 255, 0.75);
       --blur: 12px;
       --radius: 18px;
       --font: 'Inter', sans-serif;
       --shadow: 0 6px 30px rgba(79, 140, 255, 0.09), 0 1.5px 6px rgba(79, 140, 255, 0.08);
-      --text-color: #222; /* Couleur de texte pour le thème clair */
-      --header-text: #fff; /* Couleur du texte d'en-tête pour le thème clair */
+      --text-color: #222;
+      --header-text: #fff;
     }
 
     [data-theme="dark"] {
       --primary: #7aa6ff;
       --accent: #2ec4a1;
-      --bg: #1a1a2e; /* Couleur de fond pour le thème sombre */
+      --bg: #1a1a2e;
       --card-bg: rgba(40, 40, 60, 0.85);
-      --text-color: #e0e0e0; /* Couleur de texte pour le thème sombre */
+      --text-color: #e0e0e0;
       --shadow: 0 6px 30px rgba(0, 0, 0, 0.3), 0 1.5px 6px rgba(0, 0, 0, 0.2);
-      --header-text: #e0e0e0; /* Couleur du texte d'en-tête pour le thème sombre */
+      --header-text: #e0e0e0;
     }
     
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* Le fond et la couleur du texte sont gérés par HTML */
-    html {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text-color);
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-      /* Suppression de la propriété 'background' ici */
-    }
-
-    header {
-      width: 100%;
-      padding: 24px 0;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      border-radius: 0 0 var(--radius) var(--radius);
-      box-shadow: var(--shadow);
-      text-align: center;
-      color: var(--header-text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.1rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { font-family: var(--font); background: var(--bg); color: var(--text-color); transition: background 0.3s ease, color 0.3s ease; }
+    body { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; position: relative; overflow-x: hidden; }
+    header { width: 100%; padding: 24px 0; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--shadow); text-align: center; color: var(--header-text); display: flex; justify-content: center; align-items: center; transition: background 0.3s ease, color 0.3s ease; }
+    header h1 { margin: 0; font-size: 2.1rem; font-weight: 700; letter-spacing: 1px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
     header h1 i { font-size: 2.5rem; }
-
-    .content {
-      width: 100%;
-      max-width: 520px;
-      margin-top: 28px;
-      padding: 0 12px 32px;
-      animation: fadeInUp 0.6s ease-out;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .module {
-      background: var(--card-bg);
-      backdrop-filter: blur(var(--blur));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px 18px;
-      margin: 22px 0;
-      text-align: center;
-      transition: background 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .module h3 {
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 0 0 16px;
-      color: var(--primary);
-      transition: color 0.3s ease;
-    }
-
-    .button-group {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      align-items: center;
-    }
-
-    .btn {
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 14px 24px;
-      font-size: 1.1em;
-      font-weight: 600;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      transition: filter 0.2s, transform 0.2s, background 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      outline: none;
-      width: 80%;
-      max-width: 320px;
-      text-decoration: none;
-    }
-
+    .content { width: 100%; max-width: 520px; margin-top: 28px; padding: 0 12px 32px; animation: fadeInUp 0.6s ease-out; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .module { background: var(--card-bg); backdrop-filter: blur(var(--blur)); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 18px; margin: 22px 0; text-align: center; transition: background 0.3s ease, box-shadow 0.3s ease; }
+    .module h3 { font-size: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 0 16px; color: var(--primary); transition: color 0.3s ease; }
+    .button-group { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+    .btn { background: linear-gradient(90deg, var(--primary), var(--accent)); color: white; border: none; border-radius: var(--radius); padding: 14px 24px; font-size: 1.1em; font-weight: 600; box-shadow: var(--shadow); cursor: pointer; transition: filter 0.2s, transform 0.2s, background 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 6px; outline: none; width: 80%; max-width: 320px; text-decoration: none; }
     .btn:active { transform: scale(0.96); }
     .btn:hover { filter: brightness(1.1); }
-
-    #notification-container {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    .notification {
-      padding: 14px 22px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      animation: slideInUp 0.4s ease-out forwards;
-      opacity: 0;
-      transform: translateY(20px);
-      background-color: var(--danger);
-    }
+    #notification-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .notification { padding: 14px 22px; border-radius: var(--radius); box-shadow: var(--shadow); color: #fff; display: flex; align-items: center; gap: 10px; font-weight: 600; animation: slideInUp 0.4s ease-out forwards; opacity: 0; transform: translateY(20px); background-color: var(--danger); }
     .notification.warning { background-color: var(--primary); }
     .notification.fade-out { animation: fadeOutDown 0.4s ease-in forwards; }
     @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
   </style>
+
+  <script>
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body>
-  <script>
-    // Script pour appliquer le thème sauvegardé dès le chargement de la page
-    const htmlElement = document.documentElement;
-    const savedTheme = localStorage.getItem('theme') || 'light'; // Thème par défaut si non trouvé
-    htmlElement.setAttribute('data-theme', savedTheme);
-  </script>
 
   <header>
     <h1>
