@@ -1,263 +1,790 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
+<html lang="fr" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Moyenne - Your Dental Guide</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/phosphor-icons"></script>
-  <style>
-    :root {
-      --primary: #4f8cff;
-      --accent: #18a689;
-      --danger: #ff647c;
-      --success: #5ec576;
-      --bg: #f6faff;
-      --card-bg: rgba(255, 255, 255, 0.75);
-      --blur: 12px;
-      --radius: 18px;
-      --font: 'Inter', sans-serif;
-      --shadow: 0 6px 30px rgba(79, 140, 255, 0.09), 0 1.5px 6px rgba(79, 140, 255, 0.08);
-      --text-color: #222;
-      --header-text: #fff;
-    }
+    <link rel="manifest" href="../manifest.json">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Moyenne - Dental Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/phosphor-icons"></script>
+    <style>
+        :root {
+            --font: 'Manrope', sans-serif;
+            --radius: 12px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    [data-theme="dark"] {
-      --primary: #7aa6ff;
-      --accent: #2ec4a1;
-      --bg: #1a1a2e;
-      --card-bg: rgba(40, 40, 60, 0.85);
-      --text-color: #e0e0e0;
-      --shadow: 0 6px 30px rgba(0, 0, 0, 0.3), 0 1.5px 6px rgba(0, 0, 0, 0.2);
-      --header-text: #e0e0e0;
-    }
+        [data-theme="dark"] {
+            --bg: #101223;
+            --header-bg: rgba(20, 24, 40, 0.9);
+            --sidebar-bg: rgba(20, 24, 40, 0.9);
+            --card-bg: rgba(30, 35, 60, 0.85);
+            --blur: 10px;
+            --text-title: #f8faff;
+            --text-color: #d0d8ff;
+            --text-secondary: #95a0d0;
+            --border-color: rgba(80, 90, 160, 0.3);
+            --glow-color: rgba(80, 140, 255, 0.6);
+            --primary: #4a8cff;
+            --accent: #34e4b5;
+            --grad-1: rgba(80, 140, 255, 0.5);
+            --grad-2: rgba(52, 228, 181, 0.4);
+        }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+        [data-theme="light"] {
+            --bg: #f6f9ff;
+            --header-bg: rgba(245, 248, 255, 0.9);
+            --sidebar-bg: rgba(245, 248, 255, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --blur: 10px;
+            --text-title: #1c2b5a;
+            --text-color: #2a3b6a;
+            --text-secondary: #6a75a0;
+            --border-color: rgba(40, 50, 100, 0.2);
+            --glow-color: rgba(60, 100, 255, 0.6);
+            --primary: #3a7bff;
+            --accent: #2ad4a5;
+            --grad-1: rgba(60, 100, 255, 0.5);
+            --grad-2: rgba(180, 90, 255, 0.4);
+        }
 
-    html {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text-color);
-      transition: background 0.3s ease, color 0.3s ease;
-    }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
 
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }
+        html {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text-color);
+            scroll-behavior: smooth;
+        }
 
-    header {
-      width: 100%;
-      padding: 24px 0;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      border-radius: 0 0 var(--radius) var(--radius);
-      box-shadow: var(--shadow);
-      text-align: center;
-      color: var(--header-text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-    header h1 {
-      margin: 0;
-      font-size: 2.1rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
+        #interactive-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--bg);
+            --mouse-x: 50;
+            --mouse-y: 50;
+            will-change: background;
+        }
 
-    header h1 i {
-      font-size: 2.5rem;
-    }
+        #interactive-background::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                circle at calc(var(--mouse-x) * 1%) calc(var(--mouse-y) * 1%),
+                var(--grad-1),
+                transparent 25%
+            );
+            transition: var(--transition);
+        }
 
-    .content {
-      width: 100%;
-      max-width: 520px;
-      margin-top: 28px;
-      padding: 0 12px 32px;
-      animation: fadeInUp 0.6s ease-out;
-    }
+        #cursor-trail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            pointer-events: none;
+        }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: var(--header-bg);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
 
-    .module {
-      background: var(--card-bg);
-      backdrop-filter: blur(var(--blur));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px 18px;
-      margin: 22px 0;
-      text-align: center;
-      transition: background 0.3s ease, box-shadow 0.3s ease;
-    }
+        header h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .module h3 {
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 0 0 16px;
-      color: var(--primary);
-      transition: color 0.3s ease;
-    }
+        header h1 i {
+            font-size: 2rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
 
-    .button-group {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      align-items: center;
-    }
+        header h1:hover i {
+            transform: scale(1.1) rotate(10deg);
+        }
 
-    .btn {
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      color: white;
-      border: none;
-      border-radius: var(--radius);
-      padding: 14px 24px;
-      font-size: 1.1em;
-      font-weight: 600;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      transition: filter 0.2s, transform 0.2s, background 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      outline: none;
-      width: 80%;
-      max-width: 320px;
-      text-decoration: none;
-    }
+        .nav-toggle {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 30;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-    .btn:active {
-      transform: scale(0.96);
-    }
+        .nav-toggle:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
 
-    .btn:hover {
-      filter: brightness(1.1);
-    }
+        .nav-toggle i {
+            font-size: 1.6rem;
+            color: var(--text-secondary);
+        }
 
-    #notification-container {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
+        .sidebar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            width: 260px;
+            height: calc(100% - 64px);
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 25;
+        }
 
-    .notification {
-      padding: 14px 22px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      animation: slideInUp 0.4s ease-out forwards;
-      opacity: 0;
-      transform: translateY(20px);
-      background-color: var(--danger);
-    }
+        .sidebar.open {
+            transform: translateX(0);
+        }
 
-    .notification.warning {
-      background-color: var(--primary);
-    }
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
 
-    .notification.fade-out {
-      animation: fadeOutDown 0.4s ease-in forwards;
-    }
+        .sidebar-nav a, .sidebar-nav button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            background: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            justify-content: center;
+        }
 
-    @keyframes slideInUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .sidebar-nav a:hover, .sidebar-nav button:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(6px);
+        }
 
-    @keyframes fadeOutDown {
-      from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(20px); }
-    }
-  </style>
+        .sidebar-nav i {
+            font-size: 1.3rem;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .theme-toggle i {
+            font-size: 1.6rem;
+            color: var(--text-secondary);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle .ph-sun {
+            opacity: 0;
+            transform: translate(-50%, 100%);
+        }
+
+        [data-theme="dark"] .theme-toggle .ph-moon {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+
+        [data-theme="light"] .theme-toggle .ph-sun {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+
+        [data-theme="light"] .theme-toggle .ph-moon {
+            opacity: 0;
+            transform: translate(-50%, -100%);
+        }
+
+        main.main-container {
+            margin-left: 0;
+            padding: 96px 24px 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin-inline: auto;
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        main.main-container.sidebar-open {
+            margin-left: 260px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: var(--transition);
+            animation: pop-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            box-shadow: var(--shadow);
+            will-change: transform, opacity;
+        }
+
+        .card:hover {
+            transform: scale(1.05) translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius);
+            background: conic-gradient(
+                from var(--angle),
+                transparent 0%,
+                var(--glow-color) 10%,
+                transparent 20%
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotate-border 2.5s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        @property --angle {
+            syntax: '<angle>';
+            inherits: false;
+            initial-value: 0deg;
+        }
+
+        @keyframes rotate-border {
+            to { --angle: 360deg; }
+        }
+
+        @keyframes pop-in {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-content h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .card-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Consistent spacing as in Cours/index.html and Qcm/index.html */
+            align-items: center;
+        }
+
+        .btn {
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            width: 100%;
+            max-width: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            background-size: 200% 200%;
+            background-image: linear-gradient(135deg, var(--primary), var(--accent), var(--primary));
+            animation: gradient-flow 2.5s linear infinite;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:hover {
+            transform: scale(1.1) translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            animation-duration: 1.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.95) translateY(0);
+        }
+
+        .btn i {
+            font-size: 1.4rem;
+            transition: var(--transition);
+        }
+
+        .btn:hover i {
+            transform: scale(1.15) rotate(8deg);
+        }
+
+        .btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple-effect 0.4s linear;
+            pointer-events: none;
+        }
+
+        @keyframes gradient-flow {
+            to { background-position: 200% center; }
+        }
+
+        @keyframes ripple-effect {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Theme Transition */
+        @keyframes spiral-in {
+            from { clip-path: circle(0% at 50% 50%); }
+            to { clip-path: circle(150% at 50% 50%); }
+        }
+
+        ::view-transition-new(root) {
+            animation: spiral-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        ::view-transition-old(root) {
+            animation: none;
+        }
+
+        /* Notification (Adapted from Original) */
+        #notification-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification {
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            color: var(--text-color);
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            animation: slideInUp 0.4s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .notification.warning {
+            background: var(--primary);
+        }
+
+        .notification.fade-out {
+            animation: fadeOutDown 0.4s ease-in forwards;
+        }
+
+        @keyframes slideInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOutDown {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            main.main-container {
+                margin-left: 0;
+                padding: 80px 16px 16px;
+                grid-template-columns: 1fr;
+            }
+
+            main.main-container.sidebar-open {
+                margin-left: 0;
+            }
+
+            .btn {
+                max-width: 100%;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .nav-toggle {
+                top: 12px;
+                left: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>
-      <i class="ph ph-calculator"></i>
-      <span>Calculateur de Moyenne</span>
-    </h1>
-  </header>
+    <div id="interactive-background"></div>
+    <canvas id="cursor-trail"></canvas>
 
-  <div class="content">
-    <div class="module">
-      <h3><i class="ph ph-tooth"></i> Médecine Dentaire</h3>
-      <div class="button-group">
-        <a href="annee1.html" class="btn">1ère Année</a>
-        <a href="annee2.html" class="btn">2ème Année</a>
-        <button type="button" class="btn" onclick="showNotification('Bientôt disponible !', 'warning')">3ème Année</button>
-        <button type="button" class="btn" onclick="showNotification('Bientôt disponible !', 'warning')">4ème Année</button>
-        <button type="button" class="btn" onclick="showNotification('Bientôt disponible !', 'warning')">5ème Année</button>
-      </div>
-    </div>
-    <div class="module">
-      <h3>Options</h3>
-      <div class="button-group">
-        <a href="mailto:dentaireoranmoy@gmail.com" class="btn">
-          <i class="ph ph-envelope"></i> Me Contacter
-        </a>
-      </div>
-    </div>
-  </div>
+    <header>
+        <h1><i class="ph-fill ph-calculator"></i>Calculateur de Moyenne</h1>
+    </header>
 
-  <div id="notification-container"></div>
+    <button class="nav-toggle" aria-label="Toggle navigation">
+        <i class="ph-fill ph-list"></i>
+    </button>
 
-  <script>
-    // Appliquer le thème depuis localStorage
-    const html = document.documentElement;
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    html.setAttribute('data-theme', savedTheme);
+    <nav class="sidebar">
+        <div class="sidebar-nav">
+            <a href="../index.html" aria-label="Retour à l'accueil">
+                <i class="ph-fill ph-house"></i> Accueil
+            </a>
+            <a href="../Cours/index.html" aria-label="Accéder aux cours">
+                <i class="ph-fill ph-book-open"></i> Cours
+            </a>
+            <a href="../Qcm/index.html" aria-label="Accéder aux QCM">
+                <i class="ph-fill ph-list-checks"></i> QCM
+            </a>
+            <a href="./index.html" aria-label="Calculer la moyenne">
+                <i class="ph-fill ph-calculator"></i> Calcul de moyenne
+            </a>
+            <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter">
+                <i class="ph-fill ph-envelope"></i> Nous Contacter
+            </a>
+            <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application">
+                <i class="ph-fill ph-download-simple"></i> Installer l'application
+            </button>
+            <div class="theme-toggle" aria-label="Toggle theme (light/dark)">
+                <i class="ph-fill ph-sun"></i>
+                <i class="ph-fill ph-moon"></i>
+            </div>
+        </div>
+    </nav>
 
-    // Service Worker pour PWA (ajouté pour cohérence avec la page d'accueil)
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js');
-      });
-    }
+    <main class="main-container">
+        <div class="card">
+            <div class="card-content">
+                <h2><i class="ph-fill ph-tooth"></i>Médecine Dentaire</h2>
+                <p>Calculez votre moyenne pour chaque année d'études en dentisterie.</p>
+                <div class="button-group">
+                    <a href="annee1.html" class="btn" aria-label="Calculer la moyenne 1ère Année">1ère Année</a>
+                    <a href="annee2.html" class="btn" aria-label="Calculer la moyenne 2ème Année">2ème Année</a>
+                    <button type="button" class="btn" onclick="showNotification('Bientôt disponible !', 'warning')" aria-label="Calculer la moyenne 3ème Année">3ème Année</button>
+                    <button type="button" class="btn" onclick="showNotification('Bientôt disponible !', 'warning')" aria-label="Calculer la moyenne 4ème Année">4ème Année</button>
+                    <button type="button" class="btn" onclick="showNotification('Bientôt disponible !', 'warning')" aria-label="Calculer la moyenne 5ème Année">5ème Année</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-content">
+                <h2>Options</h2>
+                <p>Contactez-nous pour toute question ou suggestion.</p>
+                <div class="button-group">
+                    <a href="mailto:dentaireoranmoy@gmail.com" class="btn" aria-label="Nous contacter">
+                        <i class="ph-fill ph-envelope"></i> Me Contacter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
 
-    // Fonction de notification (inchangée)
-    function showNotification(message, type = 'warning') {
-      const container = document.getElementById('notification-container');
-      const notif = document.createElement('div');
-      notif.className = `notification ${type}`;
-      let iconClass = 'ph-info';
-      if (type === 'warning') iconClass = 'ph-warning-circle';
-      notif.innerHTML = `<i class="ph ${iconClass}"></i> ${message}`;
-      container.appendChild(notif);
-      setTimeout(() => {
-        notif.classList.add('fade-out');
-        notif.addEventListener('animationend', () => { notif.remove(); });
-      }, 2500);
-    }
-  </script>
+    <div id="notification-container"></div>
+
+    <script>
+        // --- Interactive Background ---
+        const bg = document.getElementById('interactive-background');
+        if (bg) {
+            window.addEventListener('mousemove', (e) => {
+                const { clientX, clientY } = e;
+                const x = Math.round((clientX / window.innerWidth) * 100);
+                const y = Math.round((clientY / window.innerHeight) * 100);
+                bg.style.setProperty('--mouse-x', x);
+                bg.style.setProperty('--mouse-y', y);
+            });
+        }
+
+        // --- Cursor Trail ---
+        const canvas = document.getElementById('cursor-trail');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const trails = [];
+        const trailLength = 10;
+
+        class Trail {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 4 + 2;
+                this.opacity = 0.6;
+                this.life = 1;
+            }
+
+            update() {
+                this.life -= 0.05;
+                this.opacity = this.life * 0.6;
+                this.size *= 0.95;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(80, 140, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            trails.push(new Trail(e.clientX, e.clientY));
+            if (trails.length > trailLength) {
+                trails.shift();
+            }
+        });
+
+        function animateTrail() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            trails.forEach(trail => {
+                trail.update();
+                trail.draw();
+            });
+            requestAnimationFrame(animateTrail);
+        }
+
+        animateTrail();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // --- Sidebar Toggle ---
+        const navToggle = document.querySelector('.nav-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContainer = document.querySelector('.main-container');
+
+        navToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            mainContainer.classList.toggle('sidebar-open');
+        });
+
+        // --- Card Animation ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card').forEach((card, index) => {
+                card.style.animationDelay = `${0.3 + index * 0.1}s`;
+            });
+        });
+
+        // --- Button Ripple Effect ---
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function (e) {
+                const rect = button.getBoundingClientRect();
+                const circle = document.createElement('span');
+                const diameter = Math.max(button.clientWidth, button.clientHeight);
+                const radius = diameter / 2;
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${e.clientX - rect.left - radius}px`;
+                circle.style.top = `${e.clientY - rect.top - radius}px`;
+                circle.classList.add('ripple');
+                const existingRipple = button.querySelector('.ripple');
+                if (existingRipple) existingRipple.remove();
+                button.appendChild(circle);
+            });
+        });
+
+        // --- Theme Toggle ---
+        const html = document.documentElement;
+        const toggleButton = document.querySelector('.theme-toggle');
+
+        toggleButton.addEventListener('click', () => {
+            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            if (document.startViewTransition) {
+                document.startViewTransition(() => {
+                    html.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                });
+            } else {
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            }
+        });
+
+        // Set initial theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+
+        // --- PWA Installation ---
+        let deferredPrompt;
+        const installButton = document.getElementById('install-button');
+        const toast = document.getElementById('notification-container');
+
+        if (installButton) {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'flex';
+            });
+
+            installButton.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        const notif = document.createElement('div');
+                        notif.className = 'notification';
+                        notif.innerHTML = `<i class="ph ph-check-circle"></i> Application installée avec succès !`;
+                        toast.appendChild(notif);
+                        setTimeout(() => {
+                            notif.classList.add('fade-out');
+                            notif.addEventListener('animationend', () => { notif.remove(); });
+                        }, 3000);
+                    }
+                    deferredPrompt = null;
+                    installButton.style.display = 'none';
+                }
+            });
+        }
+
+        // --- Keyboard Accessibility ---
+        document.querySelectorAll('.btn, .theme-toggle, .nav-toggle, .sidebar-nav a, .sidebar-nav button').forEach(element => {
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    element.click();
+                }
+            });
+        });
+
+        // --- Original Notification Logic (Unchanged) ---
+        function showNotification(message, type = 'warning') {
+            const container = document.getElementById('notification-container');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            let iconClass = 'ph-info';
+            if (type === 'warning') iconClass = 'ph-warning-circle';
+            notif.innerHTML = `<i class="ph ${iconClass}"></i> ${message}`;
+            container.appendChild(notif);
+            setTimeout(() => {
+                notif.classList.add('fade-out');
+                notif.addEventListener('animationend', () => { notif.remove(); });
+            }, 2500);
+        }
+    </script>
 </body>
 </html>
