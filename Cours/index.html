@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Cours - Dental Guide</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
-    <script src="https://unpkg.com/phosphor-icons"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css">
     <style>
         :root {
             --font: 'Manrope', sans-serif;
@@ -382,7 +382,7 @@
         .button-group {
             display: flex;
             flex-direction: column;
-            gap: 20px; /* Increased from 12px to 20px for more spacing */
+            gap: 20px;
             align-items: center;
         }
 
@@ -447,7 +447,6 @@
             to { transform: scale(4); opacity: 0; }
         }
 
-        /* Theme Transition */
         @keyframes spiral-in {
             from { clip-path: circle(0% at 50% 50%); }
             to { clip-path: circle(150% at 50% 50%); }
@@ -461,7 +460,6 @@
             animation: none;
         }
 
-        /* Notification (Adapted from Original) */
         #notification-container {
             position: fixed;
             bottom: 24px;
@@ -506,7 +504,6 @@
             to { opacity: 0; transform: translateY(20px); }
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
@@ -543,36 +540,36 @@
     <canvas id="cursor-trail"></canvas>
 
     <header>
-        <h1><i class="ph-fill ph-book-open"></i>Cours</h1>
+        <h1><i class="ph-light ph-book-open"></i>Cours</h1>
     </header>
 
     <button class="nav-toggle" aria-label="Toggle navigation">
-        <i class="ph-fill ph-list"></i>
+        <i class="ph-light ph-list"></i>
     </button>
 
     <nav class="sidebar">
         <div class="sidebar-nav">
-            <a href="../index.html" aria-label="Retour à l'accueil">
-                <i class="ph-fill ph-house"></i> Accueil
+            <a href="../dentaire.html" aria-label="Retour à l'accueil">
+                <i class="ph-light ph-house"></i> Accueil
             </a>
-            <a href="./index.html" aria-label="Accéder aux cours">
-                <i class="ph-fill ph-book-open"></i> Cours
+            <a href="./dentaire.html" aria-label="Accéder aux cours">
+                <i class="ph-light ph-book-open"></i> Cours
             </a>
-            <a href="../Qcm/index.html" aria-label="Accéder aux QCM">
-                <i class="ph-fill ph-list-checks"></i> QCM
+            <a href="../Qcm/dentaire.html" aria-label="Accéder aux QCM">
+                <i class="ph-light ph-list-checks"></i> QCM
             </a>
-            <a href="../Moyenne/index.html" aria-label="Calculer la moyenne">
-                <i class="ph-fill ph-calculator"></i> Calcul de moyenne
+            <a href="../Moyenne/dentaire.html" aria-label="Calculer la moyenne">
+                <i class="ph-light ph-calculator"></i> Calcul de moyenne
             </a>
             <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter">
-                <i class="ph-fill ph-envelope"></i> Nous Contacter
+                <i class="ph-light ph-envelope"></i> Nous Contacter
             </a>
             <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application">
-                <i class="ph-fill ph-download-simple"></i> Installer l'application
+                <i class="ph-light ph-download-simple"></i> Installer l'application
             </button>
             <div class="theme-toggle" aria-label="Toggle theme (light/dark)">
-                <i class="ph-fill ph-sun"></i>
-                <i class="ph-fill ph-moon"></i>
+                <i class="ph-light ph-sun"></i>
+                <i class="ph-light ph-moon"></i>
             </div>
         </div>
     </nav>
@@ -580,7 +577,7 @@
     <main class="main-container">
         <div class="card">
             <div class="card-content">
-                <h2><i class="ph-fill ph-tooth"></i>Médecine Dentaire</h2>
+                <h2><i class="ph-light ph-tooth"></i>Médecine Dentaire</h2>
                 <p>Accédez à des cours détaillés pour chaque année d'études en dentisterie.</p>
                 <div class="button-group">
                     <a href="https://drive.google.com/drive/folders/14d-U2KcHVJKbq28vrL8QnuOFV4XVYzoG" class="btn" aria-label="Cours 1ère Année">1ère Année</a>
@@ -597,7 +594,7 @@
                 <p>Contactez-nous pour toute question ou suggestion.</p>
                 <div class="button-group">
                     <a href="mailto:dentaireoranmoy@gmail.com" class="btn" aria-label="Nous contacter">
-                        <i class="ph-fill ph-envelope"></i> Me Contacter
+                        <i class="ph-light ph-envelope"></i> Me Contacter
                     </a>
                 </div>
             </div>
@@ -607,7 +604,6 @@
     <div id="notification-container"></div>
 
     <script>
-        // --- Interactive Background ---
         const bg = document.getElementById('interactive-background');
         if (bg) {
             window.addEventListener('mousemove', (e) => {
@@ -619,7 +615,6 @@
             });
         }
 
-        // --- Cursor Trail ---
         const canvas = document.getElementById('cursor-trail');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -674,7 +669,6 @@
             canvas.height = window.innerHeight;
         });
 
-        // --- Sidebar Toggle ---
         const navToggle = document.querySelector('.nav-toggle');
         const sidebar = document.querySelector('.sidebar');
         const mainContainer = document.querySelector('.main-container');
@@ -684,14 +678,12 @@
             mainContainer.classList.toggle('sidebar-open');
         });
 
-        // --- Card Animation ---
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.card').forEach((card, index) => {
                 card.style.animationDelay = `${0.3 + index * 0.1}s`;
             });
         });
 
-        // --- Button Ripple Effect ---
         document.querySelectorAll('.btn').forEach(button => {
             button.addEventListener('click', function (e) {
                 const rect = button.getBoundingClientRect();
@@ -708,7 +700,6 @@
             });
         });
 
-        // --- Theme Toggle ---
         const html = document.documentElement;
         const toggleButton = document.querySelector('.theme-toggle');
 
@@ -725,11 +716,9 @@
             }
         });
 
-        // Set initial theme
         const savedTheme = localStorage.getItem('theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
 
-        // --- PWA Installation ---
         let deferredPrompt;
         const installButton = document.getElementById('install-button');
         const toast = document.getElementById('notification-container');
@@ -761,7 +750,6 @@
             });
         }
 
-        // --- Keyboard Accessibility ---
         document.querySelectorAll('.btn, .theme-toggle, .nav-toggle, .sidebar-nav a, .sidebar-nav button').forEach(element => {
             element.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -771,7 +759,6 @@
             });
         });
 
-        // --- Original Notification Logic (Unchanged) ---
         function showNotification(message, type = 'warning') {
             const container = document.getElementById('notification-container');
             const notif = document.createElement('div');
