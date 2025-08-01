@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Moyenne 1ère Année - Dental Guide</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
-    <script src="https://unpkg.com/phosphor-icons"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css">
     <style>
         :root {
             --font: 'Manrope', sans-serif;
@@ -58,18 +58,12 @@
         .card { background: var(--card-bg); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 24px; margin-bottom: 24px; opacity: 0; transform: scale(0.9) translateY(20px); animation: pop-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes pop-in { to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        .card h3 { font-size: 1.3rem; font-weight: 800; color: var(--text-title); margin: 0 0 16px; }
+        .card h3 { font-size: 1.3rem; font-weight: 800; color: var(--text-title); margin: 0 0 16px; display: flex; align-items: center; gap: 8px;}
         .manual-moyenne-label { display: flex; align-items: center; gap: 8px; cursor: pointer; width: fit-content; margin-top: 16px; }
         .anim-container { overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease-out, margin-top 0.4s ease-out; max-height: 500px; }
         .anim-container.is-hidden { max-height: 0 !important; opacity: 0; margin-top: 0 !important; pointer-events: none; }
         
-        /* CORRECTION : Grille forcée à 2 colonnes pour l'affichage côte à côte */
-        .fields {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-top: 16px;
-        }
+        .fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
         
         .manual-moyenne-container { margin-top: 16px; }
         input[type="number"] { width: 100%; background: var(--bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; font-family: var(--font); font-size: 1rem; color: var(--text-color); transition: var(--transition); }
@@ -85,7 +79,10 @@
         .alert { border-radius: var(--radius); padding: 16px; margin: 12px 0; font-weight: 600; background: var(--card-bg); border-left: 5px solid; }
         .alert.success { border-color: var(--success); color: var(--success); } .alert.warning { border-color: var(--warning); color: var(--warning); } .alert.danger { border-color: var(--danger); color: var(--danger); }
         .alert.info { border-color: var(--primary); color: var(--primary); }
-        .moyenne-module { margin-top: 16px; font-weight: 600; }
+        .moyenne-module { margin-top: 16px; font-weight: 600; transition: color 0.3s ease; }
+        .moyenne-module.success { color: var(--success); }
+        .moyenne-module.warning { color: var(--warning); }
+        .moyenne-module.danger { color: var(--danger); }
         #resultat { margin-top: 30px; }
         #notification-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1001; }
         .notification { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); color: var(--text-color); padding: 14px 22px; }
@@ -95,84 +92,131 @@
 </head>
 <body>
     <canvas id="cursor-trail"></canvas>
-    <header><h1><i class="ph-fill ph-first-aid-kit"></i> Moyenne 1<sup>ère</sup> Année</h1></header>
-    <button class="nav-toggle" aria-label="Toggle navigation"><i class="ph-fill ph-list"></i></button>
+    <header><h1><i class="ph-light ph-first-aid-kit"></i> Moyenne 1<sup>ère</sup> Année</h1></header>
+    <button class="nav-toggle" aria-label="Toggle navigation"><i class="ph-light ph-list"></i></button>
 
     <nav class="sidebar">
         <div class="sidebar-nav">
-            <a href="../index.html"><i class="ph-fill ph-house"></i> Accueil</a>
-            <a href="../Cours/index.html"><i class="ph-fill ph-book-open"></i> Cours</a>
-            <a href="../Qcm/index.html"><i class="ph-fill ph-list-checks"></i> QCM</a>
-            <a href="#" style="background:var(--primary); color:white; pointer-events: none;"><i class="ph-fill ph-calculator"></i> Calcul de moyenne</a>
-            <a href="mailto:dentaireoranmoy@gmail.com"><i class="ph-fill ph-envelope"></i> Nous Contacter</a>
+            <a href="dentaire.html"><i class="ph-light ph-house"></i> Accueil</a>
+            <a href="../Cours-dentaire/dentaire.html"><i class="ph-light ph-book-open"></i> Cours</a>
+            <a href="../Qcm-dentaire/dentaire.html"><i class="ph-light ph-list-checks"></i> QCM</a>
+            <a href="#" style="background:var(--primary); color:white; pointer-events: none;"><i class="ph-light ph-calculator"></i> Calcul de moyenne</a>
+            <a href="mailto:dentaireoranmoy@gmail.com"><i class="ph-light ph-envelope"></i> Nous Contacter</a>
         </div>
         <div class="theme-toggle" aria-label="Changer le thème">
-            <i class="ph-fill ph-sun"></i>
-            <i class="ph-fill ph-moon"></i>
+            <i class="ph-light ph-sun"></i>
+            <i class="ph-light ph-moon"></i>
         </div>
     </nav>
 
     <main class="main-container">
         <div class="alert info" style="display: flex; align-items: center; gap: 8px;">
-            <i class="ph ph-info"></i>
+            <i class="ph-light ph-info"></i>
             <span>Saisissez seulement les notes qui vous concernent. Les champs vides sont ignorés.</span>
         </div>
         <form id="form"></form>
         <div class="actions">
-            <button type="button" class="btn" onclick="calculer()"><i class="ph-fill ph-calculator"></i>Calculer</button>
-            <button type="button" class="btn" onclick="saveResults()"><i class="ph-fill ph-floppy-disk"></i>Enregistrer</button>
-            <button type="button" class="btn" onclick="loadResults()"><i class="ph-fill ph-upload-simple"></i>Charger</button>
+            <button type="button" class="btn" onclick="calculer()"><i class="ph-light ph-calculator"></i>Calculer</button>
+            <button type="button" class="btn" onclick="saveResults()"><i class="ph-light ph-floppy-disk"></i>Enregistrer</button>
+            <button type="button" class="btn" onclick="loadResults()"><i class="ph-light ph-upload-simple"></i>Charger</button>
         </div>
         <div id="resultat"></div>
     </main>
     <div id="notification-container"></div>
     
     <script>
-        // --- LOGIQUE DE CALCUL DE 1ÈRE ANNÉE (INCHANGÉE) ---
-        const modules = [ { nom: "Anatomie", coef: 4, icon: "ph-fill ph-bone" }, { nom: "Histo-Embryo", coef: 4, icon: "ph-fill ph-microscope" }, { nom: "Biochimie", coef: 3, icon: "ph-fill ph-test-tube" }, { nom: "Biophysique", coef: 3, icon: "ph-fill ph-atom" }, { nom: "Biostatistiques", coef: 3, icon: "ph-fill ph-chart-bar" }, { nom: "Chimie", coef: 3, icon: "ph-fill ph-flask" }, { nom: "Physiologie", coef: 2, icon: "ph-fill ph-heartbeat" }, { nom: "Génétique", coef: 2, icon: "ph-fill ph-dna" }, { nom: "Physique", coef: 2, icon: "ph-fill ph-lightning" }, { nom: "SSH", coef: 1, icon: "ph-fill ph-users-three" }, { nom: "Français", coef: 1, icon: "ph-fill ph-translate" }, { nom: "Anglais", coef: 1, icon: "ph-fill ph-chat-circle-dots" } ];
+        const modules = [ { nom: "Anatomie", coef: 4, icon: "ph-light ph-bone" }, { nom: "Histo-Embryo", coef: 4, icon: "ph-light ph-microscope" }, { nom: "Biochimie", coef: 3, icon: "ph-light ph-test-tube" }, { nom: "Biophysique", coef: 3, icon: "ph-light ph-atom" }, { nom: "Biostatistiques", coef: 3, icon: "ph-light ph-chart-bar" }, { nom: "Chimie", coef: 3, icon: "ph-light ph-flask" }, { nom: "Physiologie", coef: 2, icon: "ph-light ph-heartbeat" }, { nom: "Génétique", coef: 2, icon: "ph-light ph-dna" }, { nom: "Physique", coef: 2, icon: "ph-light ph-lightning" }, { nom: "SSH", coef: 1, icon: "ph-light ph-users-three" }, { nom: "Français", coef: 1, icon: "ph-light ph-translate" }, { nom: "Anglais", coef: 1, icon: "ph-light ph-chat-circle-dots" } ];
+
+        function getModuleAverage(index) {
+            const mod = modules[index];
+            const cb = document.getElementById(`${index}_manualmoyenne_cb`);
+            const manualInput = document.getElementById(`${index}_manualmoyenne`);
+            let moyenneModule = 0, isModuleFilled = false, totalPondere = 0, diviseur = 0;
+
+            if (cb.checked && manualInput.value.trim() !== '') {
+                moyenneModule = parseFloat(manualInput.value.replace(',', '.')) || 0;
+                isModuleFilled = true;
+            } else {
+                const notes = [
+                    { id: `${index}_emd1`, weight: 1 }, { id: `${index}_emd2`, weight: 1 },
+                    { id: `${index}_td1`, weight: (mod.nom === 'Biochimie' || mod.nom === 'Génétique' ? 1 : 2) },
+                    { id: `${index}_td2`, weight: (mod.nom === 'Biochimie' || mod.nom === 'Génétique' ? 1 : 2) },
+                    { id: `${index}_tp1`, weight: 2 }, { id: `${index}_tp2`, weight: 2 }
+                ];
+                notes.forEach(note => {
+                    const input = document.getElementById(note.id);
+                    if (input && input.value.trim() !== '') {
+                        const val = parseFloat(input.value.replace(',', '.'));
+                        if (!isNaN(val)) {
+                            totalPondere += val * note.weight;
+                            diviseur += note.weight;
+                            isModuleFilled = true;
+                        }
+                    }
+                });
+                if (diviseur > 0) {
+                    moyenneModule = totalPondere / diviseur;
+                }
+            }
+            return { moyenne: moyenneModule, filled: isModuleFilled };
+        }
+
+        function calculerModule(index) {
+            const { moyenne, filled } = getModuleAverage(index);
+            const moyenneDiv = document.getElementById(`${index}_moyennemodule`);
+            moyenneDiv.classList.remove('success', 'warning', 'danger');
+
+            if (filled) {
+                moyenneDiv.textContent = `Moyenne : ${moyenne.toFixed(2)}`;
+                if (moyenne < 5) moyenneDiv.classList.add('danger');
+                else if (moyenne < 10) moyenneDiv.classList.add('warning');
+                else moyenneDiv.classList.add('success');
+            } else {
+                moyenneDiv.textContent = '';
+            }
+        }
 
         function calculer() {
             let totalPoints = 0, totalCoefsAnnee = 0, modulesMoinsDe5 = [], modulesMoinsDe10 = [];
             modules.forEach((mod, i) => {
-                const cb = document.getElementById(`${i}_manualmoyenne_cb`);
-                const manualInput = document.getElementById(`${i}_manualmoyenne`);
-                let moyenneModule = 0, isModuleFilled = false;
-                if (cb.checked && manualInput.value.trim() !== '') {
-                    moyenneModule = parseFloat(manualInput.value.replace(',', '.')) || 0; isModuleFilled = true;
-                } else {
-                    let totalPondere = 0, diviseur = 0;
-                    const notes = [ { id: `${i}_emd1`, weight: 1 }, { id: `${i}_emd2`, weight: 1 }, { id: `${i}_td1`, weight: (mod.nom === 'Biochimie' || mod.nom === 'Génétique' ? 1 : 2) }, { id: `${i}_td2`, weight: (mod.nom === 'Biochimie' || mod.nom === 'Génétique' ? 1 : 2) }, { id: `${i}_tp1`, weight: 2 }, { id: `${i}_tp2`, weight: 2 } ];
-                    notes.forEach(note => {
-                        const input = document.getElementById(note.id);
-                        if (input && input.value.trim() !== '') {
-                            const val = parseFloat(input.value.replace(',', '.'));
-                            if (!isNaN(val)) { totalPondere += val * note.weight; diviseur += note.weight; isModuleFilled = true; }
-                        }
-                    });
-                    if (diviseur > 0) { moyenneModule = totalPondere / diviseur; }
-                }
-                document.getElementById(`${i}_moyennemodule`).textContent = isModuleFilled ? `Moyenne : ${moyenneModule.toFixed(2)}` : '';
-                if (isModuleFilled) {
-                    if (moyenneModule < 5) modulesMoinsDe5.push(mod.nom); else if (moyenneModule < 10) modulesMoinsDe10.push(mod.nom);
-                    totalPoints += moyenneModule * mod.coef; totalCoefsAnnee += mod.coef;
+                const { moyenne, filled } = getModuleAverage(i);
+                if (filled) {
+                    if (moyenne < 5) modulesMoinsDe5.push(mod.nom);
+                    else if (moyenne < 10) modulesMoinsDe10.push(mod.nom);
+                    totalPoints += moyenne * mod.coef;
+                    totalCoefsAnnee += mod.coef;
                 }
             });
+
             const moyenneGen = totalCoefsAnnee > 0 ? (totalPoints / totalCoefsAnnee).toFixed(3) : 0;
             const resultatDiv = document.getElementById("resultat");
-            let htmlResultat = `<div class="alert"><p>Moyenne générale : <strong>${moyenneGen}</strong></p></div>`;
+            let htmlResultat = `<div class="alert info"><p>Moyenne générale : <strong>${moyenneGen}</strong></p></div>`;
+
             if (totalCoefsAnnee > 0) {
-                if (moyenneGen >= 10 && modulesMoinsDe5.length === 0) { htmlResultat += `<div class="alert success"><p>🎉 Année validée.</p></div>`; }
-                else {
+                if (moyenneGen >= 10 && modulesMoinsDe5.length === 0) {
+                    htmlResultat += `<div class="alert success"><p>🎉 Année validée.</p></div>`;
+                } else {
                     if (moyenneGen < 10) htmlResultat += `<div class="alert danger"><p>Année non validée (moyenne < 10).</p></div>`;
                     if (modulesMoinsDe5.length > 0) htmlResultat += `<div class="alert danger"><p>Note éliminatoire (< 5) : ${modulesMoinsDe5.join(', ')}</p></div>`;
                     if (modulesMoinsDe10.length > 0) htmlResultat += `<div class="alert warning"><p>Modules à compenser : ${modulesMoinsDe10.join(', ')}</p></div>`;
                 }
+            } else {
+                 htmlResultat = '';
             }
             resultatDiv.innerHTML = htmlResultat;
         }
-        function saveResults() { /* ... */ } function loadResults() { /* ... */ } function showNotification(message, type) { /* ... */ }
 
-        // --- FONCTIONS VISUELLES REPRISES DE LA PAGE 2ÈME ANNÉE ---
+        function saveResults() { showNotification("Fonctionnalité à venir.", "info"); }
+        function loadResults() { showNotification("Fonctionnalité à venir.", "info"); }
+        function showNotification(message, type) {
+            const container = document.getElementById('notification-container');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.textContent = message;
+            container.appendChild(notif);
+            setTimeout(() => { notif.remove(); }, 3000);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initForm();
             setupVisualsAndInteractions();
@@ -180,6 +224,7 @@
 
         function setupVisualsAndInteractions() {
             const canvas = document.getElementById('cursor-trail');
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -217,6 +262,7 @@
                 notesFields.classList.remove('is-hidden');
                 manualContainer.classList.add('is-hidden');
             }
+            calculerModule(index);
         }
 
         function initForm() {
@@ -227,7 +273,7 @@
                 card.className = "card";
                 card.style.animationDelay = `${0.3 + i * 0.1}s`;
                 card.innerHTML = `
-                    <h3><i class="ph-fill ${mod.icon}"></i> ${mod.nom}</h3>
+                    <h3><i class="${mod.icon}"></i> ${mod.nom}</h3>
                     <div id="${i}_notesfields" class="fields anim-container">
                         <label>EMD S1 <input type="number" step="0.01" min="0" max="20" id="${i}_emd1"></label>
                         <label>EMD S2 <input type="number" step="0.01" min="0" max="20" id="${i}_emd2"></label>
@@ -245,6 +291,11 @@
                     <div class="moyenne-module" id="${i}_moyennemodule"></div>
                 `;
                 form.appendChild(card);
+                
+                card.querySelectorAll('input[type="number"]').forEach(input => {
+                    input.oninput = () => calculerModule(i);
+                });
+
                 toggleManualMoyenne(i);
             });
         }
