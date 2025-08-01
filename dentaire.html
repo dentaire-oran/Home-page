@@ -82,7 +82,7 @@
     <canvas id="cursor-trail"></canvas>
 
     <header>
-        <h1 data-key="header_title"><i class="ph-light ph-tooth"></i>Dental Guide</h1>
+        <h1><i class="ph-light ph-tooth"></i><span data-key="header_title">Dental Guide</span></h1>
     </header>
 
     <button class="nav-toggle" aria-label="Toggle navigation">
@@ -102,23 +102,23 @@
             </div>
         </div>
         <div class="sidebar-nav">
-            <a href="./index.html" aria-label="Accéder à l'accueil" data-key="nav_accueil">
-                <i class="ph-light ph-house"></i> Accueil
+            <a href="./index.html" aria-label="Accéder à l'accueil">
+                <i class="ph-light ph-house"></i> <span data-key="nav_accueil">Accueil</span>
             </a>
-            <a href="./Cours-dentaire/dentaire.html" aria-label="Accéder aux cours" data-key="nav_cours">
-                <i class="ph-light ph-book-open"></i> Cours
+            <a href="./Cours-dentaire/dentaire.html" aria-label="Accéder aux cours">
+                <i class="ph-light ph-book-open"></i> <span data-key="nav_cours">Cours</span>
             </a>
-            <a href="./Qcm-dentaire/dentaire.html" aria-label="Accéder aux QCM" data-key="nav_qcm">
-                <i class="ph-light ph-list-checks"></i> QCM
+            <a href="./Qcm-dentaire/dentaire.html" aria-label="Accéder aux QCM">
+                <i class="ph-light ph-list-checks"></i> <span data-key="nav_qcm">QCM</span>
             </a>
-            <a href="./Moyenne-dentaire/dentaire.html" aria-label="Calculer la moyenne" data-key="nav_calcul">
-                <i class="ph-light ph-calculator"></i> Calcul de moyenne
+            <a href="./Moyenne-dentaire/dentaire.html" aria-label="Calculer la moyenne">
+                <i class="ph-light ph-calculator"></i> <span data-key="nav_calcul">Calcul de moyenne</span>
             </a>
-            <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter" data-key="nav_contact">
-                <i class="ph-light ph-envelope"></i> Nous Contacter
+            <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter">
+                <i class="ph-light ph-envelope"></i> <span data-key="nav_contact">Nous Contacter</span>
             </a>
-            <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application" data-key="nav_install">
-                <i class="ph-light ph-download-simple"></i> Installer l'application
+            <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application">
+                <i class="ph-light ph-download-simple"></i> <span data-key="nav_install">Installer l'application</span>
             </button>
         </div>
     </nav>
@@ -128,8 +128,8 @@
             <div class="card-content">
                 <h2 data-key="card1_title">Cours</h2>
                 <p data-key="card1_desc">Accédez à des cours détaillés pour approfondir vos connaissances en dentisterie.</p>
-                <a href="./Cours-dentaire/dentaire.html" class="btn" aria-label="Accéder aux cours" data-key="card1_button">
-                    <i class="ph-light ph-book-open"></i> Découvrir
+                <a href="./Cours-dentaire/dentaire.html" class="btn" aria-label="Accéder aux cours">
+                    <i class="ph-light ph-book-open"></i> <span data-key="card1_button">Découvrir</span>
                 </a>
             </div>
         </div>
@@ -137,8 +137,8 @@
             <div class="card-content">
                 <h2 data-key="card2_title">QCM</h2>
                 <p data-key="card2_desc">Testez vos compétences avec des questionnaires à choix multiples interactifs.</p>
-                <a href="./Qcm-dentaire/dentaire.html" class="btn" aria-label="Accéder aux QCM" data-key="card2_button">
-                    <i class="ph-light ph-list-checks"></i> Commencer
+                <a href="./Qcm-dentaire/dentaire.html" class="btn" aria-label="Accéder aux QCM">
+                    <i class="ph-light ph-list-checks"></i> <span data-key="card2_button">Commencer</span>
                 </a>
             </div>
         </div>
@@ -146,8 +146,8 @@
             <div class="card-content">
                 <h2 data-key="card3_title">Calcul de moyenne</h2>
                 <p data-key="card3_desc">Calculez vos notes et suivez votre progression académique facilement.</p>
-                <a href="./Moyenne-dentaire/dentaire.html" class="btn" aria-label="Calculer la moyenne" data-key="card3_button">
-                    <i class="ph-light ph-calculator"></i> Calculer
+                <a href="./Moyenne-dentaire/dentaire.html" class="btn" aria-label="Calculer la moyenne">
+                    <i class="ph-light ph-calculator"></i> <span data-key="card3_button">Calculer</span>
                 </a>
             </div>
         </div>
@@ -155,8 +155,8 @@
             <div class="card-content">
                 <h2 data-key="card4_title">Contactez-nous</h2>
                 <p data-key="card4_desc">Envoyez-nous vos questions ou suggestions par e-mail.</p>
-                <a href="mailto:dentaireoranmoy@gmail.com" class="btn" aria-label="Nous contacter" data-key="card4_button">
-                    <i class="ph-light ph-envelope"></i> Écrire
+                <a href="mailto:dentaireoranmoy@gmail.com" class="btn" aria-label="Nous contacter">
+                    <i class="ph-light ph-envelope"></i> <span data-key="card4_button">Écrire</span>
                 </a>
             </div>
         </div>
@@ -272,10 +272,13 @@
                     const originalText = element.textContent;
                     element.textContent = translations[lang][key];
                     if (originalText !== translations[lang][key]) {
-                        element.classList.add('glitch');
-                        setTimeout(() => {
-                            element.classList.remove('glitch');
-                        }, 600);
+                         const parent = element.closest('h1, h2, a, button, p, div#toast');
+                        if (parent) {
+                           parent.classList.add('glitch');
+                            setTimeout(() => {
+                                parent.classList.remove('glitch');
+                            }, 600);
+                        }
                     }
                 }
             });
