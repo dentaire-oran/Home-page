@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Moyenne - Dental Guide</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
-    <script src="https://unpkg.com/phosphor-icons"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css">
     <style>
         :root {
             --font: 'Manrope', sans-serif;
@@ -14,7 +14,6 @@
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         [data-theme="dark"] {
             --bg: #101223;
             --header-bg: rgba(20, 24, 40, 0.9);
@@ -31,7 +30,6 @@
             --grad-1: rgba(80, 140, 255, 0.5);
             --grad-2: rgba(52, 228, 181, 0.4);
         }
-
         [data-theme="light"] {
             --bg: #f6f9ff;
             --header-bg: rgba(245, 248, 255, 0.9);
@@ -48,21 +46,18 @@
             --grad-1: rgba(60, 100, 255, 0.5);
             --grad-2: rgba(180, 90, 255, 0.4);
         }
-
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             margin: 0;
             padding: 0;
         }
-
         html {
             font-family: var(--font);
             background: var(--bg);
             color: var(--text-color);
             scroll-behavior: smooth;
         }
-
         body {
             min-height: 100vh;
             background: var(--bg);
@@ -71,7 +66,6 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-
         #interactive-background {
             position: fixed;
             top: 0;
@@ -84,7 +78,6 @@
             --mouse-y: 50;
             will-change: background;
         }
-
         #interactive-background::before {
             content: "";
             position: absolute;
@@ -97,7 +90,6 @@
             );
             transition: var(--transition);
         }
-
         #cursor-trail {
             position: fixed;
             top: 0;
@@ -107,7 +99,6 @@
             z-index: 1000;
             pointer-events: none;
         }
-
         header {
             position: fixed;
             top: 0;
@@ -123,7 +114,6 @@
             align-items: center;
             z-index: 20;
         }
-
         header h1 {
             font-size: 1.6rem;
             font-weight: 800;
@@ -132,17 +122,14 @@
             align-items: center;
             gap: 12px;
         }
-
         header h1 i {
             font-size: 2rem;
             color: var(--primary);
             transition: var(--transition);
         }
-
         header h1:hover i {
             transform: scale(1.1) rotate(10deg);
         }
-
         .nav-toggle {
             position: fixed;
             top: 12px;
@@ -159,17 +146,14 @@
             cursor: pointer;
             transition: var(--transition);
         }
-
         .nav-toggle:hover {
             border-color: var(--primary);
             transform: scale(1.1);
         }
-
         .nav-toggle i {
             font-size: 1.6rem;
             color: var(--text-secondary);
         }
-
         .sidebar {
             position: fixed;
             top: 64px;
@@ -188,18 +172,15 @@
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 25;
         }
-
         .sidebar.open {
             transform: translateX(0);
         }
-
         .sidebar-nav {
             display: flex;
             flex-direction: column;
             gap: 12px;
             width: 100%;
         }
-
         .sidebar-nav a, .sidebar-nav button {
             display: flex;
             align-items: center;
@@ -216,17 +197,14 @@
             border: 1px solid var(--border-color);
             justify-content: center;
         }
-
         .sidebar-nav a:hover, .sidebar-nav button:hover {
             background: var(--primary);
             color: white;
             transform: translateX(6px);
         }
-
         .sidebar-nav i {
             font-size: 1.3rem;
         }
-
         .theme-toggle {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -241,12 +219,10 @@
             position: relative;
             overflow: hidden;
         }
-
         .theme-toggle:hover {
             border-color: var(--primary);
             transform: scale(1.1);
         }
-
         .theme-toggle i {
             font-size: 1.6rem;
             color: var(--text-secondary);
@@ -256,27 +232,22 @@
             transform: translate(-50%, -50%);
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
-
         [data-theme="dark"] .theme-toggle .ph-sun {
             opacity: 0;
             transform: translate(-50%, 100%);
         }
-
         [data-theme="dark"] .theme-toggle .ph-moon {
             opacity: 1;
             transform: translate(-50%, -50%);
         }
-
         [data-theme="light"] .theme-toggle .ph-sun {
             opacity: 1;
             transform: translate(-50%, -50%);
         }
-
         [data-theme="light"] .theme-toggle .ph-moon {
             opacity: 0;
             transform: translate(-50%, -100%);
         }
-
         main.main-container {
             margin-left: 0;
             padding: 96px 24px 24px;
@@ -287,11 +258,9 @@
             margin-inline: auto;
             transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         main.main-container.sidebar-open {
             margin-left: 260px;
         }
-
         .card {
             background: var(--card-bg);
             backdrop-filter: blur(var(--blur));
@@ -309,12 +278,10 @@
             box-shadow: var(--shadow);
             will-change: transform, opacity;
         }
-
         .card:hover {
             transform: scale(1.05) translateY(-6px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
         }
-
         .card::before {
             content: '';
             position: absolute;
@@ -337,31 +304,25 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-
         .card:hover::before {
             opacity: 1;
         }
-
         @property --angle {
             syntax: '<angle>';
             inherits: false;
             initial-value: 0deg;
         }
-
         @keyframes rotate-border {
             to { --angle: 360deg; }
         }
-
         @keyframes pop-in {
             from { opacity: 0; transform: scale(0.9) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
-
         .card-content {
             display: flex;
             flex-direction: column;
         }
-
         .card-content h2 {
             font-size: 1.3rem;
             font-weight: 800;
@@ -372,20 +333,17 @@
             justify-content: center;
             gap: 10px;
         }
-
         .card-content p {
             font-size: 0.9rem;
             color: var(--text-secondary);
             margin-bottom: 24px;
         }
-
         .button-group {
             display: flex;
             flex-direction: column;
-            gap: 20px; /* Consistent spacing as in Cours/index.html and Qcm/index.html */
+            gap: 20px;
             align-items: center;
         }
-
         .btn {
             color: white;
             border: none;
@@ -410,26 +368,21 @@
             animation: gradient-flow 2.5s linear infinite;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
-
         .btn:hover {
             transform: scale(1.1) translateY(-4px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
             animation-duration: 1.2s;
         }
-
         .btn:active {
             transform: scale(0.95) translateY(0);
         }
-
         .btn i {
             font-size: 1.4rem;
             transition: var(--transition);
         }
-
         .btn:hover i {
             transform: scale(1.15) rotate(8deg);
         }
-
         .btn .ripple {
             position: absolute;
             border-radius: 50%;
@@ -438,30 +391,22 @@
             animation: ripple-effect 0.4s linear;
             pointer-events: none;
         }
-
         @keyframes gradient-flow {
             to { background-position: 200% center; }
         }
-
         @keyframes ripple-effect {
             to { transform: scale(4); opacity: 0; }
         }
-
-        /* Theme Transition */
         @keyframes spiral-in {
             from { clip-path: circle(0% at 50% 50%); }
             to { clip-path: circle(150% at 50% 50%); }
         }
-
         ::view-transition-new(root) {
             animation: spiral-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         ::view-transition-old(root) {
             animation: none;
         }
-
-        /* Notification (Adapted from Original) */
         #notification-container {
             position: fixed;
             bottom: 24px;
@@ -473,7 +418,6 @@
             align-items: center;
             gap: 12px;
         }
-
         .notification {
             padding: 12px 24px;
             border-radius: var(--radius);
@@ -488,49 +432,38 @@
             opacity: 0;
             transform: translateY(20px);
         }
-
         .notification.warning {
             background: var(--primary);
         }
-
         .notification.fade-out {
             animation: fadeOutDown 0.4s ease-in forwards;
         }
-
         @keyframes slideInUp {
             to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes fadeOutDown {
             from { opacity: 1; transform: translateY(0); }
             to { opacity: 0; transform: translateY(20px); }
         }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
                 max-width: 280px;
             }
-
             main.main-container {
                 margin-left: 0;
                 padding: 80px 16px 16px;
                 grid-template-columns: 1fr;
             }
-
             main.main-container.sidebar-open {
                 margin-left: 0;
             }
-
             .btn {
                 max-width: 100%;
             }
-
             header h1 {
                 font-size: 1.4rem;
             }
-
             .nav-toggle {
                 top: 12px;
                 left: 12px;
@@ -543,36 +476,36 @@
     <canvas id="cursor-trail"></canvas>
 
     <header>
-        <h1><i class="ph-fill ph-calculator"></i>Calculateur de Moyenne</h1>
+        <h1><i class="ph-light ph-calculator"></i>Calculateur de Moyenne</h1>
     </header>
 
     <button class="nav-toggle" aria-label="Toggle navigation">
-        <i class="ph-fill ph-list"></i>
+        <i class="ph-light ph-list"></i>
     </button>
 
     <nav class="sidebar">
         <div class="sidebar-nav">
-            <a href="../index.html" aria-label="Retour à l'accueil">
-                <i class="ph-fill ph-house"></i> Accueil
+            <a href="../dentaire.html" aria-label="Retour à l'accueil">
+                <i class="ph-light ph-house"></i> Accueil
             </a>
-            <a href="../Cours/index.html" aria-label="Accéder aux cours">
-                <i class="ph-fill ph-book-open"></i> Cours
+            <a href="../Cours-dentaire/dentaire.html" aria-label="Accéder aux cours">
+                <i class="ph-light ph-book-open"></i> Cours
             </a>
-            <a href="../Qcm/index.html" aria-label="Accéder aux QCM">
-                <i class="ph-fill ph-list-checks"></i> QCM
+            <a href="../Qcm-dentaire/dentaire.html" aria-label="Accéder aux QCM">
+                <i class="ph-light ph-list-checks"></i> QCM
             </a>
-            <a href="./index.html" aria-label="Calculer la moyenne">
-                <i class="ph-fill ph-calculator"></i> Calcul de moyenne
+            <a href="./dentaire.html" aria-label="Calculer la moyenne">
+                <i class="ph-light ph-calculator"></i> Calcul de moyenne
             </a>
             <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter">
-                <i class="ph-fill ph-envelope"></i> Nous Contacter
+                <i class="ph-light ph-envelope"></i> Nous Contacter
             </a>
             <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application">
-                <i class="ph-fill ph-download-simple"></i> Installer l'application
+                <i class="ph-light ph-download-simple"></i> Installer l'application
             </button>
             <div class="theme-toggle" aria-label="Toggle theme (light/dark)">
-                <i class="ph-fill ph-sun"></i>
-                <i class="ph-fill ph-moon"></i>
+                <i class="ph-light ph-sun"></i>
+                <i class="ph-light ph-moon"></i>
             </div>
         </div>
     </nav>
@@ -580,7 +513,7 @@
     <main class="main-container">
         <div class="card">
             <div class="card-content">
-                <h2><i class="ph-fill ph-tooth"></i>Médecine Dentaire</h2>
+                <h2><i class="ph-light ph-tooth"></i>Médecine Dentaire</h2>
                 <p>Calculez votre moyenne pour chaque année d'études en dentisterie.</p>
                 <div class="button-group">
                     <a href="annee1.html" class="btn" aria-label="Calculer la moyenne 1ère Année">1ère Année</a>
@@ -597,7 +530,7 @@
                 <p>Contactez-nous pour toute question ou suggestion.</p>
                 <div class="button-group">
                     <a href="mailto:dentaireoranmoy@gmail.com" class="btn" aria-label="Nous contacter">
-                        <i class="ph-fill ph-envelope"></i> Me Contacter
+                        <i class="ph-light ph-envelope"></i> Me Contacter
                     </a>
                 </div>
             </div>
@@ -607,7 +540,6 @@
     <div id="notification-container"></div>
 
     <script>
-        // --- Interactive Background ---
         const bg = document.getElementById('interactive-background');
         if (bg) {
             window.addEventListener('mousemove', (e) => {
@@ -619,7 +551,6 @@
             });
         }
 
-        // --- Cursor Trail ---
         const canvas = document.getElementById('cursor-trail');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -674,7 +605,6 @@
             canvas.height = window.innerHeight;
         });
 
-        // --- Sidebar Toggle ---
         const navToggle = document.querySelector('.nav-toggle');
         const sidebar = document.querySelector('.sidebar');
         const mainContainer = document.querySelector('.main-container');
@@ -684,14 +614,12 @@
             mainContainer.classList.toggle('sidebar-open');
         });
 
-        // --- Card Animation ---
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.card').forEach((card, index) => {
                 card.style.animationDelay = `${0.3 + index * 0.1}s`;
             });
         });
 
-        // --- Button Ripple Effect ---
         document.querySelectorAll('.btn').forEach(button => {
             button.addEventListener('click', function (e) {
                 const rect = button.getBoundingClientRect();
@@ -708,7 +636,6 @@
             });
         });
 
-        // --- Theme Toggle ---
         const html = document.documentElement;
         const toggleButton = document.querySelector('.theme-toggle');
 
@@ -725,11 +652,9 @@
             }
         });
 
-        // Set initial theme
         const savedTheme = localStorage.getItem('theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
 
-        // --- PWA Installation ---
         let deferredPrompt;
         const installButton = document.getElementById('install-button');
         const toast = document.getElementById('notification-container');
@@ -748,7 +673,7 @@
                     if (outcome === 'accepted') {
                         const notif = document.createElement('div');
                         notif.className = 'notification';
-                        notif.innerHTML = `<i class="ph ph-check-circle"></i> Application installée avec succès !`;
+                        notif.innerHTML = `<i class="ph-light ph-check-circle"></i> Application installée avec succès !`;
                         toast.appendChild(notif);
                         setTimeout(() => {
                             notif.classList.add('fade-out');
@@ -761,7 +686,6 @@
             });
         }
 
-        // --- Keyboard Accessibility ---
         document.querySelectorAll('.btn, .theme-toggle, .nav-toggle, .sidebar-nav a, .sidebar-nav button').forEach(element => {
             element.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -771,14 +695,13 @@
             });
         });
 
-        // --- Original Notification Logic (Unchanged) ---
         function showNotification(message, type = 'warning') {
             const container = document.getElementById('notification-container');
             const notif = document.createElement('div');
             notif.className = `notification ${type}`;
-            let iconClass = 'ph-info';
-            if (type === 'warning') iconClass = 'ph-warning-circle';
-            notif.innerHTML = `<i class="ph ${iconClass}"></i> ${message}`;
+            let iconClass = 'ph-light ph-info';
+            if (type === 'warning') iconClass = 'ph-light ph-warning-circle';
+            notif.innerHTML = `<i class="ph-light ${iconClass}"></i> ${message}`;
             container.appendChild(notif);
             setTimeout(() => {
                 notif.classList.add('fade-out');
