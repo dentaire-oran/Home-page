@@ -87,7 +87,7 @@
     <canvas id="cursor-trail"></canvas>
 
     <header>
-        <h1 data-key="header_title"><i class="ph-light ph-calculator"></i>Calculateur de Moyenne</h1>
+        <h1><i class="ph-light ph-calculator"></i><span data-key="header_title">Calculateur de Moyenne</span></h1>
     </header>
 
     <button class="nav-toggle" aria-label="Toggle navigation">
@@ -107,23 +107,23 @@
             </div>
         </div>
         <div class="sidebar-nav">
-            <a href="../dentaire.html" aria-label="Retour à l'accueil" data-key="nav_accueil">
-                <i class="ph-light ph-house"></i> Accueil
+            <a href="../dentaire.html" aria-label="Retour à l'accueil">
+                <i class="ph-light ph-house"></i> <span data-key="nav_accueil">Accueil</span>
             </a>
-            <a href="../Cours-dentaire/dentaire.html" aria-label="Accéder aux cours" data-key="nav_cours">
-                <i class="ph-light ph-book-open"></i> Cours
+            <a href="../Cours-dentaire/dentaire.html" aria-label="Accéder aux cours">
+                <i class="ph-light ph-book-open"></i> <span data-key="nav_cours">Cours</span>
             </a>
-            <a href="../Qcm-dentaire/dentaire.html" aria-label="Accéder aux QCM" data-key="nav_qcm">
-                <i class="ph-light ph-list-checks"></i> QCM
+            <a href="../Qcm-dentaire/dentaire.html" aria-label="Accéder aux QCM">
+                <i class="ph-light ph-list-checks"></i> <span data-key="nav_qcm">QCM</span>
             </a>
-            <a href="./dentaire.html" aria-label="Calculer la moyenne" data-key="nav_calcul">
-                <i class="ph-light ph-calculator"></i> Calcul de moyenne
+            <a href="./dentaire.html" aria-label="Calculer la moyenne">
+                <i class="ph-light ph-calculator"></i> <span data-key="nav_calcul">Calcul de moyenne</span>
             </a>
-            <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter" data-key="nav_contact">
-                <i class="ph-light ph-envelope"></i> Nous Contacter
+            <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter">
+                <i class="ph-light ph-envelope"></i> <span data-key="nav_contact">Nous Contacter</span>
             </a>
-            <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application" data-key="nav_install">
-                <i class="ph-light ph-download-simple"></i> Installer l'application
+            <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application">
+                <i class="ph-light ph-download-simple"></i> <span data-key="nav_install">Installer l'application</span>
             </button>
         </div>
     </nav>
@@ -131,7 +131,7 @@
     <main class="main-container">
         <div class="card">
             <div class="card-content">
-                <h2 data-key="card1_title"><i class="ph-light ph-tooth"></i>Médecine Dentaire</h2>
+                <h2><i class="ph-light ph-tooth"></i><span data-key="card1_title">Médecine Dentaire</span></h2>
                 <p data-key="card1_desc">Calculez votre moyenne pour chaque année d'études en dentisterie.</p>
                 <div class="button-group">
                     <a href="annee1.html" class="btn" aria-label="Calculer la moyenne 1ère Année" data-key="year_1">1ère Année</a>
@@ -147,8 +147,8 @@
                 <h2 data-key="card2_title">Options</h2>
                 <p data-key="card2_desc">Contactez-nous pour toute question ou suggestion.</p>
                 <div class="button-group">
-                    <a href="mailto:dentaireoranmoy@gmail.com" class="btn" aria-label="Nous contacter" data-key="card2_button">
-                        <i class="ph-light ph-envelope"></i> Me Contacter
+                    <a href="mailto:dentaireoranmoy@gmail.com" class="btn" aria-label="Nous contacter">
+                        <i class="ph-light ph-envelope"></i> <span data-key="card2_button">Me Contacter</span>
                     </a>
                 </div>
             </div>
@@ -277,10 +277,14 @@
                     const originalText = element.textContent;
                     element.textContent = translations[lang][key];
                     if (originalText !== translations[lang][key]) {
-                        element.classList.add('glitch');
-                        setTimeout(() => {
-                            element.classList.remove('glitch');
-                        }, 600);
+                        // Applying glitch effect to the parent element for better visual feedback
+                        const parent = element.closest('h1, h2, a, button, p');
+                        if (parent) {
+                           parent.classList.add('glitch');
+                            setTimeout(() => {
+                                parent.classList.remove('glitch');
+                            }, 600);
+                        }
                     }
                 }
             });
