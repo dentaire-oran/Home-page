@@ -555,10 +555,10 @@
             <a href="./dentaire.html" aria-label="Accéder aux cours">
                 <i class="ph-light ph-book-open"></i> Cours
             </a>
-            <a href="../Qcm/dentaire.html" aria-label="Accéder aux QCM">
+            <a href="../Qcm-dentaire/dentaire.html" aria-label="Accéder aux QCM">
                 <i class="ph-light ph-list-checks"></i> QCM
             </a>
-            <a href="../Moyenne/dentaire.html" aria-label="Calculer la moyenne">
+            <a href="../Moyenne-dentaire/dentaire.html" aria-label="Calculer la moyenne">
                 <i class="ph-light ph-calculator"></i> Calcul de moyenne
             </a>
             <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter">
@@ -737,7 +737,7 @@
                     if (outcome === 'accepted') {
                         const notif = document.createElement('div');
                         notif.className = 'notification';
-                        notif.innerHTML = `<i class="ph ph-check-circle"></i> Application installée avec succès !`;
+                        notif.innerHTML = `<i class="ph-light ph-check-circle"></i> Application installée avec succès !`;
                         toast.appendChild(notif);
                         setTimeout(() => {
                             notif.classList.add('fade-out');
@@ -765,7 +765,7 @@
             notif.className = `notification ${type}`;
             let iconClass = 'ph-info';
             if (type === 'warning') iconClass = 'ph-warning-circle';
-            notif.innerHTML = `<i class="ph ${iconClass}"></i> ${message}`;
+            notif.innerHTML = `<i class="ph-light ${iconClass}"></i> ${message}`;
             container.appendChild(notif);
             setTimeout(() => {
                 notif.classList.add('fade-out');
