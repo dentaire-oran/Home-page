@@ -30,7 +30,6 @@
         .sidebar-nav a, .sidebar-nav button { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: var(--radius); background: var(--card-bg); color: var(--text-color); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: var(--transition); cursor: pointer; border: 1px solid var(--border-color); justify-content: center; }
         .sidebar-nav a:hover, .sidebar-nav button:hover { background: var(--primary); color: white; transform: translateX(6px); }
         .sidebar-nav i { font-size: 1.3rem; }
-
         .sidebar-top-buttons {
             display: flex;
             gap: 8px;
@@ -83,7 +82,6 @@
         [data-theme="dark"] .theme-toggle .ph-moon { opacity: 1; transform: translate(-50%, -50%); }
         [data-theme="light"] .theme-toggle .ph-sun { opacity: 1; transform: translate(-50%, -50%); }
         [data-theme="light"] .theme-toggle .ph-moon { opacity: 0; transform: translate(-50%, -100%); }
-
         main.main-container { margin-left: 0; padding: 96px 24px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; max-width: 1400px; margin-inline: auto; transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         main.main-container.sidebar-open { margin-left: 260px; }
         .card { background: var(--card-bg); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 24px; text-align: center; position: relative; overflow: hidden; opacity: 0; transform: scale(0.9); transition: var(--transition); animation: pop-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; box-shadow: var(--shadow); will-change: transform, opacity; }
@@ -104,8 +102,7 @@
         .btn .ripple { position: absolute; border-radius: 50%; background-color: rgba(255, 255, 255, 0.4); transform: scale(0); animation: ripple-effect 0.4s linear; pointer-events: none; }
         @keyframes gradient-flow { to { background-position: 200% center; } }
         @keyframes ripple-effect { to { transform: scale(4); opacity: 0; } }
-
-        /* Animation futuriste de changement de langue */
+        
         .glitch {
             animation: glitch-anim 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
         }
