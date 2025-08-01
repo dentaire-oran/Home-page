@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Dental Guide</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
-    <script src="https://unpkg.com/phosphor-icons"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css">
     <style>
         :root {
             --font: 'Manrope', sans-serif;
@@ -436,7 +436,6 @@
             to { transform: scale(4); opacity: 0; }
         }
 
-        /* Theme Transition */
         @keyframes spiral-in {
             from { clip-path: circle(0% at 50% 50%); }
             to { clip-path: circle(150% at 50% 50%); }
@@ -450,7 +449,6 @@
             animation: none;
         }
 
-        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -471,7 +469,6 @@
             transform: translateX(-50%) translateY(-10px);
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
@@ -508,33 +505,36 @@
     <canvas id="cursor-trail"></canvas>
 
     <header>
-        <h1><i class="ph-fill ph-tooth"></i>Dental Guide</h1>
+        <h1><i class="ph-light ph-tooth"></i>Dental Guide</h1>
     </header>
 
     <button class="nav-toggle" aria-label="Toggle navigation">
-        <i class="ph-fill ph-list"></i>
+        <i class="ph-light ph-list"></i>
     </button>
 
     <nav class="sidebar">
         <div class="sidebar-nav">
-            <a href="./Cours/index.html" aria-label="Accéder aux cours">
-                <i class="ph-fill ph-book-open"></i> Cours
+            <a href="./index.html" aria-label="Accéder à l'accueil">
+                <i class="ph-light ph-house"></i> Accueil
             </a>
-            <a href="./Qcm/index.html" aria-label="Accéder aux QCM">
-                <i class="ph-fill ph-list-checks"></i> QCM
+            <a href="./Cours-dentaire/dentaire.html" aria-label="Accéder aux cours">
+                <i class="ph-light ph-book-open"></i> Cours
             </a>
-            <a href="./Moyenne/index.html" aria-label="Calculer la moyenne">
-                <i class="ph-fill ph-calculator"></i> Calcul de moyenne
+            <a href="./Qcm-dentaire/dentaire.html" aria-label="Accéder aux QCM">
+                <i class="ph-light ph-list-checks"></i> QCM
+            </a>
+            <a href="./Moyenne-dentaire/dentaire.html" aria-label="Calculer la moyenne">
+                <i class="ph-light ph-calculator"></i> Calcul de moyenne
             </a>
             <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter">
-                <i class="ph-fill ph-envelope"></i> Nous Contacter
+                <i class="ph-light ph-envelope"></i> Nous Contacter
             </a>
             <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application">
-                <i class="ph-fill ph-download-simple"></i> Installer l'application
+                <i class="ph-light ph-download-simple"></i> Installer l'application
             </button>
             <div class="theme-toggle" aria-label="Toggle theme (light/dark)">
-                <i class="ph-fill ph-sun"></i>
-                <i class="ph-fill ph-moon"></i>
+                <i class="ph-light ph-sun"></i>
+                <i class="ph-light ph-moon"></i>
             </div>
         </div>
     </nav>
@@ -544,8 +544,8 @@
             <div class="card-content">
                 <h2>Cours</h2>
                 <p>Accédez à des cours détaillés pour approfondir vos connaissances en dentisterie.</p>
-                <a href="./Cours/index.html" class="btn" aria-label="Accéder aux cours">
-                    <i class="ph-fill ph-book-open"></i> Découvrir
+                <a href="./Cours-dentaire/dentaire.html" class="btn" aria-label="Accéder aux cours">
+                    <i class="ph-light ph-book-open"></i> Découvrir
                 </a>
             </div>
         </div>
@@ -553,8 +553,8 @@
             <div class="card-content">
                 <h2>QCM</h2>
                 <p>Testez vos compétences avec des questionnaires à choix multiples interactifs.</p>
-                <a href="./Qcm/index.html" class="btn" aria-label="Accéder aux QCM">
-                    <i class="ph-fill ph-list-checks"></i> Commencer
+                <a href="./Qcm-dentaire/dentaire.html" class="btn" aria-label="Accéder aux QCM">
+                    <i class="ph-light ph-list-checks"></i> Commencer
                 </a>
             </div>
         </div>
@@ -562,8 +562,8 @@
             <div class="card-content">
                 <h2>Calcul de moyenne</h2>
                 <p>Calculez vos notes et suivez votre progression académique facilement.</p>
-                <a href="./Moyenne/index.html" class="btn" aria-label="Calculer la moyenne">
-                    <i class="ph-fill ph-calculator"></i> Calculer
+                <a href="./Moyenne-dentaire/dentaire.html" class="btn" aria-label="Calculer la moyenne">
+                    <i class="ph-light ph-calculator"></i> Calculer
                 </a>
             </div>
         </div>
@@ -572,7 +572,7 @@
                 <h2>Contactez-nous</h2>
                 <p>Envoyez-nous vos questions ou suggestions par e-mail.</p>
                 <a href="mailto:dentaireoranmoy@gmail.com" class="btn" aria-label="Nous contacter">
-                    <i class="ph-fill ph-envelope"></i> Écrire
+                    <i class="ph-light ph-envelope"></i> Écrire
                 </a>
             </div>
         </div>
@@ -581,7 +581,6 @@
     <div id="toast" class="toast">Application installée avec succès !</div>
 
     <script>
-        // --- Interactive Background ---
         const bg = document.getElementById('interactive-background');
         if (bg) {
             window.addEventListener('mousemove', (e) => {
@@ -592,16 +591,12 @@
                 bg.style.setProperty('--mouse-y', y);
             });
         }
-
-        // --- Cursor Trail ---
         const canvas = document.getElementById('cursor-trail');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
         const trails = [];
         const trailLength = 10;
-
         class Trail {
             constructor(x, y) {
                 this.x = x;
@@ -610,13 +605,11 @@
                 this.opacity = 0.6;
                 this.life = 1;
             }
-
             update() {
                 this.life -= 0.05;
                 this.opacity = this.life * 0.6;
                 this.size *= 0.95;
             }
-
             draw() {
                 ctx.fillStyle = `rgba(80, 140, 255, ${this.opacity})`;
                 ctx.beginPath();
@@ -624,14 +617,12 @@
                 ctx.fill();
             }
         }
-
         window.addEventListener('mousemove', (e) => {
             trails.push(new Trail(e.clientX, e.clientY));
             if (trails.length > trailLength) {
                 trails.shift();
             }
         });
-
         function animateTrail() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             trails.forEach(trail => {
@@ -640,32 +631,23 @@
             });
             requestAnimationFrame(animateTrail);
         }
-
         animateTrail();
-
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
-
-        // --- Sidebar Toggle ---
         const navToggle = document.querySelector('.nav-toggle');
         const sidebar = document.querySelector('.sidebar');
         const mainContainer = document.querySelector('.main-container');
-
         navToggle.addEventListener('click', () => {
             sidebar.classList.toggle('open');
             mainContainer.classList.toggle('sidebar-open');
         });
-
-        // --- Card Animation ---
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.card').forEach((card, index) => {
                 card.style.animationDelay = `${0.3 + index * 0.1}s`;
             });
         });
-
-        // --- Button Ripple Effect ---
         document.querySelectorAll('.btn').forEach(button => {
             button.addEventListener('click', function (e) {
                 const rect = button.getBoundingClientRect();
@@ -681,11 +663,8 @@
                 button.appendChild(circle);
             });
         });
-
-        // --- Theme Toggle ---
         const html = document.documentElement;
         const toggleButton = document.querySelector('.theme-toggle');
-
         toggleButton.addEventListener('click', () => {
             const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
             if (document.startViewTransition) {
@@ -698,23 +677,17 @@
                 localStorage.setItem('theme', newTheme);
             }
         });
-
-        // Set initial theme
         const savedTheme = localStorage.getItem('theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
-
-        // --- PWA Installation ---
         let deferredPrompt;
         const installButton = document.getElementById('install-button');
         const toast = document.getElementById('toast');
-
         if (installButton) {
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
                 installButton.style.display = 'flex';
             });
-
             installButton.addEventListener('click', async () => {
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
@@ -728,8 +701,6 @@
                 }
             });
         }
-
-        // --- Keyboard Accessibility ---
         document.querySelectorAll('.btn, .theme-toggle, .nav-toggle, .sidebar-nav a, .sidebar-nav button').forEach(element => {
             element.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
