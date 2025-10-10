@@ -70,6 +70,15 @@
         .alert.success { border-color: var(--success); color: var(--success); } .alert.warning { border-color: var(--warning); color: var(--warning); } .alert.danger { border-color: var(--danger); color: var(--danger); }
         .moyenne-module { margin-top: 16px; font-weight: 600; transition: color 0.3s; }
         #resultat { margin-top: 30px; }
+        .info-note {
+            background: rgba(74, 140, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 24px;
+            color: var(--text-color);
+            font-weight: 600;
+        }
         @media (max-width: 768px) { .sidebar { width: 100%; max-width: 280px; } .main-container.sidebar-open { margin-left: 0; } }
     </style>
 </head>
@@ -195,6 +204,10 @@
 
         function initForm() {
             const form = document.getElementById("form");
+            const infoDiv = document.createElement("div");
+            infoDiv.className = "info-note";
+            infoDiv.innerHTML = '<p>Saisissez seulement les notes qui vous concernent. Les champs vides sont ignorés.</p>';
+            form.appendChild(infoDiv);
             modules.forEach((mod, i) => {
                 const card = document.createElement("div");
                 card.className = "card";
