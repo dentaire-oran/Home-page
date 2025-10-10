@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Moyenne 2ème Année - Dental Guide</title>
+    <title>Moyenne 3ème Année - Dental Guide</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css" />
     <style>
@@ -75,7 +75,7 @@
 </head>
 <body>
     <canvas id="cursor-trail"></canvas>
-    <header><h1><i class="ph-light ph-tooth"></i> Moyenne 2<sup>ème</sup> Année</h1></header>
+    <header><h1><i class="ph-light ph-tooth"></i> Moyenne 3<sup>ème</sup> Année</h1></header>
     <button class="nav-toggle" aria-label="Toggle navigation"><i class="ph-light ph-list"></i></button>
 
     <nav class="sidebar">
@@ -104,17 +104,17 @@
     
     <script>
         const modules = [ 
-            { nom: "Oc", coef: 5, icon: "tooth", e1: true, e2: true, tp: true }, 
-            { nom: "Prothese", coef: 5, icon: "cube", e1: true, e2: true, tp: true }, 
-            { nom: "Patho", coef: 5, icon: "first-aid-kit", e1: true, e2: true, tp: true }, 
-            { nom: "Paro", coef: 5, icon: "microscope", e1: true, e2: true, tp: true }, 
-            { nom: "Odf", coef: 5, icon: "align-center-horizontal-simple", e1: true, e2: true, tp: true }, 
-            { nom: "Anatomi pathologique", coef: 1, icon: "brain", e1: true, e2: true, tp: true }, 
-            { nom: "Imagrie medical", coef: 3, icon: "x-ray", e1: true, e2: true, tp: true }, 
-            { nom: "Oxyologie", coef: 1, icon: "lungs", e1: true, e2: true, tp: true }, 
-            { nom: "Pharmacologie", coef: 1, icon: "pills", e1: true, e2: true, tp: true }, 
-            { nom: "Occlusodontie", coef: 1, icon: "tooth", e1: true, e2: true, tp: true }, 
-            { nom: "Anesthesiologie", coef: 1, icon: "syringe", e1: true, e2: true, tp: true } 
+            { nom: "Oc", coef: 5, icon: "tooth", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Prothese", coef: 5, icon: "cube", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Patho", coef: 5, icon: "first-aid-kit", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Paro", coef: 5, icon: "microscope", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Odf", coef: 5, icon: "align-center-horizontal-simple", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Anatomi pathologique", coef: 1, icon: "brain", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Imagrie medical", coef: 3, icon: "x-ray", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Oxyologie", coef: 1, icon: "lungs", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Pharmacologie", coef: 1, icon: "pills", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Occlusodontie", coef: 1, icon: "tooth", e1: true, e2: true, td: true, tp: true }, 
+            { nom: "Anesthesiologie", coef: 1, icon: "syringe", e1: true, e2: true, td: true, tp: true } 
         ];
         
         document.addEventListener('DOMContentLoaded', () => {
