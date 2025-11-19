@@ -30,6 +30,7 @@
         --pill-color: #ffffff;
         --sidebar-bg: rgba(0, 0, 0, 0.6);
         --input-bg: rgba(0, 0, 0, 0.3);
+        --success: #2ad4a5; --danger: #ff647c; --warning: #ffc94a;
     }
 
     /* THÈME CLAIR */
@@ -44,6 +45,7 @@
         --pill-color: #312e81;
         --sidebar-bg: rgba(255, 255, 255, 0.7);
         --input-bg: rgba(255, 255, 255, 0.5);
+        --success: #2ad4a5; --danger: #ff647c; --warning: #ffc94a;
     }
 
     body {
@@ -135,6 +137,31 @@
     #sidebar.open { transform: translateX(0) !important; }
     html[dir="rtl"] #menuBtn { right: 2rem; left: auto; }
     html[dir="ltr"] #menuBtn { left: 2rem; right: auto; }
+
+    /* Boutons d'Action */
+    .btn-action {
+        padding: 1rem 1.5rem;
+        border-radius: 9999px; /* rounded-full */
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btn-primary {
+        color: var(--text-main);
+        background: linear-gradient(135deg, rgba(129, 140, 248, 0.3), rgba(192, 132, 252, 0.3));
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+    .btn-primary:active {
+        transform: scale(0.98);
+        box-shadow: none;
+    }
+
   </style>
 </head>
 
@@ -161,11 +188,9 @@
         <a href="../../dentaire.html" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main);">
            <i class="ph-bold ph-house text-xl"></i> <span data-key="home">Accueil</span>
         </a>
-        <a href="https://drive.google.com/drive/folders/1zfhMqLO9W8HawEOgK6-WYJbpoMbPQQHY" target="_blank" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main);">
-           <i class="ph-bold ph-book-open text-xl"></i> <span data-key="cours">Cours</span>
-        </a>
-        <a href="#" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main);">
-           <i class="ph-bold ph-check-square-offset text-xl"></i> <span data-key="qcm">QCM</span>
+        
+        <a href="3eme.html" class="w-full py-4 px-6 rounded-2xl glass transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main); background: rgba(129, 140, 248, 0.2);">
+           <i class="ph-bold ph-graduation-cap text-xl text-indigo-400"></i> <span data-key="year3">3ème Année</span>
         </a>
 
         <div class="w-full h-px bg-white/20 my-2"></div>
@@ -194,17 +219,30 @@
 
     <form id="form" class="space-y-6"></form>
 
-    <div class="mt-10 flex flex-wrap justify-center gap-4">
-        <button type="button" onclick="calculer()" class="px-8 py-4 rounded-full glass font-bold text-lg hover:scale-105 active:scale-95 transition flex items-center gap-2 shadow-xl bg-blue-600/20 border-blue-400/30" style="color: var(--text-main);">
+    <div id="calc-actions" class="mt-10 flex flex-wrap justify-center gap-4">
+        <button type="button" onclick="calculer()" class="btn-action btn-primary bg-indigo-500/50 hover:bg-indigo-600/70">
             <i class="ph-bold ph-calculator"></i> <span data-key="btnCalc">Calculer</span>
         </button>
-        </div>
+        <button type="button" onclick="saveResults()" class="btn-action btn-primary">
+            <i class="ph-bold ph-floppy-disk"></i> <span data-key="btnSave">Enregistrer</span>
+        </button>
+        <button type="button" onclick="loadResults()" class="btn-action btn-primary">
+            <i class="ph-bold ph-upload-simple"></i> <span data-key="btnLoad">Charger</span>
+        </button>
+    </div>
 
     <div id="resultat" class="mt-8"></div>
   </main>
 
+  <a href="mailto:dentaireoranmoy@gmail.com" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 group">
+    <div class="px-6 py-3 rounded-full glass shadow-2xl flex items-center gap-3 font-semibold transition hover:scale-105 active:scale-95 border border-white/20 backdrop-blur-xl" style="color: var(--text-main); background: rgba(0,0,0,0.5);">
+      <i class="ph-fill ph-paper-plane-right text-lg group-hover:-rotate-12 transition-transform"></i>
+      <span data-key="contact">Nous contacter</span>
+    </div>
+  </a>
+  
   <script>
-    // === 1. LOGIQUE DE CALCUL (SOURCE 1) ===
+    // === 1. LOGIQUE DE CALCUL ===
     const modules = [ 
         { nom: "Oc", display: "Occlusion", coef: 5, icon: "tooth", e1: true, e2: true, td: true, tp: true }, 
         { nom: "Odf", display: "ODF", coef: 5, icon: "align-center-horizontal-simple", e1: true, e2: true, td: true, tp: true },
@@ -219,18 +257,18 @@
         { nom: "Oxyologie", display: "Oxyologie", coef: 1, icon: "lungs", e1: true, e2: true, td: true, tp: true }
     ];
 
-    // Génération du formulaire au chargement
     document.addEventListener('DOMContentLoaded', () => {
         initForm();
+        // Initialiser l'état des checkbox après la création du formulaire
+        modules.forEach((_, i) => toggleManualMoyenne(i));
     });
 
     function initForm() {
         const form = document.getElementById("form");
         modules.forEach((mod, i) => {
             const card = document.createElement("div");
-            card.className = "glass module-card"; // Style Source 2
+            card.className = "glass module-card"; 
             
-            // Génération HTML adaptée au style Source 2
             card.innerHTML = `
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-xl font-bold flex items-center gap-2" style="color: var(--text-main);">
@@ -243,12 +281,12 @@
                     </label>
                 </div>
 
-                <div id="${i}_manual_container" class="anim-container is-hidden mb-2">
+                <div id="${i}_manual_container" class="anim-container mb-2">
                     <input type="number" step="0.01" min="0" max="20" id="${i}_manual_moyenne" 
                            class="calc-input" placeholder="Moyenne (ex: 12.5)" oninput="updateModuleDisplay(${i})">
                 </div>
 
-                <div id="${i}_notes_fields" class="grid grid-cols-2 gap-4 anim-container">
+                <div id="${i}_notes_fields" class="grid grid-cols-2 gap-4 anim-container is-hidden">
                     ${mod.e1 ? `<div><label class="block text-xs mb-1 opacity-70">EMD S1</label><input type="number" step="0.01" min="0" max="20" id="${i}_emd1" class="calc-input" oninput="updateModuleDisplay(${i})"></div>` : ""}
                     ${mod.e2 ? `<div><label class="block text-xs mb-1 opacity-70">EMD S2</label><input type="number" step="0.01" min="0" max="20" id="${i}_emd2" class="calc-input" oninput="updateModuleDisplay(${i})"></div>` : ""}
                     ${mod.td ? `<div><label class="block text-xs mb-1 opacity-70">TD</label><input type="number" step="0.01" min="0" max="20" id="${i}_td" class="calc-input" oninput="updateModuleDisplay(${i})"></div>` : ""}
@@ -256,7 +294,7 @@
                 </div>
 
                 <div class="mt-4 pt-4 border-t border-white/10 flex justify-end">
-                    <div class="font-bold text-lg transition-colors duration-300" id="${i}_moyenne_module"></div>
+                    <div class="font-bold text-lg transition-colors duration-300" id="${i}_moyenne_module">-</div>
                 </div>
             `;
             form.appendChild(card);
@@ -294,18 +332,11 @@
             let emdMoy = 0, emdCoef = 0;
             if (!isNaN(e1)) { emdMoy += e1; emdCoef++; }
             if (!isNaN(e2)) { emdMoy += e2; emdCoef++; }
-            if (emdCoef > 0) { pts += emdMoy / emdCoef; coefs++; } // Moyenne EMD compte pour 1 coef globalement (selon logique source)
+            if (emdCoef > 0) { pts += emdMoy / emdCoef; coefs++; }
             
             if (!isNaN(td)) { pts += td; coefs++; }
-            if (!isNaN(tp)) { pts += tp * 2; coefs += 2; } // TP compte souvent double ou a un coef spé, ici selon logique Source 1
+            if (!isNaN(tp)) { pts += tp * 2; coefs += 2; }
             
-            // Logique Source 1 (simplifiée): (MoyEMD + TD + 2*TP) / 4
-            // Vérifier si cette logique correspond exactement à Source 1, ici j'ai reproduit le code Source 1:
-            /* Source 1 logic re-read:
-               if (emdCoef > 0) { pts += emdMoy / emdCoef; coefs++; }
-               if (!isNaN(td)) { pts += td; coefs++; }
-               if (!isNaN(tp)) { pts += tp * 2; coefs += 2; }
-            */
             if (coefs > 0) moyMod = pts / coefs;
         }
         return { moyenne: moyMod, filled: filled };
@@ -316,12 +347,17 @@
         const moyElem = document.getElementById(`${i}_moyenne_module`);
         if (filled) {
             moyElem.textContent = `${moyenne.toFixed(2)}`;
-            if (moyenne < 5) moyElem.className = "font-bold text-xl text-red-400";
-            else if (moyenne < 10) moyElem.className = "font-bold text-xl text-yellow-400";
-            else moyElem.className = "font-bold text-xl text-green-400";
+            // Utiliser les variables CSS définies
+            let color;
+            if (moyenne < 5) color = 'var(--danger)';
+            else if (moyenne < 10) color = 'var(--warning)';
+            else color = 'var(--success)';
+            moyElem.style.color = color;
+            moyElem.className = "font-bold text-xl transition-colors duration-300";
         } else {
             moyElem.textContent = '-';
             moyElem.className = "font-bold text-xl opacity-50";
+            moyElem.style.color = 'var(--text-main)';
         }
     }
 
@@ -362,24 +398,22 @@
         resDiv.innerHTML = html;
     }
 
+    // Fonctions non implémentées (pour le moment)
+    function saveResults() {
+        const lang = localStorage.getItem('lang') || 'fr';
+        showToast(translations[lang].toastSave);
+    }
+    function loadResults() {
+        const lang = localStorage.getItem('lang') || 'fr';
+        showToast(translations[lang].toastLoad);
+    }
 
-    // === 2. LOGIQUE THEME & LANGUE (SOURCE 2) ===
-    const html = document.documentElement;
-    const toggleButton = document.querySelector('.theme-toggle-btn');
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    html.setAttribute('data-theme', savedTheme);
 
-    toggleButton.addEventListener('click', () => {
-        const currentTheme = html.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        html.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-    });
-
+    // === 2. LOGIQUE THEME & LANGUE ===
     const translations = {
-      fr: { appTitle: "Dental Guide", pageTitle: "Calcul de Moyenne", subtitle: "Simulateur pour la 3ème année", infoText: "Saisissez seulement les notes qui vous concernent. Les champs vides sont ignorés.", btnCalc: "Calculer", manualMode: "Entrer moyenne", home: "Accueil", cours: "Cours", qcm: "QCM", contact: "Nous contacter" },
-      en: { appTitle: "Dental Guide", pageTitle: "GPA Calculator", subtitle: "Simulator for 3rd Year", infoText: "Enter only relevant grades. Empty fields are ignored.", btnCalc: "Calculate", manualMode: "Enter Average", home: "Home", cours: "Courses", qcm: "Quizzes", contact: "Contact Us" },
-      ar: { appTitle: "دليل طب الأسنان", pageTitle: "حساب المعدل", subtitle: "محاكي للسنة الثالثة", infoText: "أدخل النقاط التي تهمك فقط. الحقول الفارغة يتم تجاهلها.", btnCalc: "حساب", manualMode: "إدخال المعدل", home: "الرئيسية", cours: "دروس", qcm: "أسئلة متعددة", contact: "اتصل بنا" }
+      fr: { appTitle: "Dental Guide", pageTitle: "Calcul de Moyenne", subtitle: "Simulateur pour la 3ème année", infoText: "Saisissez seulement les notes qui vous concernent. Les champs vides sont ignorés.", btnCalc: "Calculer", btnSave: "Enregistrer", btnLoad: "Charger", manualMode: "Entrer moyenne", home: "Accueil", year3: "3ème Année", contact: "Nous contacter", toastSave: "Fonctionnalité d'enregistrement bientôt disponible !", toastLoad: "Fonctionnalité de chargement bientôt disponible !" },
+      en: { appTitle: "Dental Guide", pageTitle: "GPA Calculator", subtitle: "Simulator for 3rd Year", infoText: "Enter only relevant grades. Empty fields are ignored.", btnCalc: "Calculate", btnSave: "Save", btnLoad: "Load", manualMode: "Enter Average", home: "Home", year3: "3rd Year", contact: "Contact Us", toastSave: "Save feature coming soon!", toastLoad: "Load feature coming soon!" },
+      ar: { appTitle: "دليل طب الأسنان", pageTitle: "حساب المعدل", subtitle: "محاكي للسنة الثالثة", infoText: "أدخل النقاط التي تهمك فقط. الحقول الفارغة يتم تجاهلها.", btnCalc: "حساب", btnSave: "حفظ", btnLoad: "تحميل", manualMode: "إدخال المعدل", home: "الرئيسية", year3: "السنة الثالثة", contact: "اتصل بنا", toastSave: "ميزة الحفظ قريبا!", toastLoad: "ميزة التحميل قريبا!" }
     };
 
     const langPill = document.getElementById('langPill');
@@ -435,6 +469,24 @@
     const menuBtn = document.getElementById('menuBtn');
     menuBtn.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); if(sidebar.classList.contains('open')) overlay.classList.remove('hidden'); else overlay.classList.add('hidden'); };
     window.closeMenu = () => { sidebar.classList.remove('open'); overlay.classList.add('hidden'); };
+
+    // Toast (Notification éphémère)
+    const showToast = (msg) => {
+        const container = document.getElementById('toastContainer') || (() => {
+            const div = document.createElement('div');
+            div.id = 'toastContainer';
+            div.className = 'fixed bottom-28 left-1/2 -translate-x-1/2 flex flex-col-reverse gap-3 z-50 pointer-events-none w-max';
+            document.body.appendChild(div);
+            return div;
+        })();
+        const toast = document.createElement('div');
+        toast.className = 'px-6 py-3 rounded-full glass text-white shadow-2xl flex items-center gap-3 translate-y-10 opacity-0 transition-all duration-500 font-semibold';
+        toast.style.background = "rgba(0,0,0,0.85)";
+        toast.innerHTML = `<i class="ph-bold ph-clock"></i> <span>${msg}</span>`;
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+        setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 500); }, 2500);
+    };
   </script>
 </body>
 </html>
