@@ -16,7 +16,6 @@
     /* --- 1. VARIABLES ET THÈMES --- */
     :root { --transition-speed: 0.5s; }
 
-    /* THÈME SOMBRE */
     [data-theme="dark"] {
         --bg-gradient: linear-gradient(135deg, #312e81 0%, #1e1b4b 50%, #4c0519 100%);
         --glass-bg: rgba(255, 255, 255, 0.08);
@@ -24,14 +23,13 @@
         --text-main: #ffffff;
         --text-muted: rgba(255, 255, 255, 0.7);
         --btn-hover: rgba(255, 255, 255, 0.15);
-        --pill-bg: rgba(0, 0, 0, 0.3);
-        --pill-color: #ffffff;
         --sidebar-bg: rgba(0, 0, 0, 0.8);
         --input-bg: rgba(0, 0, 0, 0.3);
         --success: #2ad4a5; --danger: #ff647c; --warning: #ffc94a;
+        --nav-active-bg: rgba(129, 140, 248, 0.2);
+        --nav-active-text: #a5b4fc;
     }
 
-    /* THÈME CLAIR */
     [data-theme="light"] {
         --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fce7f3 100%);
         --glass-bg: rgba(255, 255, 255, 0.65);
@@ -39,11 +37,11 @@
         --text-main: #312e81;
         --text-muted: #6366f1;
         --btn-hover: rgba(255, 255, 255, 0.9);
-        --pill-bg: rgba(255, 255, 255, 0.5);
-        --pill-color: #312e81;
         --sidebar-bg: rgba(255, 255, 255, 0.9);
         --input-bg: rgba(255, 255, 255, 0.5);
         --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+        --nav-active-bg: rgba(79, 70, 229, 0.1);
+        --nav-active-text: #4f46e5;
     }
 
     body {
@@ -74,46 +72,68 @@
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     .animate-float { animation: float 6s ease-in-out infinite; }
 
+    /* --- NAVIGATION & SIDEBAR STYLES --- */
+    .nav-link {
+        display: flex; align-items: center; gap: 0.75rem;
+        width: 100%; padding: 1rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 500; text-decoration: none;
+        color: var(--text-main);
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-link:hover {
+        background: var(--btn-hover);
+        transform: translateX(5px);
+    }
+
+    /* Style pour la page active */
+    .nav-link.active {
+        background: var(--nav-active-bg);
+        color: var(--nav-active-text);
+        border-color: var(--glass-border);
+        font-weight: 600;
+    }
+    .nav-link.active i { color: inherit; }
+
     /* --- UI ELEMENTS --- */
     .lang-container {
-        position: relative; display: flex; background: var(--pill-bg);
+        position: relative; display: flex; background: rgba(0,0,0,0.2);
         border-radius: 99px; padding: 4px; border: 1px solid var(--glass-border);
         height: 48px; width: 100%; direction: ltr;
     }
+    [data-theme="light"] .lang-container { background: rgba(255,255,255,0.4); }
+
     .lang-pill {
         position: absolute; top: 4px; bottom: 4px; left: 4px;
-        width: calc(33.33% - 5px); background: var(--pill-color);
+        width: calc(33.33% - 5px); background: var(--text-main);
         border-radius: 99px; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-        z-index: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 0; opacity: 0.15;
     }
+    
     .lang-btn {
         flex: 1; position: relative; z-index: 1; font-size: 0.9rem; font-weight: 600;
         color: var(--text-muted); transition: color 0.3s;
     }
-    [data-theme="dark"] .lang-btn.active { color: #333; font-weight: 800; }
-    [data-theme="light"] .lang-btn.active { color: #fff; font-weight: 800; }
+    .lang-btn.active { color: var(--text-main); font-weight: 800; }
 
     .theme-toggle-btn {
         width: 48px; height: 48px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; position: relative; overflow: hidden;
-        color: var(--text-main);
-        flex-shrink: 0;
+        color: var(--text-main); flex-shrink: 0;
     }
     .theme-toggle-btn:hover { background: var(--btn-hover); }
     .theme-toggle-btn i { position: absolute; top: 50%; left: 50%; transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
     
-    /* Gestion icônes thème */
     [data-theme="dark"] .ph-moon { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
     [data-theme="dark"] .ph-sun { transform: translate(-50%, -50%) scale(0.5) rotate(90deg); opacity: 0; }
-    
     [data-theme="light"] .ph-sun { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
     [data-theme="light"] .ph-moon { transform: translate(-50%, -50%) scale(0.5) rotate(-90deg); opacity: 0; }
 
     /* CALCULATOR STYLES */
-    .module-card {
-        margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 1.5rem; text-align: left;
-    }
+    .module-card { margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 1.5rem; text-align: left; }
     .calc-input {
         width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border);
         color: var(--text-main); border-radius: 0.5rem; padding: 0.5rem 0.75rem;
@@ -166,19 +186,22 @@
         </div>
       </div>
 
-      <div class="space-y-4">
-        <a href="#" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main);">
-           <i class="ph-bold ph-house text-xl"></i> <span data-key="home">Accueil</span>
+      <div class="space-y-3">
+        <a href="index.html" class="nav-link glass">
+           <i class="ph-bold ph-house text-xl"></i> 
+           <span data-key="home">Accueil</span>
         </a>
         
-        <a href="#" class="w-full py-4 px-6 rounded-2xl glass transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main); background: rgba(129, 140, 248, 0.2);">
-           <i class="ph-bold ph-graduation-cap text-xl text-indigo-400"></i> <span data-key="year3">3ème Année</span>
+        <a href="3eme.html" class="nav-link glass active">
+           <i class="ph-bold ph-graduation-cap text-xl"></i> 
+           <span data-key="year3">3ème Année</span>
         </a>
 
-        <div class="w-full h-px bg-white/20 my-2"></div>
+        <div class="w-full h-px bg-white/10 my-4"></div>
 
-        <a href="mailto:dentaireoranmoy@gmail.com" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main);">
-          <i class="ph-bold ph-envelope text-xl"></i> <span data-key="contact">Nous contacter</span>
+        <a href="mailto:dentaireoranmoy@gmail.com" class="nav-link glass">
+          <i class="ph-bold ph-envelope text-xl"></i> 
+          <span data-key="contact">Nous contacter</span>
         </a>
       </div>
     </div>
@@ -225,10 +248,11 @@
   
   <script>
     // === 1. CONFIGURATION ===
-    const html = document.documentElement; // Référence globale au tag HTML
+    const html = document.documentElement; 
 
+    // CORRECTION DU NOM DE MODULE ICI : "Oce" pour l'ID et "OCE" pour l'affichage
     const modules = [ 
-        { nom: "Oc", display: "Occlusion", coef: 5, icon: "tooth", e1: true, e2: true, td: true, tp: true }, 
+        { nom: "Oce", display: "OCE", coef: 5, icon: "tooth", e1: true, e2: true, td: true, tp: true }, 
         { nom: "Odf", display: "ODF", coef: 5, icon: "align-center-horizontal-simple", e1: true, e2: true, td: true, tp: true },
         { nom: "Paro", display: "Parodontologie", coef: 5, icon: "microscope", e1: true, e2: true, td: true, tp: true },
         { nom: "Patho", display: "Pathologie", coef: 5, icon: "first-aid-kit", e1: true, e2: true, td: true, tp: true },
@@ -243,16 +267,15 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         initForm();
-        // Initialiser l'état des checkbox pour s'assurer de la cohérence visuelle
         modules.forEach((_, i) => toggleManualMoyenne(i, false)); 
-        initTheme(); // Initialiser le thème
-        initLang(localStorage.getItem('lang') || 'fr'); // Initialiser la langue
+        initTheme(); 
+        initLang(localStorage.getItem('lang') || 'fr'); 
     });
 
     // === 2. GÉNÉRATION DU FORMULAIRE ===
     function initForm() {
         const form = document.getElementById("form");
-        form.innerHTML = ""; // Clean start
+        form.innerHTML = ""; 
         modules.forEach((mod, i) => {
             const card = document.createElement("div");
             card.className = "glass module-card"; 
@@ -325,17 +348,15 @@
             const td = getVal(`${i}_td`);
             const tp = getVal(`${i}_tp`);
             
-            // Vérifier si au moins une note est entrée
             if ([e1, e2, td, tp].some(v => !isNaN(v))) filled = true;
             
-            // Logique spécifique (adaptable selon le règlement des études)
             let emdSum = 0, emdCount = 0;
             if (!isNaN(e1)) { emdSum += e1; emdCount++; }
             if (!isNaN(e2)) { emdSum += e2; emdCount++; }
             
-            if (emdCount > 0) { pts += (emdSum / emdCount); coefsCalc++; } // Moyenne des EMDs compte pour 1 part
+            if (emdCount > 0) { pts += (emdSum / emdCount); coefsCalc++; }
             if (!isNaN(td)) { pts += td; coefsCalc++; }
-            if (!isNaN(tp)) { pts += tp * 2; coefsCalc += 2; } // TP compte double (selon votre logique initiale)
+            if (!isNaN(tp)) { pts += tp * 2; coefsCalc += 2; }
             
             if (coefsCalc > 0 && filled) moyMod = pts / coefsCalc;
         }
@@ -362,7 +383,6 @@
 
         modules.forEach((mod, i) => {
             const { moyenne, filled } = getModuleMoyenne(i);
-            // Forcer l'affichage à jour
             updateModuleDisplay(i); 
 
             if(filled){
@@ -434,12 +454,10 @@
             data.forEach((item, i) => {
                 if(i >= modules.length) return;
                 
-                // Restaurer Checkbox
                 const cb = document.getElementById(`${i}_manual_cb`);
                 cb.checked = item.manual;
-                toggleManualMoyenne(i, false); // Mettre à jour l'UI sans anim excessive
+                toggleManualMoyenne(i, false); 
 
-                // Restaurer Valeurs
                 if (document.getElementById(`${i}_manual_moyenne`)) document.getElementById(`${i}_manual_moyenne`).value = item.manualVal;
                 if (document.getElementById(`${i}_emd1`)) document.getElementById(`${i}_emd1`).value = item.emd1;
                 if (document.getElementById(`${i}_emd2`)) document.getElementById(`${i}_emd2`).value = item.emd2;
@@ -448,7 +466,7 @@
                 
                 updateModuleDisplay(i);
             });
-            calculer(); // Lancer le calcul automatiquement
+            calculer();
             showToast(translations[lang].loaded || "Données chargées !");
         } catch (e) {
             console.error(e);
@@ -482,13 +500,11 @@
           html.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
           localStorage.setItem('lang', lang);
 
-          // Traduction dynamique
           document.querySelectorAll('[data-key]').forEach(el => {
             const key = el.getAttribute('data-key');
             if (translations[lang][key]) el.textContent = translations[lang][key];
           });
           
-          // Mise à jour des placeholders spécifiques si besoin
           requestAnimationFrame(() => { document.body.classList.remove('switching-lang'); });
       }, 300);
     };
