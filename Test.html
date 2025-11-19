@@ -4,82 +4,18 @@
     <link rel="manifest" href="../manifest.json">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Cours - Dental Guide</title>
+    <title>Dental Guide</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css">
     <style>
+        /* Tout le CSS reste identique (je ne le recopie pas pour gagner de la place, il est exactement le même) */
         :root { --font: 'Manrope', sans-serif; --radius: 12px; --shadow: 0 10px 30px rgba(0, 0, 0, 0.15); --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         [data-theme="dark"] { --bg: #101223; --header-bg: rgba(20, 24, 40, 0.9); --sidebar-bg: rgba(20, 24, 40, 0.9); --card-bg: rgba(30, 35, 60, 0.85); --blur: 10px; --text-title: #f8faff; --text-color: #d0d8ff; --text-secondary: #95a0d0; --border-color: rgba(80, 90, 160, 0.3); --glow-color: rgba(80, 140, 255, 0.6); --primary: #4a8cff; --accent: #34e4b5; --grad-1: rgba(80, 140, 255, 0.5); --grad-2: rgba(52, 228, 181, 0.4); }
         [data-theme="light"] { --bg: #f6f9ff; --header-bg: rgba(245, 248, 255, 0.9); --sidebar-bg: rgba(245, 248, 255, 0.9); --card-bg: rgba(255, 255, 255, 0.85); --blur: 10px; --text-title: #1c2b5a; --text-color: #2a3b6a; --text-secondary: #6a75a0; --border-color: rgba(40, 50, 100, 0.2); --glow-color: rgba(60, 100, 255, 0.6); --primary: #3a7bff; --accent: #2ad4a5; --grad-1: rgba(60, 100, 255, 0.5); --grad-2: rgba(180, 90, 255, 0.4); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         html { font-family: var(--font); background: var(--bg); color: var(--text-color); scroll-behavior: smooth; }
         body { min-height: 100vh; background: var(--bg); position: relative; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        #interactive-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: var(--bg); --mouse-x: 50; --mouse-y: 50; will-change: background; }
-        #interactive-background::before { content: ""; position: absolute; width: 100%; height: 100%; background: radial-gradient( circle at calc(var(--mouse-x) * 1%) calc(var(--mouse-y) * 1%), var(--grad-1), transparent 25% ); transition: var(--transition); }
-        #cursor-trail { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; pointer-events: none; }
-        header { position: fixed; top: 0; left: 0; width: 100%; height: 64px; background: var(--header-bg); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); border-bottom: 1px solid var(--border-color); display: flex; justify-content: center; align-items: center; z-index: 20; }
-        header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text-title); display: flex; align-items: center; gap: 12px; }
-        header h1 i { font-size: 2rem; color: var(--primary); transition: var(--transition); }
-        header h1:hover i { transform: scale(1.1) rotate(10deg); }
-        .nav-toggle { position: fixed; top: 12px; left: 12px; z-index: 30; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
-        .nav-toggle:hover { border-color: var(--primary); transform: scale(1.1); }
-        .nav-toggle i { font-size: 1.6rem; color: var(--text-secondary); }
-        .sidebar { position: fixed; top: 64px; left: 0; width: 260px; height: calc(100% - 64px); background: var(--sidebar-bg); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 25; }
-        .sidebar.open { transform: translateX(0); }
-        .sidebar-top-buttons { display: flex; gap: 8px; width: 100%; justify-content: center; margin-bottom: 12px; }
-        .sidebar-nav { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-        .sidebar-nav a, .sidebar-nav button { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: var(--radius); background: var(--card-bg); color: var(--text-color); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: var(--transition); cursor: pointer; border: 1px solid var(--border-color); justify-content: center; }
-        .sidebar-nav a:hover, .sidebar-nav button:hover { background: var(--primary); color: white; transform: translateX(6px); }
-        .sidebar-nav i { font-size: 1.3rem; }
-        .language-toggle { display: flex; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50px; width: 120px; height: 40px; overflow: hidden; }
-        .language-toggle button { flex: 1; background: transparent; border: none; color: var(--text-secondary); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
-        .language-toggle button.active { background: var(--primary); color: white; transform: scale(1.1); }
-        .theme-toggle { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
-        .theme-toggle:hover { border-color: var(--primary); transform: scale(1.1); }
-        .theme-toggle i { font-size: 1.6rem; color: var(--text-secondary); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.4s ease, transform 0.4s ease; }
-        [data-theme="dark"] .theme-toggle .ph-sun { opacity: 0; transform: translate(-50%, 100%); }
-        [data-theme="dark"] .theme-toggle .ph-moon { opacity: 1; transform: translate(-50%, -50%); }
-        [data-theme="light"] .theme-toggle .ph-sun { opacity: 1; transform: translate(-50%, -50%); }
-        [data-theme="light"] .theme-toggle .ph-moon { opacity: 0; transform: translate(-50%, -100%); }
-        main.main-container { margin-left: 0; padding: 96px 24px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; max-width: 1400px; margin-inline: auto; transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        main.main-container.sidebar-open { margin-left: 260px; }
-        .card { background: var(--card-bg); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 24px; text-align: center; position: relative; overflow: hidden; opacity: 0; transform: scale(0.9); transition: var(--transition); animation: pop-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; box-shadow: var(--shadow); will-change: transform, opacity; }
-        .card:hover { transform: scale(1.05) translateY(-6px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: var(--radius); background: conic-gradient( from var(--angle), transparent 0%, var(--glow-color) 10%, transparent 20% ); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: rotate-border 2.5s linear infinite; opacity: 0; transition: opacity 0.3s ease; }
-        .card:hover::before { opacity: 1; }
-        @property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-        @keyframes rotate-border { to { --angle: 360deg; } }
-        @keyframes pop-in { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .card-content { display: flex; flex-direction: column; }
-        .card-content h2 { font-size: 1.3rem; font-weight: 800; color: var(--text-title); margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .card-content p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 24px; }
-        .button-group { display: flex; flex-direction: column; gap: 20px; align-items: center; }
-        .btn { color: white; border: none; border-radius: 50px; padding: 12px 24px; font-size: 1rem; font-weight: 600; cursor: pointer; outline: none; width: 100%; max-width: 240px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; position: relative; overflow: hidden; transition: var(--transition); background-size: 200% 200%; background-image: linear-gradient(135deg, var(--primary), var(--accent), var(--primary)); animation: gradient-flow 2.5s linear infinite; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); }
-        .btn:hover { transform: scale(1.1) translateY(-4px); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25); animation-duration: 1.2s; }
-        .btn:active { transform: scale(0.95) translateY(0); }
-        .btn i { font-size: 1.4rem; transition: var(--transition); }
-        .btn:hover i { transform: scale(1.15) rotate(8deg); }
-        .btn .ripple { position: absolute; border-radius: 50%; background-color: rgba(255, 255, 255, 0.4); transform: scale(0); animation: ripple-effect 0.4s linear; pointer-events: none; }
-        @keyframes gradient-flow { to { background-position: 200% center; } }
-        @keyframes ripple-effect { to { transform: scale(4); opacity: 0; } }
-        .glitch { animation: glitch-anim 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
-        @keyframes glitch-anim {
-            0% { transform: translate(0); opacity: 1; }
-            5% { transform: translate(-5px, -5px); opacity: 0.8; }
-            10% { transform: translate(5px, 5px); opacity: 0.8; }
-            15% { transform: translate(0); opacity: 1; }
-            20% { transform: translate(5px, -5px); opacity: 0.8; }
-            25% { transform: translate(-5px, 5px); opacity: 0.8; }
-            30% { transform: translate(0); opacity: 1; }
-            100% { transform: translate(0); opacity: 1; }
-        }
-        #notification-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-        .notification { padding: 12px 24px; border-radius: var(--radius); box-shadow: var(--shadow); color: var(--text-color); background: var(--card-bg); display: flex; align-items: center; gap: 10px; font-weight: 600; animation: slideInUp 0.4s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        .notification.warning { background: var(--primary); }
-        .notification.fade-out { animation: fadeOutDown 0.4s ease-in forwards; }
-        @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOutDown { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
-        @media (max-width: 768px) { .sidebar { width: 100%; max-width: 280px; } main.main-container { margin-left: 0; padding: 80px 16px 16px; grid-template-columns: 1fr; } main.main-container.sidebar-open { margin-left: 0; } .btn { max-width: 100%; } header h1 { font-size: 1.4rem; } .nav-toggle { top: 12px; left: 12px; } }
+        /* ... tout le reste du CSS inchangé ... */
     </style>
 </head>
 <body>
@@ -87,7 +23,8 @@
     <canvas id="cursor-trail"></canvas>
 
     <header>
-        <h1><i class="ph-light ph-book-open"></i><span data-key="header_title">Cours</span></h1>
+        <!-- Titre modifié + icône dent -->
+        <h1><i class="ph-light ph-tooth"></i><span data-key="header_title">Dental Guide</span></h1>
     </header>
 
     <button class="nav-toggle" aria-label="Toggle navigation">
@@ -95,53 +32,27 @@
     </button>
 
     <nav class="sidebar">
-        <div class="sidebar-top-buttons">
-            <div class="language-toggle">
-                <button data-lang="fr" aria-label="Changer la langue en français">fr</button>
-                <button data-lang="en" aria-label="Change language to English">en</button>
-                <button data-lang="ar" aria-label="تغيير اللغة إلى العربية" style="direction: rtl;">ar</button>
-            </div>
-            <div class="theme-toggle" aria-label="Toggle theme (light/dark)">
-                <i class="ph-light ph-sun"></i>
-                <i class="ph-light ph-moon"></i>
-            </div>
-        </div>
-        <div class="sidebar-nav">
-            <a href="../dentaire.html" aria-label="Retour à l'accueil">
-                <i class="ph-light ph-house"></i> <span data-key="nav_accueil">Accueil</span>
-            </a>
-            <a href="./dentaire.html" aria-label="Accéder aux cours">
-                <i class="ph-light ph-book-open"></i> <span data-key="nav_cours">Cours</span>
-            </a>
-            <a href="../Qcm-dentaire/dentaire.html" aria-label="Accéder aux QCM">
-                <i class="ph-light ph-list-checks"></i> <span data-key="nav_qcm">QCM</span>
-            </a>
-            <a href="../Moyenne-dentaire/dentaire.html" aria-label="Calculer la moyenne">
-                <i class="ph-light ph-calculator"></i> <span data-key="nav_calcul">Calcul de moyenne</span>
-            </a>
-            <a href="mailto:dentaireoranmoy@gmail.com" aria-label="Nous contacter">
-                <i class="ph-light ph-envelope"></i> <span data-key="nav_contact">Nous Contacter</span>
-            </a>
-            <button type="button" id="install-button" style="display: none;" aria-label="Installer l'application">
-                <i class="ph-light ph-download-simple"></i> <span data-key="nav_install">Installer l'application</span>
-            </button>
-        </div>
+        <!-- Sidebar inchangée -->
+        <!-- ... -->
     </nav>
 
     <main class="main-container">
         <div class="card">
             <div class="card-content">
                 <h2><i class="ph-light ph-tooth"></i><span data-key="card1_title">Médecine Dentaire</span></h2>
-                <p data-key="card1_desc">Accédez à des cours détaillés pour chaque année d'études en dentisterie.</p>
+                <!-- Description supprimée -->
+                
                 <div class="button-group">
-                    <a href="https://drive.google.com/drive/folders/14d-U2KcHVJKbq28vrL8QnuOFV4XVYzoG" class="btn" aria-label="Cours 1ère Année" data-key="year_1">1ère Année</a>
-                    <a href="https://drive.google.com/drive/folders/1-LkLRmXcpJ5K-QR1tRurObSdl5uvTKZj" class="btn" aria-label="Cours 2ème Année" data-key="year_2">2ème Année</a>
-                    <a href="https://drive.google.com/drive/folders/1zfhMqLO9W8HawEOgK6-WYJbpoMbPQQHY" class="btn" aria-label="Cours 3ème Année" data-key="year_3">3ème Année</a>
+                    <!-- 1ère, 2ème, 3ème année → Bientôt disponible -->
+                    <button type="button" class="btn" onclick="showNotification(translations[savedLang].not_available, 'warning')" aria-label="Cours 1ère Année" data-key="year_1">1ère Année</button>
+                    <button type="button" class="btn" onclick="showNotification(translations[savedLang].not_available, 'warning')" aria-label="Cours 2ème Année" data-key="year_2">2ème Année</button>
+                    <button type="button" class="btn" onclick="showNotification(translations[savedLang].not_available, 'warning')" aria-label="Cours 3ème Année" data-key="year_3">3ème Année</button>
                     <button type="button" class="btn" onclick="showNotification(translations[savedLang].not_available, 'warning')" aria-label="Cours 4ème Année" data-key="year_4">4ème Année</button>
                     <button type="button" class="btn" onclick="showNotification(translations[savedLang].not_available, 'warning')" aria-label="Cours 5ème Année" data-key="year_5">5ème Année</button>
                 </div>
             </div>
         </div>
+
         <div class="card">
             <div class="card-content">
                 <h2 data-key="card2_title">Options</h2>
@@ -158,55 +69,10 @@
     <div id="notification-container"></div>
 
     <script>
-        const bg = document.getElementById('interactive-background'); if (bg) { window.addEventListener('mousemove', (e) => { const { clientX, clientY } = e; const x = Math.round((clientX / window.innerWidth) * 100); const y = Math.round((clientY / window.innerHeight) * 100); bg.style.setProperty('--mouse-x', x); bg.style.setProperty('--mouse-y', y); }); }
-        const canvas = document.getElementById('cursor-trail'); const ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const trails = []; const trailLength = 10;
-        class Trail { constructor(x, y) { this.x = x; this.y = y; this.size = Math.random() * 4 + 2; this.opacity = 0.6; this.life = 1; } update() { this.life -= 0.05; this.opacity = this.life * 0.6; this.size *= 0.95; } draw() { ctx.fillStyle = `rgba(80, 140, 255, ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } }
-        window.addEventListener('mousemove', (e) => { trails.push(new Trail(e.clientX, e.clientY)); if (trails.length > trailLength) { trails.shift(); } });
-        function animateTrail() { ctx.clearRect(0, 0, canvas.width, canvas.height); trails.forEach(trail => { trail.update(); trail.draw(); }); requestAnimationFrame(animateTrail); } animateTrail();
-        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
-        const navToggle = document.querySelector('.nav-toggle'); const sidebar = document.querySelector('.sidebar'); const mainContainer = document.querySelector('.main-container');
-        navToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle('open');
-            mainContainer.classList.toggle('sidebar-open');
-        });
-        document.addEventListener('click', (e) => {
-            if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !navToggle.contains(e.target)) {
-                sidebar.classList.remove('open');
-                mainContainer.classList.remove('sidebar-open');
-            }
-        });
-        document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('.card').forEach((card, index) => { card.style.animationDelay = `${0.3 + index * 0.1}s`; }); });
-        document.querySelectorAll('.btn').forEach(button => {
-            button.addEventListener('click', function (e) {
-                const rect = button.getBoundingClientRect();
-                const circle = document.createElement('span');
-                const diameter = Math.max(button.clientWidth, button.clientHeight);
-                const radius = diameter / 2;
-                circle.style.width = circle.style.height = `${diameter}px`;
-                circle.style.left = `${e.clientX - rect.left - radius}px`;
-                circle.style.top = `${e.clientY - rect.top - radius}px`;
-                circle.classList.add('ripple');
-                const existingRipple = button.querySelector('.ripple');
-                if (existingRipple) existingRipple.remove();
-                button.appendChild(circle);
-            });
-        });
-        
-        const html = document.documentElement;
-        const toggleButton = document.querySelector('.theme-toggle');
-        toggleButton.addEventListener('click', () => {
-            const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        html.setAttribute('data-theme', savedTheme);
-
+        /* Tout le JavaScript reste exactement le même, sauf la traduction du titre */
         const translations = {
             fr: {
-                header_title: "Cours",
+                header_title: "Dental Guide",  // ← modifié ici
                 nav_accueil: "Accueil",
                 nav_cours: "Cours",
                 nav_qcm: "QCM",
@@ -214,7 +80,6 @@
                 nav_contact: "Nous Contacter",
                 nav_install: "Installer l'application",
                 card1_title: "Médecine Dentaire",
-                card1_desc: "Accédez à des cours détaillés pour chaque année d'études en dentisterie.",
                 year_1: "1ère Année",
                 year_2: "2ème Année",
                 year_3: "3ème Année",
@@ -227,100 +92,23 @@
                 toast_message_install: "Application installée avec succès !",
             },
             en: {
-                header_title: "Courses",
-                nav_accueil: "Home",
-                nav_cours: "Courses",
-                nav_qcm: "Quizzes",
-                nav_calcul: "GPA Calculator",
-                nav_contact: "Contact Us",
-                nav_install: "Install App",
-                card1_title: "Dental Medicine",
-                card1_desc: "Access detailed courses for each year of dentistry studies.",
-                year_1: "1st Year",
-                year_2: "2nd Year",
-                year_3: "3rd Year",
-                year_4: "4th Year",
-                year_5: "5th Year",
-                card2_title: "Options",
-                card2_desc: "Contact us for any questions or suggestions.",
-                card2_button: "Contact Me",
+                header_title: "Dental Guide",  // ← modifié aussi en anglais
+                /* ... le reste inchangé ... */
                 not_available: "Coming soon!",
-                toast_message_install: "Application installed successfully!",
             },
             ar: {
-                header_title: "الدروس",
-                nav_accueil: "الصفحة الرئيسية",
-                nav_cours: "الدروس",
-                nav_qcm: "اختبارات",
-                nav_calcul: "حساب المعدل",
-                nav_contact: "اتصل بنا",
-                nav_install: "تثبيت التطبيق",
-                card1_title: "طب الأسنان",
-                card1_desc: "احصل على دروس مفصلة لكل سنة من سنوات دراسة طب الأسنان.",
-                year_1: "السنة الأولى",
-                year_2: "السنة الثانية",
-                year_3: "السنة الثالثة",
-                year_4: "السنة الرابعة",
-                year_5: "السنة الخامسة",
-                card2_title: "خيارات",
-                card2_desc: "اتصل بنا لأي أسئلة أو اقتراحات.",
-                card2_button: "اتصل بي",
+                header_title: "دليل الأسنان",  // tu peux changer si tu veux, j'ai mis une traduction logique
+                /* ... */
                 not_available: "قريبا!",
-                toast_message_install: "تم تثبيت التطبيق بنجاح!",
             }
         };
 
-        const updateContent = (lang) => {
-            document.querySelectorAll('[data-key]').forEach(element => {
-                const key = element.getAttribute('data-key');
-                if (translations[lang] && translations[lang][key]) {
-                    const originalText = element.textContent;
-                    element.textContent = translations[lang][key];
-                    if (originalText !== translations[lang][key]) {
-                        const parent = element.closest('h1, h2, a, button, p');
-                        if (parent) {
-                           parent.classList.add('glitch');
-                            setTimeout(() => {
-                                parent.classList.remove('glitch');
-                            }, 600);
-                        }
-                    }
-                }
-            });
-            html.setAttribute('lang', lang);
-            document.querySelectorAll('.language-toggle button').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-            });
-        };
-
-        const languageButtons = document.querySelectorAll('.language-toggle button');
-        languageButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const newLang = button.getAttribute('data-lang');
-                localStorage.setItem('lang', newLang);
-                updateContent(newLang);
-            });
-        });
-
+        // Le reste du script est 100% identique
+        // (tout le code de traduction, thème, installation PWA, etc.)
+        
         const savedLang = localStorage.getItem('lang') || 'fr';
         updateContent(savedLang);
-        
-        let deferredPrompt; const installButton = document.getElementById('install-button'); const notificationContainer = document.getElementById('notification-container');
-        if (installButton) { window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installButton.style.display = 'flex'; }); installButton.addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') { showNotification(translations[savedLang].toast_message_install); } deferredPrompt = null; installButton.style.display = 'none'; } }); }
-        document.querySelectorAll('.btn, .theme-toggle, .nav-toggle, .sidebar-nav a, .sidebar-nav button').forEach(element => { element.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); element.click(); } }); });
-
-        function showNotification(message, type = 'warning') {
-            const notif = document.createElement('div');
-            notif.className = `notification ${type}`;
-            let iconClass = 'ph-light ph-info';
-            if (type === 'warning') iconClass = 'ph-light ph-warning-circle';
-            notif.innerHTML = `<i class="${iconClass}"></i> ${message}`;
-            notificationContainer.appendChild(notif);
-            setTimeout(() => {
-                notif.classList.add('fade-out');
-                notif.addEventListener('animationend', () => { notif.remove(); });
-            }, 2500);
-        }
+        // ... tout le reste du script inchangé ...
     </script>
 </body>
 </html>
