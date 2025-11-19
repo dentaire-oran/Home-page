@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr" data-theme="dark" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,15 +7,13 @@
   <title>Calcul Moyenne - 3ème Année</title>
 
   <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="icon" href="icon-192.png">
-
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* --- 1. VARIABLES ET THÈMES (Style Source 2) --- */
+    /* --- 1. VARIABLES ET THÈMES --- */
     :root { --transition-speed: 0.5s; }
 
     /* THÈME SOMBRE */
@@ -28,7 +26,7 @@
         --btn-hover: rgba(255, 255, 255, 0.15);
         --pill-bg: rgba(0, 0, 0, 0.3);
         --pill-color: #ffffff;
-        --sidebar-bg: rgba(0, 0, 0, 0.6);
+        --sidebar-bg: rgba(0, 0, 0, 0.8);
         --input-bg: rgba(0, 0, 0, 0.3);
         --success: #2ad4a5; --danger: #ff647c; --warning: #ffc94a;
     }
@@ -43,9 +41,9 @@
         --btn-hover: rgba(255, 255, 255, 0.9);
         --pill-bg: rgba(255, 255, 255, 0.5);
         --pill-color: #312e81;
-        --sidebar-bg: rgba(255, 255, 255, 0.7);
+        --sidebar-bg: rgba(255, 255, 255, 0.9);
         --input-bg: rgba(255, 255, 255, 0.5);
-        --success: #2ad4a5; --danger: #ff647c; --warning: #ffc94a;
+        --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
     }
 
     body {
@@ -100,35 +98,31 @@
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; position: relative; overflow: hidden;
         color: var(--text-main);
+        flex-shrink: 0;
     }
     .theme-toggle-btn:hover { background: var(--btn-hover); }
     .theme-toggle-btn i { position: absolute; top: 50%; left: 50%; transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+    
+    /* Gestion icônes thème */
     [data-theme="dark"] .ph-moon { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
     [data-theme="dark"] .ph-sun { transform: translate(-50%, -50%) scale(0.5) rotate(90deg); opacity: 0; }
+    
     [data-theme="light"] .ph-sun { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
     [data-theme="light"] .ph-moon { transform: translate(-50%, -50%) scale(0.5) rotate(-90deg); opacity: 0; }
 
     /* CALCULATOR STYLES */
     .module-card {
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        border-radius: 1.5rem;
-        text-align: left;
+        margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 1.5rem; text-align: left;
     }
     .calc-input {
-        width: 100%;
-        background: var(--input-bg);
-        border: 1px solid var(--glass-border);
-        color: var(--text-main);
-        border-radius: 0.5rem;
-        padding: 0.5rem 0.75rem;
-        outline: none;
-        transition: border-color 0.3s;
+        width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border);
+        color: var(--text-main); border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+        outline: none; transition: border-color 0.3s;
     }
     .calc-input:focus { border-color: #818cf8; }
     
     .anim-container { overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease-out; max-height: 500px; opacity: 1; }
-    .anim-container.is-hidden { max-height: 0 !important; opacity: 0; pointer-events: none; }
+    .anim-container.is-hidden { max-height: 0 !important; opacity: 0; pointer-events: none; margin: 0; }
 
     /* RTL Sidebar Logic */
     body.switching-lang #sidebar { transition: none !important; }
@@ -140,35 +134,23 @@
 
     /* Boutons d'Action */
     .btn-action {
-        padding: 1rem 1.5rem;
-        border-radius: 9999px; /* rounded-full */
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 600;
+        transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
     }
     .btn-primary {
         color: var(--text-main);
         background: linear-gradient(135deg, rgba(129, 140, 248, 0.3), rgba(192, 132, 252, 0.3));
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .btn-primary:hover {
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    }
-    .btn-primary:active {
-        transform: scale(0.98);
-        box-shadow: none;
-    }
-
+    .btn-primary:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); }
+    .btn-primary:active { transform: scale(0.98); box-shadow: none; }
   </style>
 </head>
 
 <body>
 
-  <div id="sidebar" class="fixed inset-y-0 z-50 w-80 glass transition-transform duration-500 ease-out" style="background: var(--sidebar-bg);">
-    <div class="p-8 pt-24 flex flex-col h-full">
+  <div id="sidebar" class="fixed inset-y-0 z-50 w-80 glass transition-transform duration-500 ease-out flex flex-col" style="background: var(--sidebar-bg);">
+    <div class="p-8 pt-24 flex flex-col h-full overflow-y-auto">
       <h2 class="text-3xl font-bold text-gradient mb-10" data-key="appTitle">Dental Guide</h2>
 
       <div class="flex items-center gap-3 mb-10">
@@ -178,18 +160,18 @@
             <button data-lang="en" class="lang-btn">EN</button>
             <button data-lang="ar" class="lang-btn">AR</button>
         </div>
-        <button class="theme-toggle-btn glass">
+        <div class="theme-toggle-btn glass" id="themeBtn">
             <i class="ph-fill ph-moon text-xl"></i>
             <i class="ph-fill ph-sun text-xl"></i>
-        </button>
+        </div>
       </div>
 
       <div class="space-y-4">
-        <a href="../../dentaire.html" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main);">
+        <a href="#" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main);">
            <i class="ph-bold ph-house text-xl"></i> <span data-key="home">Accueil</span>
         </a>
         
-        <a href="3eme.html" class="w-full py-4 px-6 rounded-2xl glass transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main); background: rgba(129, 140, 248, 0.2);">
+        <a href="#" class="w-full py-4 px-6 rounded-2xl glass transition flex items-center gap-3 text-lg font-medium" style="color: var(--text-main); background: rgba(129, 140, 248, 0.2);">
            <i class="ph-bold ph-graduation-cap text-xl text-indigo-400"></i> <span data-key="year3">3ème Année</span>
         </a>
 
@@ -204,16 +186,16 @@
 
   <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden backdrop-blur-sm transition-opacity" onclick="closeMenu()"></div>
   
-  <button id="menuBtn" class="fixed top-8 z-50 p-4 rounded-2xl glass hover:bg-white/20 transition active:scale-95 shadow-lg" style="color: var(--text-main);">
+  <button id="menuBtn" class="fixed top-8 z-50 p-3 rounded-2xl glass hover:bg-white/20 transition active:scale-95 shadow-lg" style="color: var(--text-main);">
     <i class="ph-bold ph-list text-3xl"></i>
   </button>
 
-  <main class="pt-28 pb-32 px-6 max-w-4xl mx-auto text-center">
+  <main class="pt-28 pb-32 px-4 sm:px-6 max-w-4xl mx-auto text-center">
     <h1 class="text-4xl md:text-6xl font-bold text-gradient animate-float mb-4" data-key="pageTitle">Calcul de Moyenne</h1>
     <p class="text-xl mb-10 font-light" style="color: var(--text-muted);" data-key="subtitle">Simulateur pour la 3ème année</p>
 
     <div class="glass p-4 rounded-xl mb-8 text-sm flex items-start gap-3 text-left" style="color: var(--text-main);">
-        <i class="ph-fill ph-info text-2xl text-blue-400 mt-0.5"></i>
+        <i class="ph-fill ph-info text-2xl text-blue-400 mt-0.5 flex-shrink-0"></i>
         <p data-key="infoText">Saisissez seulement les notes qui vous concernent. Les champs vides sont ignorés lors du calcul.</p>
     </div>
 
@@ -231,18 +213,20 @@
         </button>
     </div>
 
-    <div id="resultat" class="mt-8"></div>
+    <div id="resultat" class="mt-8 space-y-4"></div>
   </main>
 
-  <a href="mailto:dentaireoranmoy@gmail.com" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 group">
-    <div class="px-6 py-3 rounded-full glass shadow-2xl flex items-center gap-3 font-semibold transition hover:scale-105 active:scale-95 border border-white/20 backdrop-blur-xl" style="color: var(--text-main); background: rgba(0,0,0,0.5);">
+  <a href="mailto:dentaireoranmoy@gmail.com" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 group w-max max-w-[90%]">
+    <div class="px-6 py-3 rounded-full glass shadow-2xl flex items-center justify-center gap-3 font-semibold transition hover:scale-105 active:scale-95 border border-white/20 backdrop-blur-xl whitespace-nowrap" style="color: var(--text-main); background: rgba(0,0,0,0.5);">
       <i class="ph-fill ph-paper-plane-right text-lg group-hover:-rotate-12 transition-transform"></i>
       <span data-key="contact">Nous contacter</span>
     </div>
   </a>
   
   <script>
-    // === 1. LOGIQUE DE CALCUL ===
+    // === 1. CONFIGURATION ===
+    const html = document.documentElement; // Référence globale au tag HTML
+
     const modules = [ 
         { nom: "Oc", display: "Occlusion", coef: 5, icon: "tooth", e1: true, e2: true, td: true, tp: true }, 
         { nom: "Odf", display: "ODF", coef: 5, icon: "align-center-horizontal-simple", e1: true, e2: true, td: true, tp: true },
@@ -259,12 +243,16 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         initForm();
-        // Initialiser l'état des checkbox après la création du formulaire
-        modules.forEach((_, i) => toggleManualMoyenne(i));
+        // Initialiser l'état des checkbox pour s'assurer de la cohérence visuelle
+        modules.forEach((_, i) => toggleManualMoyenne(i, false)); 
+        initTheme(); // Initialiser le thème
+        initLang(localStorage.getItem('lang') || 'fr'); // Initialiser la langue
     });
 
+    // === 2. GÉNÉRATION DU FORMULAIRE ===
     function initForm() {
         const form = document.getElementById("form");
+        form.innerHTML = ""; // Clean start
         modules.forEach((mod, i) => {
             const card = document.createElement("div");
             card.className = "glass module-card"; 
@@ -273,7 +261,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-xl font-bold flex items-center gap-2" style="color: var(--text-main);">
                         <i class="ph-duotone ph-${mod.icon} text-2xl text-indigo-400"></i> ${mod.display}
-                        <span class="text-xs bg-white/10 px-2 py-1 rounded text-white/70">Coef ${mod.coef}</span>
+                        <span class="text-xs bg-white/10 px-2 py-1 rounded text-white/70 border border-white/10">Coef ${mod.coef}</span>
                     </h3>
                     <label class="flex items-center gap-2 text-sm cursor-pointer text-white/70 hover:text-white transition">
                         <input type="checkbox" id="${i}_manual_cb" onchange="toggleManualMoyenne(${i})" class="accent-indigo-500 w-4 h-4"> 
@@ -281,12 +269,12 @@
                     </label>
                 </div>
 
-                <div id="${i}_manual_container" class="anim-container mb-2">
+                <div id="${i}_manual_container" class="anim-container is-hidden mb-2">
                     <input type="number" step="0.01" min="0" max="20" id="${i}_manual_moyenne" 
                            class="calc-input" placeholder="Moyenne (ex: 12.5)" oninput="updateModuleDisplay(${i})">
                 </div>
 
-                <div id="${i}_notes_fields" class="grid grid-cols-2 gap-4 anim-container is-hidden">
+                <div id="${i}_notes_fields" class="grid grid-cols-2 gap-4 anim-container">
                     ${mod.e1 ? `<div><label class="block text-xs mb-1 opacity-70">EMD S1</label><input type="number" step="0.01" min="0" max="20" id="${i}_emd1" class="calc-input" oninput="updateModuleDisplay(${i})"></div>` : ""}
                     ${mod.e2 ? `<div><label class="block text-xs mb-1 opacity-70">EMD S2</label><input type="number" step="0.01" min="0" max="20" id="${i}_emd2" class="calc-input" oninput="updateModuleDisplay(${i})"></div>` : ""}
                     ${mod.td ? `<div><label class="block text-xs mb-1 opacity-70">TD</label><input type="number" step="0.01" min="0" max="20" id="${i}_td" class="calc-input" oninput="updateModuleDisplay(${i})"></div>` : ""}
@@ -301,10 +289,11 @@
         });
     }
 
-    function toggleManualMoyenne(index) {
+    function toggleManualMoyenne(index, animate = true) {
         const isChecked = document.getElementById(`${index}_manual_cb`).checked;
         const manualContainer = document.getElementById(`${index}_manual_container`);
         const notesFields = document.getElementById(`${index}_notes_fields`);
+        
         if (isChecked) {
             manualContainer.classList.remove('is-hidden');
             notesFields.classList.add('is-hidden');
@@ -312,32 +301,43 @@
             notesFields.classList.remove('is-hidden');
             manualContainer.classList.add('is-hidden');
         }
-        updateModuleDisplay(index);
+        if(animate) updateModuleDisplay(index);
+    }
+
+    // === 3. LOGIQUE DE CALCUL ===
+    function getVal(id) {
+        const el = document.getElementById(id);
+        if (!el || el.value === "") return NaN;
+        return parseFloat(el.value.replace(',', '.'));
     }
 
     function getModuleMoyenne(i) {
         let moyMod = 0, filled = false;
-        if (document.getElementById(`${i}_manual_cb`).checked) {
-            const val = document.getElementById(`${i}_manual_moyenne`).value;
-            if (val) { moyMod = parseFloat(val.replace(',', '.')) || 0; filled = true; }
+        const isManual = document.getElementById(`${i}_manual_cb`).checked;
+
+        if (isManual) {
+            const val = getVal(`${i}_manual_moyenne`);
+            if (!isNaN(val)) { moyMod = val; filled = true; }
         } else {
-            let pts = 0, coefs = 0;
-            const e1 = parseFloat(document.getElementById(`${i}_emd1`)?.value.replace(',', '.'));
-            const e2 = parseFloat(document.getElementById(`${i}_emd2`)?.value.replace(',', '.'));
-            const td = parseFloat(document.getElementById(`${i}_td`)?.value.replace(',', '.'));
-            const tp = parseFloat(document.getElementById(`${i}_tp`)?.value.replace(',', '.'));
+            let pts = 0, coefsCalc = 0;
+            const e1 = getVal(`${i}_emd1`);
+            const e2 = getVal(`${i}_emd2`);
+            const td = getVal(`${i}_td`);
+            const tp = getVal(`${i}_tp`);
             
+            // Vérifier si au moins une note est entrée
             if ([e1, e2, td, tp].some(v => !isNaN(v))) filled = true;
             
-            let emdMoy = 0, emdCoef = 0;
-            if (!isNaN(e1)) { emdMoy += e1; emdCoef++; }
-            if (!isNaN(e2)) { emdMoy += e2; emdCoef++; }
-            if (emdCoef > 0) { pts += emdMoy / emdCoef; coefs++; }
+            // Logique spécifique (adaptable selon le règlement des études)
+            let emdSum = 0, emdCount = 0;
+            if (!isNaN(e1)) { emdSum += e1; emdCount++; }
+            if (!isNaN(e2)) { emdSum += e2; emdCount++; }
             
-            if (!isNaN(td)) { pts += td; coefs++; }
-            if (!isNaN(tp)) { pts += tp * 2; coefs += 2; }
+            if (emdCount > 0) { pts += (emdSum / emdCount); coefsCalc++; } // Moyenne des EMDs compte pour 1 part
+            if (!isNaN(td)) { pts += td; coefsCalc++; }
+            if (!isNaN(tp)) { pts += tp * 2; coefsCalc += 2; } // TP compte double (selon votre logique initiale)
             
-            if (coefs > 0) moyMod = pts / coefs;
+            if (coefsCalc > 0 && filled) moyMod = pts / coefsCalc;
         }
         return { moyenne: moyMod, filled: filled };
     }
@@ -347,26 +347,26 @@
         const moyElem = document.getElementById(`${i}_moyenne_module`);
         if (filled) {
             moyElem.textContent = `${moyenne.toFixed(2)}`;
-            // Utiliser les variables CSS définies
-            let color;
-            if (moyenne < 5) color = 'var(--danger)';
-            else if (moyenne < 10) color = 'var(--warning)';
-            else color = 'var(--success)';
-            moyElem.style.color = color;
-            moyElem.className = "font-bold text-xl transition-colors duration-300";
+            if (moyenne < 5) moyElem.style.color = 'var(--danger)';
+            else if (moyenne < 10) moyElem.style.color = 'var(--warning)';
+            else moyElem.style.color = 'var(--success)';
         } else {
             moyElem.textContent = '-';
-            moyElem.className = "font-bold text-xl opacity-50";
             moyElem.style.color = 'var(--text-main)';
         }
     }
 
     function calculer() {
         let totalPoints = 0, totalCoefs = 0, under5 = [], under10 = [];
+        let hasAnyData = false;
+
         modules.forEach((mod, i) => {
             const { moyenne, filled } = getModuleMoyenne(i);
-            updateModuleDisplay(i);
+            // Forcer l'affichage à jour
+            updateModuleDisplay(i); 
+
             if(filled){
+                hasAnyData = true;
                 if(moyenne < 5) under5.push(mod.display);
                 else if(moyenne < 10) under10.push(mod.display);
                 totalPoints += moyenne * mod.coef;
@@ -375,45 +375,92 @@
         });
 
         const resDiv = document.getElementById("resultat");
-        if (totalCoefs === 0) {
+        
+        if (!hasAnyData || totalCoefs === 0) {
             resDiv.innerHTML = `<div class="glass p-4 border-l-4 border-yellow-500 text-yellow-200 text-left">Veuillez entrer au moins une note.</div>`;
             return;
         }
         
-        const moyGen = (totalPoints / totalCoefs).toFixed(3);
-        let html = `
-            <div class="glass p-6 rounded-2xl animate-float">
+        const moyGen = (totalPoints / totalCoefs).toFixed(2);
+        let htmlResult = `
+            <div class="glass p-6 rounded-2xl animate-float border-t-4 ${moyGen >= 10 ? 'border-green-400' : 'border-red-400'}">
                 <p class="text-lg opacity-80">Moyenne Générale</p>
-                <h2 class="text-5xl font-bold my-2 text-gradient">${moyGen}</h2>
+                <h2 class="text-6xl font-bold my-4 text-gradient">${moyGen}</h2>
         `;
 
         if(moyGen >= 10 && under5.length === 0){
-            html += `<div class="mt-4 p-3 bg-green-500/20 text-green-300 rounded-lg font-bold">🎉 Année validée !</div>`;
+            htmlResult += `<div class="inline-block px-4 py-2 bg-green-500/20 text-green-300 rounded-full font-bold border border-green-500/30">🎉 Année validée !</div>`;
         } else {
-            if(moyGen < 10) html += `<div class="mt-4 p-3 bg-red-500/20 text-red-300 rounded-lg font-bold mb-2">Moyenne insuffisante</div>`;
-            if(under5.length > 0) html += `<div class="text-left text-sm text-red-300 mt-2">🚫 Note éliminatoire (< 5) : ${under5.join(', ')}</div>`;
-            if(under10.length > 0) html += `<div class="text-left text-sm text-yellow-300 mt-2">⚠️ Modules à compenser : ${under10.join(', ')}</div>`;
+            if(moyGen < 10) htmlResult += `<div class="mb-3 inline-block px-4 py-2 bg-red-500/20 text-red-300 rounded-full font-bold border border-red-500/30">Moyenne insuffisante</div>`;
+            
+            htmlResult += `<div class="mt-4 space-y-2 text-left bg-black/20 p-4 rounded-lg">`;
+            if(under5.length > 0) htmlResult += `<div class="text-sm text-red-300 flex items-start gap-2"><i class="ph-bold ph-warning-circle mt-1"></i> <span><strong>Note éliminatoire (< 5) :</strong> ${under5.join(', ')}</span></div>`;
+            if(under10.length > 0) htmlResult += `<div class="text-sm text-yellow-300 flex items-start gap-2"><i class="ph-bold ph-info mt-1"></i> <span><strong>À compenser :</strong> ${under10.join(', ')}</span></div>`;
+            htmlResult += `</div>`;
         }
-        html += `</div>`;
-        resDiv.innerHTML = html;
+        htmlResult += `</div>`;
+        resDiv.innerHTML = htmlResult;
+        resDiv.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Fonctions non implémentées (pour le moment)
+    // === 4. SAUVEGARDE ET CHARGEMENT ===
     function saveResults() {
+        const data = modules.map((_, i) => {
+            return {
+                manual: document.getElementById(`${i}_manual_cb`).checked,
+                manualVal: document.getElementById(`${i}_manual_moyenne`).value,
+                emd1: document.getElementById(`${i}_emd1`)?.value,
+                emd2: document.getElementById(`${i}_emd2`)?.value,
+                td: document.getElementById(`${i}_td`)?.value,
+                tp: document.getElementById(`${i}_tp`)?.value
+            };
+        });
+        localStorage.setItem('saved_notes', JSON.stringify(data));
         const lang = localStorage.getItem('lang') || 'fr';
-        showToast(translations[lang].toastSave);
+        showToast(translations[lang].saved || "Données enregistrées !");
     }
+
     function loadResults() {
+        const saved = localStorage.getItem('saved_notes');
         const lang = localStorage.getItem('lang') || 'fr';
-        showToast(translations[lang].toastLoad);
+        
+        if (!saved) {
+            showToast(translations[lang].noData || "Aucune donnée trouvée.");
+            return;
+        }
+
+        try {
+            const data = JSON.parse(saved);
+            data.forEach((item, i) => {
+                if(i >= modules.length) return;
+                
+                // Restaurer Checkbox
+                const cb = document.getElementById(`${i}_manual_cb`);
+                cb.checked = item.manual;
+                toggleManualMoyenne(i, false); // Mettre à jour l'UI sans anim excessive
+
+                // Restaurer Valeurs
+                if (document.getElementById(`${i}_manual_moyenne`)) document.getElementById(`${i}_manual_moyenne`).value = item.manualVal;
+                if (document.getElementById(`${i}_emd1`)) document.getElementById(`${i}_emd1`).value = item.emd1;
+                if (document.getElementById(`${i}_emd2`)) document.getElementById(`${i}_emd2`).value = item.emd2;
+                if (document.getElementById(`${i}_td`)) document.getElementById(`${i}_td`).value = item.td;
+                if (document.getElementById(`${i}_tp`)) document.getElementById(`${i}_tp`).value = item.tp;
+                
+                updateModuleDisplay(i);
+            });
+            calculer(); // Lancer le calcul automatiquement
+            showToast(translations[lang].loaded || "Données chargées !");
+        } catch (e) {
+            console.error(e);
+            showToast("Erreur lors du chargement.");
+        }
     }
 
-
-    // === 2. LOGIQUE THEME & LANGUE ===
+    // === 5. INTERNATIONALISATION ===
     const translations = {
-      fr: { appTitle: "Dental Guide", pageTitle: "Calcul de Moyenne", subtitle: "Simulateur pour la 3ème année", infoText: "Saisissez seulement les notes qui vous concernent. Les champs vides sont ignorés.", btnCalc: "Calculer", btnSave: "Enregistrer", btnLoad: "Charger", manualMode: "Entrer moyenne", home: "Accueil", year3: "3ème Année", contact: "Nous contacter", toastSave: "Fonctionnalité d'enregistrement bientôt disponible !", toastLoad: "Fonctionnalité de chargement bientôt disponible !" },
-      en: { appTitle: "Dental Guide", pageTitle: "GPA Calculator", subtitle: "Simulator for 3rd Year", infoText: "Enter only relevant grades. Empty fields are ignored.", btnCalc: "Calculate", btnSave: "Save", btnLoad: "Load", manualMode: "Enter Average", home: "Home", year3: "3rd Year", contact: "Contact Us", toastSave: "Save feature coming soon!", toastLoad: "Load feature coming soon!" },
-      ar: { appTitle: "دليل طب الأسنان", pageTitle: "حساب المعدل", subtitle: "محاكي للسنة الثالثة", infoText: "أدخل النقاط التي تهمك فقط. الحقول الفارغة يتم تجاهلها.", btnCalc: "حساب", btnSave: "حفظ", btnLoad: "تحميل", manualMode: "إدخال المعدل", home: "الرئيسية", year3: "السنة الثالثة", contact: "اتصل بنا", toastSave: "ميزة الحفظ قريبا!", toastLoad: "ميزة التحميل قريبا!" }
+      fr: { appTitle: "Dental Guide", pageTitle: "Calcul de Moyenne", subtitle: "Simulateur pour la 3ème année", infoText: "Saisissez seulement les notes qui vous concernent. Les champs vides sont ignorés.", btnCalc: "Calculer", btnSave: "Enregistrer", btnLoad: "Charger", manualMode: "Entrer moyenne", home: "Accueil", year3: "3ème Année", contact: "Nous contacter", saved: "Données sauvegardées avec succès !", loaded: "Données chargées avec succès !", noData: "Aucune sauvegarde trouvée." },
+      en: { appTitle: "Dental Guide", pageTitle: "GPA Calculator", subtitle: "Simulator for 3rd Year", infoText: "Enter only relevant grades. Empty fields are ignored.", btnCalc: "Calculate", btnSave: "Save", btnLoad: "Load", manualMode: "Enter Average", home: "Home", year3: "3rd Year", contact: "Contact Us", saved: "Data saved successfully!", loaded: "Data loaded successfully!", noData: "No saved data found." },
+      ar: { appTitle: "دليل طب الأسنان", pageTitle: "حساب المعدل", subtitle: "محاكي للسنة الثالثة", infoText: "أدخل النقاط التي تهمك فقط. الحقول الفارغة يتم تجاهلها.", btnCalc: "حساب", btnSave: "حفظ", btnLoad: "تحميل", manualMode: "إدخال المعدل", home: "الرئيسية", year3: "السنة الثالثة", contact: "اتصل بنا", saved: "تم حفظ البيانات بنجاح!", loaded: "تم تحميل البيانات بنجاح!", noData: "لا توجد بيانات محفوظة." }
     };
 
     const langPill = document.getElementById('langPill');
@@ -435,57 +482,90 @@
           html.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
           localStorage.setItem('lang', lang);
 
+          // Traduction dynamique
           document.querySelectorAll('[data-key]').forEach(el => {
             const key = el.getAttribute('data-key');
             if (translations[lang][key]) el.textContent = translations[lang][key];
           });
           
+          // Mise à jour des placeholders spécifiques si besoin
           requestAnimationFrame(() => { document.body.classList.remove('switching-lang'); });
       }, 300);
     };
 
-    const savedLang = localStorage.getItem('lang') || 'fr';
     const initLang = (lang) => {
       const isRTL = lang === 'ar';
       html.setAttribute('lang', lang);
       html.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
       const index = lang === 'fr' ? 0 : lang === 'en' ? 1 : 2;
       langPill.style.transform = `translateX(${index * 100}%)`;
+      
       langBtns.forEach(btn => {
         if (btn.dataset.lang === lang) btn.classList.add('active');
         else btn.classList.remove('active');
       });
+
       document.querySelectorAll('[data-key]').forEach(el => {
         const key = el.getAttribute('data-key');
-        if (translations[lang][key]) el.textContent = translations[lang][key];
+        if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
       });
     };
-    initLang(savedLang);
+
     langBtns.forEach(btn => btn.addEventListener('click', () => updateLanguage(btn.dataset.lang)));
 
-    // Sidebar
+    // === 6. THEME LOGIC ===
+    const themeBtn = document.getElementById('themeBtn');
+    
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+    }
+
+    themeBtn.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    });
+
+    // === 7. SIDEBAR & TOAST ===
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
     const menuBtn = document.getElementById('menuBtn');
-    menuBtn.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); if(sidebar.classList.contains('open')) overlay.classList.remove('hidden'); else overlay.classList.add('hidden'); };
-    window.closeMenu = () => { sidebar.classList.remove('open'); overlay.classList.add('hidden'); };
+    
+    menuBtn.onclick = (e) => { 
+        e.stopPropagation(); 
+        sidebar.classList.toggle('open'); 
+        if(sidebar.classList.contains('open')) overlay.classList.remove('hidden'); 
+        else overlay.classList.add('hidden'); 
+    };
+    
+    window.closeMenu = () => { 
+        sidebar.classList.remove('open'); 
+        overlay.classList.add('hidden'); 
+    };
 
-    // Toast (Notification éphémère)
     const showToast = (msg) => {
         const container = document.getElementById('toastContainer') || (() => {
             const div = document.createElement('div');
             div.id = 'toastContainer';
-            div.className = 'fixed bottom-28 left-1/2 -translate-x-1/2 flex flex-col-reverse gap-3 z-50 pointer-events-none w-max';
+            div.className = 'fixed bottom-28 left-1/2 -translate-x-1/2 flex flex-col-reverse gap-3 z-50 pointer-events-none w-max max-w-[90%]';
             document.body.appendChild(div);
             return div;
         })();
+        
         const toast = document.createElement('div');
-        toast.className = 'px-6 py-3 rounded-full glass text-white shadow-2xl flex items-center gap-3 translate-y-10 opacity-0 transition-all duration-500 font-semibold';
+        toast.className = 'px-6 py-3 rounded-full glass text-white shadow-2xl flex items-center gap-3 translate-y-10 opacity-0 transition-all duration-500 font-semibold text-sm sm:text-base';
         toast.style.background = "rgba(0,0,0,0.85)";
-        toast.innerHTML = `<i class="ph-bold ph-clock"></i> <span>${msg}</span>`;
+        toast.innerHTML = `<i class="ph-bold ph-check-circle text-green-400 text-xl"></i> <span>${msg}</span>`;
+        
         container.appendChild(toast);
+        
         requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
-        setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 500); }, 2500);
+        setTimeout(() => { 
+            toast.classList.add('translate-y-10', 'opacity-0'); 
+            setTimeout(() => toast.remove(), 500); 
+        }, 3000);
     };
   </script>
 </body>
