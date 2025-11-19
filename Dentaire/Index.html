@@ -1,1 +1,334 @@
-.
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#6366f1"/>
+  <title>Dental Guide</title>
+
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" href="icon-192.png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* --- 1. VARIABLES ET THÈMES --- */
+    :root { --transition-speed: 0.5s; }
+
+    /* THÈME SOMBRE */
+    [data-theme="dark"] {
+        --bg-gradient: linear-gradient(135deg, #312e81 0%, #1e1b4b 50%, #4c0519 100%);
+        --glass-bg: rgba(255, 255, 255, 0.08);
+        --glass-border: rgba(255, 255, 255, 0.15);
+        --text-main: #ffffff;
+        --text-muted: rgba(255, 255, 255, 0.7);
+        --btn-hover: rgba(255, 255, 255, 0.15);
+        --pill-bg: rgba(0, 0, 0, 0.3);
+        --pill-color: #ffffff;
+        --sidebar-bg: rgba(0, 0, 0, 0.6);
+    }
+
+    /* THÈME CLAIR (Aube Boréale) */
+    [data-theme="light"] {
+        --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fce7f3 100%);
+        --glass-bg: rgba(255, 255, 255, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.8);
+        --text-main: #312e81;
+        --text-muted: #6366f1;
+        --btn-hover: rgba(255, 255, 255, 0.9);
+        --pill-bg: rgba(255, 255, 255, 0.5);
+        --pill-color: #312e81;
+        --sidebar-bg: rgba(255, 255, 255, 0.7);
+    }
+
+    /* --- ANIMATION DE CHANGEMENT DE LANGUE --- */
+    body {
+        background: var(--bg-gradient);
+        color: var(--text-main);
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+        transition: background 0.5s ease, color 0.5s ease, opacity 0.3s ease, filter 0.3s ease;
+    }
+
+    /* Classe active pendant le changement */
+    body.switching-lang {
+        opacity: 0;
+        filter: blur(15px);
+        pointer-events: none;
+    }
+
+    /* --- 2. UTILITAIRES --- */
+    .glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        transition: all 0.3s ease;
+    }
+
+    .text-gradient {
+        background-clip: text; -webkit-background-clip: text; color: transparent;
+        background-image: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
+    }
+    [data-theme="light"] .text-gradient {
+        background-image: linear-gradient(to right, #4f46e5, #9333ea, #db2777);
+    }
+
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+
+    @keyframes glitch {
+      0% { transform: translate(0); opacity: 1; }
+      20% { transform: translate(-2px, 2px); opacity: 0.8; }
+      40% { transform: translate(2px, -2px); opacity: 1; }
+      100% { transform: translate(0); opacity: 1; }
+    }
+    .glitch { animation: glitch 0.3s linear; }
+
+    /* --- 3. UI ELEMENTS --- */
+    .lang-container {
+        position: relative; display: flex; background: var(--pill-bg);
+        border-radius: 99px; padding: 4px; border: 1px solid var(--glass-border);
+        height: 48px; width: 100%; direction: ltr;
+    }
+    .lang-pill {
+        position: absolute; top: 4px; bottom: 4px; left: 4px;
+        width: calc(33.33% - 5px); background: var(--pill-color);
+        border-radius: 99px; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        z-index: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .lang-btn {
+        flex: 1; position: relative; z-index: 1; font-size: 0.9rem; font-weight: 600;
+        color: var(--text-muted); transition: color 0.3s;
+    }
+    [data-theme="dark"] .lang-btn.active { color: #333; font-weight: 800; }
+    [data-theme="light"] .lang-btn.active { color: #fff; font-weight: 800; }
+
+    /* Theme Toggle */
+    .theme-toggle-btn {
+        width: 48px; height: 48px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; position: relative; overflow: hidden;
+        color: var(--text-main);
+    }
+    .theme-toggle-btn:hover { background: var(--btn-hover); }
+    .theme-toggle-btn i { position: absolute; top: 50%; left: 50%; transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+    [data-theme="dark"] .ph-moon { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+    [data-theme="dark"] .ph-sun { transform: translate(-50%, -50%) scale(0.5) rotate(90deg); opacity: 0; }
+    [data-theme="light"] .ph-sun { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+    [data-theme="light"] .ph-moon { transform: translate(-50%, -50%) scale(0.5) rotate(-90deg); opacity: 0; }
+
+    /* Années */
+    .yearBtn {
+      height: 150px; border-radius: 24px; display: flex; flex-direction: column; 
+      align-items: center; justify-content: center; gap: 12px; cursor: pointer; 
+      color: var(--text-main); transition: all 0.3s;
+    }
+    .yearBtn i { transition: transform 0.3s, color 0.3s; color: var(--text-muted); }
+    .yearBtn:hover { transform: translateY(-8px); background: var(--btn-hover); border-color: rgba(255,255,255,0.4); }
+    .yearBtn:hover i { transform: scale(1.1); color: var(--text-main); }
+
+    /* RTL Logic - Sidebar */
+    /* Note: On enlève temporairement la transition pendant le switch pour éviter que le menu traverse l'écran */
+    body.switching-lang #sidebar { transition: none !important; }
+
+    html[dir="rtl"] #sidebar { right: 0; left: auto; transform: translateX(100%); border-left: 1px solid var(--glass-border); border-right: none; }
+    html[dir="ltr"] #sidebar { left: 0; right: auto; transform: translateX(-100%); border-right: 1px solid var(--glass-border); border-left: none; }
+    #sidebar.open { transform: translateX(0) !important; }
+    
+    html[dir="rtl"] #menuBtn { right: 2rem; left: auto; }
+    html[dir="ltr"] #menuBtn { left: 2rem; right: auto; }
+  </style>
+</head>
+
+<body>
+
+  <div id="sidebar" class="fixed inset-y-0 z-50 w-80 glass transition-transform duration-500 ease-out" style="background: var(--sidebar-bg);">
+    <div class="p-8 pt-24 flex flex-col h-full">
+      <h2 class="text-3xl font-bold text-gradient mb-10" data-key="title">Dental Guide</h2>
+
+      <div class="flex items-center gap-3 mb-10">
+        <div class="lang-container">
+            <div class="lang-pill" id="langPill"></div>
+            <button data-lang="fr" class="lang-btn active">FR</button>
+            <button data-lang="en" class="lang-btn">EN</button>
+            <button data-lang="ar" class="lang-btn">AR</button>
+        </div>
+        <button class="theme-toggle-btn glass">
+            <i class="ph-fill ph-moon text-xl"></i>
+            <i class="ph-fill ph-sun text-xl"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <button id="installBtn" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center justify-center gap-3 text-lg font-medium">
+          <i class="ph-bold ph-download-simple text-xl"></i> <span data-key="install">Télécharger l'app</span>
+        </button>
+        <a href="mailto:dentaireoranmoy@gmail.com" class="w-full py-4 px-6 rounded-2xl glass hover:bg-white/20 transition flex items-center justify-center gap-3 text-lg font-medium">
+          <i class="ph-bold ph-envelope text-xl"></i> <span data-key="contact">Nous contacter</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden backdrop-blur-sm transition-opacity" onclick="closeMenu()"></div>
+  
+  <button id="menuBtn" class="fixed top-8 z-50 p-4 rounded-2xl glass hover:bg-white/20 transition active:scale-95 shadow-lg" style="color: var(--text-main);">
+    <i class="ph-bold ph-list text-3xl"></i>
+  </button>
+
+  <main class="pt-28 pb-32 px-6 max-w-5xl mx-auto text-center">
+    <h1 class="text-5xl md:text-7xl font-bold text-gradient animate-float mb-4" data-key="title">Dental Guide</h1>
+    <p class="text-xl mb-16 font-light" style="color: var(--text-muted);" data-key="subtitle">Le guide ultime pour tes études dentaires</p>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+      <button onclick="handleYearClick()" class="yearBtn glass">
+        <i class="ph-duotone ph-book-open-text text-5xl"></i> <span class="text-xl font-bold" data-key="year1">1<sup>ère</sup> année</span>
+      </button>
+      <button onclick="handleYearClick()" class="yearBtn glass">
+        <i class="ph-duotone ph-tooth text-5xl"></i> <span class="text-xl font-bold" data-key="year2">2<sup>ème</sup> année</span>
+      </button>
+      <button onclick="handleYearClick()" class="yearBtn glass">
+        <i class="ph-duotone ph-flask text-5xl"></i> <span class="text-xl font-bold" data-key="year3">3<sup>ème</sup> année</span>
+      </button>
+      <button onclick="handleYearClick()" class="yearBtn glass">
+        <i class="ph-duotone ph-syringe text-5xl"></i> <span class="text-xl font-bold" data-key="year4">4<sup>ème</sup> année</span>
+      </button>
+      <button onclick="handleYearClick()" class="yearBtn glass">
+        <i class="ph-duotone ph-first-aid text-5xl"></i> <span class="text-xl font-bold" data-key="year5">5<sup>ème</sup> année</span>
+      </button>
+      <button onclick="handleYearClick()" class="yearBtn glass">
+        <i class="ph-duotone ph-graduation-cap text-5xl"></i> <span class="text-xl font-bold" data-key="year6">6<sup>ème</sup> année</span>
+      </button>
+    </div>
+  </main>
+
+  <a href="mailto:dentaireoranmoy@gmail.com" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 group">
+    <div class="px-6 py-3 rounded-full glass shadow-2xl flex items-center gap-3 font-semibold transition hover:scale-105 active:scale-95 hover:bg-white/30 border border-white/20 backdrop-blur-xl" style="color: var(--text-main);">
+      <i class="ph-fill ph-paper-plane-right text-lg group-hover:-rotate-12 transition-transform"></i>
+      <span data-key="contact">Nous contacter</span>
+    </div>
+  </a>
+
+  <div id="toastContainer" class="fixed bottom-28 left-1/2 -translate-x-1/2 flex flex-col-reverse gap-3 z-50 pointer-events-none w-max"></div>
+
+  <script>
+    // === THEME ===
+    const html = document.documentElement;
+    const toggleButton = document.querySelector('.theme-toggle-btn');
+    
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+
+    toggleButton.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+
+    // === LANGUE & ANIMATION DE TRANSITION ===
+    const translations = {
+      fr: { title: "Dental Guide", subtitle: "Le guide ultime pour tes études dentaires", install: "Télécharger l'app", contact: "Nous contacter", year1: "1ère année", year2: "2ème année", year3: "3ème année", year4: "4ème année", year5: "5ème année", year6: "6ème année", toast: "Bientôt disponible !", toastInstall: "Installation impossible" },
+      en: { title: "Dental Guide", subtitle: "Your ultimate dental studies companion", install: "Install App", contact: "Contact Us", year1: "1st Year", year2: "2nd Year", year3: "3rd Year", year4: "4th Year", year5: "5th Year", year6: "6th Year", toast: "Coming soon!", toastInstall: "Install not available" },
+      ar: { title: "دليل طب الأسنان", subtitle: "رفيقك النهائي لدراسة طب الأسنان", install: "تثبيت التطبيق", contact: "اتصل بنا", year1: "السنة الأولى", year2: "السنة الثانية", year3: "السنة الثالثة", year4: "السنة الرابعة", year5: "السنة الخامسة", year6: "السنة السادسة", toast: "قريباً!", toastInstall: "التثبيت غير متاح" }
+    };
+
+    const langPill = document.getElementById('langPill');
+    const langBtns = document.querySelectorAll('.lang-btn');
+
+    const updateLanguage = (lang) => {
+      // 1. Animation de départ
+      document.body.classList.add('switching-lang');
+
+      // 2. Mise à jour pilule visuelle
+      const index = lang === 'fr' ? 0 : lang === 'en' ? 1 : 2;
+      langPill.style.transform = `translateX(${index * 100}%)`;
+      
+      langBtns.forEach(btn => {
+        if (btn.dataset.lang === lang) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+
+      // 3. Attendre que l'écran soit flou
+      setTimeout(() => {
+          const isRTL = lang === 'ar';
+          html.setAttribute('lang', lang);
+          html.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+          localStorage.setItem('lang', lang);
+
+          // Textes
+          document.querySelectorAll('[data-key]').forEach(el => {
+            const key = el.getAttribute('data-key');
+            if (translations[lang][key]) el.textContent = translations[lang][key];
+          });
+          
+          // On NE FERME PAS le menu ici, on le laisse ouvert s'il l'était.
+          // La transition CSS invisible (grâce à opacity:0) le déplacera de gauche à droite.
+
+          // 4. Réapparition
+          requestAnimationFrame(() => {
+             document.body.classList.remove('switching-lang');
+          });
+
+      }, 300);
+    };
+
+    const savedLang = localStorage.getItem('lang') || 'fr';
+    // Init (sans anim)
+    const initLang = (lang) => {
+      const isRTL = lang === 'ar';
+      html.setAttribute('lang', lang);
+      html.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+      const index = lang === 'fr' ? 0 : lang === 'en' ? 1 : 2;
+      langPill.style.transform = `translateX(${index * 100}%)`;
+      langBtns.forEach(btn => {
+        if (btn.dataset.lang === lang) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+      document.querySelectorAll('[data-key]').forEach(el => {
+        const key = el.getAttribute('data-key');
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+      });
+    };
+    initLang(savedLang);
+
+    langBtns.forEach(btn => btn.addEventListener('click', () => updateLanguage(btn.dataset.lang)));
+
+    // === MENU & UTILS ===
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const menuBtn = document.getElementById('menuBtn');
+
+    menuBtn.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); if(sidebar.classList.contains('open')) overlay.classList.remove('hidden'); else overlay.classList.add('hidden'); };
+    window.closeMenu = () => { sidebar.classList.remove('open'); overlay.classList.add('hidden'); };
+
+    window.handleYearClick = () => {
+        const lang = localStorage.getItem('lang') || 'fr';
+        showToast(translations[lang].toast);
+    };
+
+    const showToast = (msg) => {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'px-6 py-3 rounded-full glass text-white shadow-2xl flex items-center gap-3 translate-y-10 opacity-0 transition-all duration-500 font-semibold';
+        toast.style.background = "rgba(0,0,0,0.85)";
+        toast.innerHTML = `<i class="ph-bold ph-clock"></i> <span>${msg}</span>`;
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+        setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 500); }, 2500);
+    };
+
+    // PWA
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
+    document.getElementById('installBtn').onclick = async () => {
+        if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; closeMenu(); }
+        else { showToast(translations[localStorage.getItem('lang') || 'fr'].toastInstall); }
+    };
+  </script>
+</body>
+</html>
