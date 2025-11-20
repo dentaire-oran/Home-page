@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="theme-color" content="#6366f1"/>
-  <title>Dental Guide - 3ème Année</title>
+  <title>Dental Guide - 1ère Année</title>
 
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -184,17 +184,17 @@
 
     <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
       
-      <button onclick="handleBtnClick()" class="yearBtn glass">
+      <button onclick="openCours()" class="yearBtn glass">
         <i class="ph-duotone ph-book-open-text text-5xl"></i> 
         <span class="text-xl font-bold" data-key="cours">Cours</span>
       </button>
 
-      <button onclick="handleBtnClick()" class="yearBtn glass">
+      <button onclick="openQCM()" class="yearBtn glass">
         <i class="ph-duotone ph-check-square-offset text-5xl"></i> 
         <span class="text-xl font-bold" data-key="qcm">QCM</span>
       </button>
 
-      <button onclick="handleBtnClick()" class="yearBtn glass col-span-2 md:col-span-1">
+      <button onclick="openCalculator()" class="yearBtn glass col-span-2 md:col-span-1">
         <i class="ph-duotone ph-calculator text-5xl"></i> 
         <span class="text-xl font-bold" data-key="calc">Calcul de moyenne</span>
       </button>
@@ -329,9 +329,18 @@
     menuBtn.onclick = (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); if(sidebar.classList.contains('open')) overlay.classList.remove('hidden'); else overlay.classList.add('hidden'); };
     window.closeMenu = () => { sidebar.classList.remove('open'); overlay.classList.add('hidden'); };
 
-    window.handleBtnClick = () => {
-        const lang = localStorage.getItem('lang') || 'fr';
-        showToast(translations[lang].toast);
+    // Button click handlers
+    window.openCours = () => {
+      window.open('https://drive.google.com/drive/folders/14d-U2KcHVJKbq28vrL8QnuOFV4XVYzoG', '_blank');
+    };
+
+    window.openQCM = () => {
+      const lang = localStorage.getItem('lang') || 'fr';
+      showToast(translations[lang].toast);
+    };
+
+    window.openCalculator = () => {
+      window.location.href = '1ere.html';
     };
 
     const showToast = (msg) => {
