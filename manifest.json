@@ -1,7 +1,7 @@
 {
   "name": "Your Dental Guide",
   "short_name": "DentalGuide",
-  "start_url": "index.html",
+  "start_url": "dentaire.html",
   "display": "standalone",
   "background_color": "#f6faff",
   "theme_color": "#4f8cff",
