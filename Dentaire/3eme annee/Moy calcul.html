@@ -355,7 +355,10 @@
             if (!isNaN(e2)) { emdSum += e2; emdCount++; }
             
             if (emdCount > 0) { pts += (emdSum / emdCount); coefsCalc++; }
-            if (!isNaN(td)) { pts += td; coefsCalc++; }
+            
+            // MODIFICATION ICI : TD est maintenant multiplié par 2 (coef de 2)
+            if (!isNaN(td)) { pts += td * 2; coefsCalc += 2; } 
+            
             if (!isNaN(tp)) { pts += tp * 2; coefsCalc += 2; }
             
             if (coefsCalc > 0 && filled) moyMod = pts / coefsCalc;
@@ -586,3 +589,4 @@
   </script>
 </body>
 </html>
+
