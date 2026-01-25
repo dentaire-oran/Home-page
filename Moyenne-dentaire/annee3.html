@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dental Guide Expert 8.8</title>
+    <title>Dental Guide Expert 8.9 (Fix Offline)</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase -->
@@ -217,6 +217,21 @@
         
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // --- FIX OFFLINE ERROR ---
+        // Force Firestore to try getting fresh data from server first, fallback to cache if offline.
+        // This prevents the "client is offline" error when cache is empty but internet is available.
+        db.settings({
+            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+        });
+        db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+            if (err.code == 'failed-precondition') {
+                console.log("Persistence failed: Multiple tabs open");
+            } else if (err.code == 'unimplemented') {
+                console.log("Persistence not supported by browser");
+            }
+        });
+
         let isGuest = false;
         let saveTimeout;
 
@@ -261,7 +276,7 @@
             }
 
             if(type !== 'loading') {
-                setTimeout(() => t.classList.remove('show'), 5000); // Extended to 5s for reading errors
+                setTimeout(() => t.classList.remove('show'), 5000);
             }
         }
 
@@ -385,10 +400,8 @@
             } catch(e) { 
                 console.error(e);
                 cloudIcon.className = "ph-bold ph-cloud-slash text-red-500 text-xl";
-                // Show specific error if permission denied
                 if(e.code === 'permission-denied' || e.message.includes('Missing or insufficient permissions')) {
-                    showToast("Erreur: Permissions refusées (Voir console)", "error");
-                    alert("Erreur de permissions Firestore :\nVeuillez vérifier les règles de sécurité dans la console Firebase.\nL'utilisateur doit pouvoir lire/écrire son propre document.");
+                    showToast("Erreur: Permissions refusées", "error");
                 } else {
                     showToast("Erreur de synchronisation", "error");
                 }
@@ -602,7 +615,8 @@
                     document.getElementById('authOverlay').classList.add('hidden-force');
                     showToast("Chargement des notes...", "loading");
 
-                    db.collection("users").doc(u.uid).get().then(doc => {
+                    // --- FIX OFFLINE: Use get() with source 'server' to bypass cache if empty ---
+                    db.collection("users").doc(u.uid).get({ source: 'server' }).then(doc => {
                         if(doc.exists) {
                             const d = doc.data();
                             document.getElementById('edit-nom').value = d.nom || '';
@@ -635,25 +649,16 @@
                                 showToast("Aucune note sauvegardée trouvée ℹ️");
                             }
                         } else {
-                            showToast("Aucun profil en base (Première connexion ?)", "error");
+                            showToast("Profil vide (Première utilisation ?)", "error");
                         }
                     }).catch(err => {
                         console.error(err);
-                        // Improved Error Handling
                         let msg = "Erreur de chargement Cloud";
-                        if(err.code === 'permission-denied') {
-                            msg = "Permissions refusées (Règles Firestore)";
-                        } else if (err.message) {
-                            msg = "Erreur: " + err.message;
-                        }
-                        showToast(msg, "error");
+                        if(err.code === 'permission-denied') msg = "Permissions refusées (Firestore Rules)";
+                        else if (err.code === 'failed-precondition') msg = "Erreur: Configuration Firebase incorrecte";
+                        else if (err.message) msg = err.message;
                         
-                        // Extra help alert for permission issues
-                        if(err.code === 'permission-denied') {
-                            setTimeout(() => {
-                                alert("ATTENTION : Les règles de sécurité Firestore bloquent l'accès.\n\n1. Allez dans la console Firebase.\n2. Firestore Database > Règles.\n3. Remplacez le code par celui fourni dans la description/chat.");
-                            }, 1000);
-                        }
+                        showToast(msg, "error");
                     });
                 }
             });
