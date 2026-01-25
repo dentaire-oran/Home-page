@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dental Guide Expert</title>
+    <title>Dental Guide Expert 8.5</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -11,83 +11,118 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --transition: 0.3s ease; --radius: 24px; }
-        [data-theme="dark"] { --bg: #000000; --glass: rgba(28, 28, 30, 0.8); --text: #f8fafc; --primary: #3e82f7; --border: rgba(255,255,255,0.1); }
-        [data-theme="light"] { --bg: #f2f2f7; --glass: rgba(255, 255, 255, 0.9); --text: #1c1c1e; --primary: #007aff; --border: rgba(0,0,0,0.05); }
+        :root { --transition: 0.3s ease; }
+        [data-theme="dark"] { --bg: #000000; --glass: rgba(28, 28, 30, 0.8); --text: #f8fafc; --primary: #3e82f7; --border: rgba(255,255,255,0.1); --card: #1c1c1e; }
+        [data-theme="light"] { --bg: #f2f2f7; --glass: rgba(255, 255, 255, 0.9); --text: #1c1c1e; --primary: #007aff; --border: rgba(0,0,0,0.05); --card: #ffffff; }
         
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; transition: background var(--transition); }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; transition: background var(--transition); }
         .glass { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); }
+        .one-ui-card { background: var(--card); border-radius: 28px; border: 1px solid var(--border); transition: 0.3s; }
         
         #sidebar { position: fixed; top: 0; bottom: 0; width: 280px; z-index: 100; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: var(--glass); border-right: 1px solid var(--border); }
         html[dir="ltr"] #sidebar { left: 0; transform: translateX(-100%); }
-        html[dir="rtl"] #sidebar { right: 0; transform: translateX(100%); }
         #sidebar.open { transform: translateX(0) !important; }
 
         .calc-input { width: 100%; background: rgba(120, 120, 128, 0.12); border: none; padding: 12px; border-radius: 16px; color: inherit; outline: none; }
         .hidden-force { display: none !important; }
-        
-        /* One UI 8.5 Slim Navbar */
+        .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
+
         .oneui-navbar { 
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: fit-content; min-width: 260px; max-width: 340px;
-            height: 60px; padding: 0 12px;
+            width: fit-content; min-width: 280px; height: 64px; padding: 0 10px;
             border-radius: 100px; display: flex; align-items: center; justify-content: space-around;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 1000;
         }
 
-        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0; transition: 0.3s; pointer-events: none; }
+        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0; transition: 0.3s; pointer-events: none; z-index: 1001; }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-32">
 
     <div id="toast" class="glass px-6 py-2 rounded-full text-sm font-medium shadow-xl flex items-center gap-2">
         <i id="toast-icon" class="ph-bold"></i> <span id="toast-msg"></span>
     </div>
 
     <div id="authOverlay" class="fixed inset-0 z-[300] bg-black flex items-center justify-center p-6 text-center">
-        <div class="glass p-8 rounded-[32px] w-full max-w-sm">
+        <div class="glass p-8 rounded-[40px] w-full max-w-sm">
             <h2 class="text-3xl font-bold mb-8 text-blue-500">Dental Guide</h2>
             <div id="authStep1" class="space-y-4">
                 <input type="text" id="id-nom" placeholder="Nom" class="calc-input">
                 <input type="text" id="id-prenom" placeholder="Prénom" class="calc-input">
                 <input type="text" id="id-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)">
-                <button onclick="goToStep2()" class="w-full bg-blue-600 text-white p-3 rounded-2xl font-bold">Suivant</button>
-                <button onclick="startGuestMode()" class="w-full text-xs opacity-60 mt-4 underline">Continuer en tant qu'invité</button>
+                <button onclick="goToStep2()" class="w-full bg-blue-600 text-white p-4 rounded-3xl font-bold">Suivant</button>
+                <button onclick="startGuestMode()" class="w-full text-xs opacity-50 mt-4 underline">Mode Invité</button>
             </div>
             <div id="authStep2" class="hidden-force space-y-4">
                 <input type="password" id="auth-pass" placeholder="Mot de passe" class="calc-input">
-                <button onclick="performAuth()" class="w-full bg-blue-600 text-white p-3 rounded-2xl font-bold">Se connecter</button>
+                <button onclick="performAuth()" class="w-full bg-blue-600 text-white p-4 rounded-3xl font-bold">Se connecter</button>
+                <button onclick="backToStep1()" class="w-full text-xs opacity-50">Retour</button>
             </div>
         </div>
     </div>
 
     <aside id="sidebar">
         <div class="p-6 flex flex-col h-full">
-            <div class="text-2xl font-bold mb-10 text-blue-500 flex items-center gap-2"><i class="ph-fill ph-tooth"></i> Expert 3.0</div>
+            <div class="text-2xl font-black mb-10 text-blue-500 flex items-center gap-2"><i class="ph-fill ph-tooth"></i> Expert 3.0</div>
             <nav class="space-y-2 flex-1">
-                <div onclick="location.reload()" class="flex items-center gap-3 p-3 rounded-2xl bg-blue-600/20 text-blue-500 cursor-pointer"><i class="ph-bold ph-house"></i> <span data-key="home">Accueil</span></div>
-                <div onclick="setLang('fr')" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/5 cursor-pointer">🇫🇷 Français</div>
-                <div onclick="setLang('ar')" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/5 cursor-pointer">🇩🇿 Arabe</div>
+                <div onclick="location.reload()" class="flex items-center gap-3 p-4 rounded-2xl bg-blue-600/10 text-blue-500 cursor-pointer font-bold"><i class="ph-bold ph-house"></i> <span data-key="home">Accueil</span></div>
+                <div onclick="openModal('profileModal')" class="flex items-center gap-3 p-4 rounded-2xl hover:bg-white/5 cursor-pointer"><i class="ph-bold ph-user-circle"></i> <span data-key="profile">Mon Profil</span></div>
+                <div onclick="openModal('passModal')" class="flex items-center gap-3 p-4 rounded-2xl hover:bg-white/5 cursor-pointer"><i class="ph-bold ph-lock-key"></i> <span data-key="password">Sécurité</span></div>
+                <div id="themeBtn" class="flex items-center gap-3 p-4 rounded-2xl hover:bg-white/5 cursor-pointer"><i class="ph-bold ph-palette"></i> <span data-key="theme">Thème</span></div>
+                <div class="h-px bg-white/10 my-4"></div>
+                <div onclick="setLang('fr')" class="p-3">🇫🇷 Français</div>
+                <div onclick="setLang('ar')" class="p-3">🇩🇿 Arabe</div>
             </nav>
-            <button onclick="logout()" class="flex items-center gap-3 p-3 rounded-2xl text-red-500 hover:bg-red-500/10 mt-auto"><i class="ph-bold ph-sign-out"></i> <span data-key="logout">Déconnexion</span></button>
+            <button onclick="logout()" class="flex items-center gap-3 p-4 rounded-2xl text-red-500 hover:bg-red-500/10 mt-auto"><i class="ph-bold ph-sign-out"></i> <span data-key="logout">Déconnexion</span></button>
         </div>
     </aside>
 
-    <main class="pt-10 lg:ml-[280px] p-6 max-w-5xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
+    <main class="pt-6 lg:ml-[280px] p-6 max-w-5xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
             <button onclick="toggleMenu()" class="p-3 glass rounded-2xl"><i class="ph-bold ph-list text-xl"></i></button>
-            <h1 class="text-2xl font-black" data-key="pageTitle">Simulateur</h1>
+            <h1 class="text-2xl font-black" data-key="pageTitle">Calcul Moyenne</h1>
             <div class="w-10"></div>
-        </div>
-        <div id="formContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        <div id="resultat" class="mt-10 mb-20"></div>
+        </header>
+
+        <div id="formContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4"></div>
+        <div id="resultat" class="mt-8"></div>
     </main>
 
+    <div id="profileModal" class="modal-overlay hidden-force">
+        <div class="glass p-8 rounded-[40px] w-full max-w-md text-center">
+            <h3 class="text-xl font-bold mb-6">Modifier Profil</h3>
+            <div class="space-y-4">
+                <input type="text" id="edit-nom" placeholder="Nom" class="calc-input">
+                <input type="text" id="edit-prenom" placeholder="Prénom" class="calc-input">
+                <input type="text" id="edit-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)">
+                <div class="flex gap-2">
+                    <button onclick="updateProfile()" class="flex-1 bg-blue-600 text-white p-4 rounded-3xl font-bold">Sauver</button>
+                    <button onclick="closeModals()" class="flex-1 bg-white/10 p-4 rounded-3xl">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="passModal" class="modal-overlay hidden-force">
+        <div class="glass p-8 rounded-[40px] w-full max-w-md text-center">
+            <h3 class="text-xl font-bold mb-6">Sécurité</h3>
+            <div class="space-y-4">
+                <input type="password" id="old-pass" placeholder="Ancien mot de passe" class="calc-input">
+                <input type="password" id="new-pass" placeholder="Nouveau" class="calc-input">
+                <input type="password" id="confirm-pass" placeholder="Confirmer" class="calc-input">
+                <div class="flex gap-2">
+                    <button onclick="changePassword()" class="flex-1 bg-blue-600 text-white p-4 rounded-3xl font-bold">Valider</button>
+                    <button onclick="closeModals()" class="flex-1 bg-white/10 p-4 rounded-3xl">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <nav class="oneui-navbar glass">
-        <button onclick="toggleMenu()" class="p-3 rounded-full hover:bg-white/10"><i class="ph-bold ph-squares-four text-xl"></i></button>
-        <button onclick="calculer()" class="bg-blue-600 text-white px-8 h-10 rounded-full font-bold shadow-lg active:scale-95 transition">Calculer</button>
-        <button onclick="saveToCloud(true)" class="p-3 rounded-full hover:bg-white/10"><i class="ph-bold ph-cloud-arrow-up text-xl"></i></button>
+        <button onclick="toggleMenu()" class="p-4 rounded-full hover:bg-white/10 transition"><i class="ph-bold ph-squares-four text-xl"></i></button>
+        <button onclick="calculer()" class="bg-blue-600 text-white px-10 h-11 rounded-full font-bold shadow-lg active:scale-95 transition">Calculer</button>
+        <button onclick="saveToCloud(true)" class="p-4 rounded-full hover:bg-white/10 transition"><i class="ph-bold ph-cloud-arrow-up text-xl"></i></button>
     </nav>
 
     <div id="overlay" class="fixed inset-0 bg-black/50 z-[90] hidden-force" onclick="toggleMenu()"></div>
@@ -99,29 +134,34 @@
         let isGuest = false, saveTimeout;
 
         const modules = [ { n: "OCE", c: 5 }, { n: "ODF", c: 5 }, { n: "Parodontologie", c: 5 }, { n: "Pathologie", c: 5 }, { n: "Prothèse", c: 5 }, { n: "Imagerie", c: 3 }, { n: "Anat-Path", c: 1 }, { n: "Anesthésie", c: 1 }, { n: "Pharmacologie", c: 1 }, { n: "Occlusodontie", c: 1 }, { n: "Oxyologie", c: 1 } ];
-        const translations = { fr: { home: "Accueil", logout: "Déconnexion", pageTitle: "Moyenne" }, ar: { home: "الرئيسية", logout: "خروج", pageTitle: "المعدل" } };
+        const translations = { fr: { home: "Accueil", profile: "Mon Profil", password: "Sécurité", theme: "Thème", logout: "Déconnexion", pageTitle: "Simulateur" }, ar: { home: "الرئيسية", profile: "حسابي", password: "الأمان", theme: "المظهر", logout: "خروج", pageTitle: "حساب المعدل" } };
 
         function showToast(msg, err=false) {
             const t = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
-            document.getElementById('toast-icon').className = err ? "ph-bold ph-warning-circle text-red-500" : "ph-bold ph-check-circle text-green-500";
+            document.getElementById('toast-icon').className = err ? "ph-bold ph-x-circle text-red-500" : "ph-bold ph-check-circle text-green-500";
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
+            setTimeout(() => t.classList.remove('show'), 2500);
         }
 
         function formatDate(el) { let v = el.value.replace(/\D/g, '').slice(0, 8); if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2); if (v.length >= 5) v = v.slice(0, 5) + '/' + v.slice(5); el.value = v; }
         function setLang(l) { document.documentElement.dir = (l === 'ar' ? 'rtl' : 'ltr'); localStorage.setItem('lang', l); document.querySelectorAll('[data-key]').forEach(el => { const key = el.getAttribute('data-key'); if(translations[l][key]) el.textContent = translations[l][key]; }); }
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('hidden-force'); }
-        
+        function openModal(id) { if(isGuest) return showToast("Indisponible en invité", true); document.getElementById(id).classList.remove('hidden-force'); }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden-force')); }
+
         function getV(id) { const v = document.getElementById(id).value; return v === "" ? NaN : parseFloat(v.replace(',','.')); }
 
         function updateRes(i) {
             const m = getModuleMoyenne(i); const el = document.getElementById(`${i}_res`);
-            if(!isNaN(m)) { el.innerText = m.toFixed(2); el.style.opacity = "1"; el.className = `font-black text-lg ${m < 10 ? 'text-orange-400' : 'text-green-400'}`; }
+            if(!isNaN(m)) { el.innerText = m.toFixed(2); el.style.opacity = "1"; el.style.color = m < 5 ? "#f87171" : (m < 10 ? "#fbbf24" : "#34d399"); }
             else { el.innerText = "-"; el.style.opacity = "0.2"; }
-            
+            debouncedSave();
+        }
+
+        function debouncedSave() {
             clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => saveToCloud(false), 1500);
+            saveTimeout = setTimeout(() => saveToCloud(false), 2000);
         }
 
         function getModuleMoyenne(i) {
@@ -147,65 +187,113 @@
             }));
             try { 
                 await db.collection("users").doc(auth.currentUser.uid).set({ scores: data }, { merge: true }); 
-                if(manual) showToast("Synchronisé");
+                if(manual) showToast("Enregistré");
             } catch(e) { if(manual) showToast("Erreur Cloud", true); }
         }
 
         function calculer() {
-            let total = 0, coefs = 0, any = false;
-            modules.forEach((mod, i) => { const res = getModuleMoyenne(i); if(!isNaN(res)) { any = true; total += res * mod.c; coefs += mod.c; } });
-            if(!any) return showToast("Aucune donnée", true);
+            let total = 0, coefs = 0, u5 = [], u10 = [], any = false;
+            modules.forEach((mod, i) => { 
+                const res = getModuleMoyenne(i); 
+                if(!isNaN(res)) { 
+                    any = true; total += res * mod.c; coefs += mod.c; 
+                    if(res < 5) u5.push(mod.n); else if(res < 10) u10.push(mod.n); 
+                } 
+            });
+            if(!any) return showToast("Veuillez saisir des notes", true);
             const moy = total / coefs;
-            document.getElementById('resultat').innerHTML = `<div class="glass p-8 rounded-[40px] text-center"><div class="text-xs uppercase opacity-40 font-bold mb-2">Moyenne Générale</div><div class="text-6xl font-black ${moy >= 10 ? 'text-blue-500' : 'text-red-500'}">${moy.toFixed(3)}</div></div>`;
+            const isAdmis = moy >= 10 && u5.length === 0;
+
+            document.getElementById('resultat').innerHTML = `
+                <div class="one-ui-card p-10 text-center animate-in fade-in zoom-in duration-500">
+                    <div class="text-7xl font-black mb-6 ${moy >= 10 ? 'text-blue-500' : 'text-red-500'}">${moy.toFixed(3)}</div>
+                    <div class="text-left bg-black/10 p-6 rounded-3xl space-y-2">
+                        ${u5.length ? `<p class="text-red-500 font-bold">❌ Eliminatoire : ${u5.join(', ')}</p>` : ''}
+                        ${u10.length ? `<p class="text-yellow-500">⚠️ À compenser : ${u10.join(', ')}</p>` : ''}
+                        ${isAdmis ? '<p class="text-green-500 text-center font-black text-xl">ANNÉE VALIDÉE ! 🎉</p>' : '<p class="text-red-500 text-center font-bold">ANNÉE NON VALIDÉE</p>'}
+                    </div>
+                </div>`;
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            saveToCloud(false);
         }
 
+        // --- Auth & Account Functions ---
         function startGuestMode() { isGuest = true; document.getElementById('authOverlay').classList.add('hidden-force'); }
-        function goToStep2() { document.getElementById('authStep1').classList.add('hidden-force'); document.getElementById('authStep2').classList.remove('hidden-force'); }
+        function goToStep2() { 
+            if(!document.getElementById('id-nom').value || !document.getElementById('id-prenom').value) return showToast("Champs requis", true);
+            document.getElementById('authStep1').classList.add('hidden-force'); 
+            document.getElementById('authStep2').classList.remove('hidden-force'); 
+        }
+        function backToStep1() { document.getElementById('authStep2').classList.add('hidden-force'); document.getElementById('authStep1').classList.remove('hidden-force'); }
+        
         function performAuth() {
             const nom = document.getElementById('id-nom').value;
             const prenom = document.getElementById('id-prenom').value;
-            const email = `${nom}.${prenom}@dental.app`.toLowerCase();
+            const dob = document.getElementById('id-dob').value;
+            const email = `${nom.trim()}.${prenom.trim()}.${dob.replace(/\//g,'')}@dental.app`.toLowerCase();
             const pass = document.getElementById('auth-pass').value;
+            
             auth.signInWithEmailAndPassword(email, pass).catch(() => {
                 auth.createUserWithEmailAndPassword(email, pass).then(res => {
-                    db.collection("users").doc(res.user.uid).set({ nom, prenom });
+                    db.collection("users").doc(res.user.uid).set({ nom, prenom, dob });
                 });
             });
         }
+
+        async function updateProfile() {
+            const u = auth.currentUser;
+            const data = { nom: document.getElementById('edit-nom').value, prenom: document.getElementById('edit-prenom').value, dob: document.getElementById('edit-dob').value };
+            await db.collection("users").doc(u.uid).update(data);
+            showToast("Profil mis à jour"); closeModals();
+        }
+
+        async function changePassword() {
+            const user = auth.currentUser, oldP = document.getElementById('old-pass').value, newP = document.getElementById('new-pass').value, confP = document.getElementById('confirm-pass').value;
+            if(newP !== confP) return showToast("Passwords différents", true);
+            try {
+                const cred = firebase.auth.EmailAuthProvider.credential(user.email, oldP);
+                await user.reauthenticateWithCredential(cred);
+                await user.updatePassword(newP);
+                showToast("Mot de passe changé"); closeModals();
+            } catch(e) { showToast("Ancien mot de passe incorrect", true); }
+        }
+
         function logout() { auth.signOut().then(() => location.reload()); }
 
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById("formContainer");
             modules.forEach((m, i) => {
                 container.innerHTML += `
-                <div class="glass p-5 rounded-[28px]">
+                <div class="one-ui-card p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <span class="font-bold text-blue-400">${m.n} <span class="text-[10px] opacity-40 ml-1">x${m.c}</span></span>
-                        <input type="checkbox" id="${i}_man_cb" onchange="toggleManual(${i})" class="accent-blue-500">
+                        <span class="font-bold text-blue-500">${m.n} <span class="text-[10px] opacity-40 ml-1">COEF ${m.c}</span></span>
+                        <label class="text-[10px] opacity-40 flex items-center gap-2 cursor-pointer uppercase font-bold">Manuel <input type="checkbox" id="${i}_man_cb" onchange="toggleManual(${i})"></label>
                     </div>
                     <div id="${i}_auto" class="grid grid-cols-2 gap-2">
                         <input type="number" id="${i}_e1" placeholder="EMD1" class="calc-input text-xs" oninput="updateRes(${i})">
                         <input type="number" id="${i}_e2" placeholder="EMD2" class="calc-input text-xs" oninput="updateRes(${i})">
-                        <input type="number" id="${i}_td" placeholder="TD" class="calc-input text-xs" oninput="updateRes(${i})">
-                        <input type="number" id="${i}_tp" placeholder="TP" class="calc-input text-xs" oninput="updateRes(${i})">
+                        <input type="number" id="${i}_td" placeholder="TD (x2)" class="calc-input text-xs" oninput="updateRes(${i})">
+                        <input type="number" id="${i}_tp" placeholder="TP (x2)" class="calc-input text-xs" oninput="updateRes(${i})">
                     </div>
                     <div id="${i}_man" class="hidden-force">
-                        <input type="number" id="${i}_man_val" placeholder="Note" class="calc-input text-center font-bold" oninput="updateRes(${i})">
+                        <input type="number" id="${i}_man_val" placeholder="Note finale" class="calc-input text-center font-bold" oninput="updateRes(${i})">
                     </div>
-                    <div class="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
-                        <span class="text-[10px] opacity-30 font-bold uppercase">Moy</span>
-                        <span id="${i}_res" class="font-bold opacity-20">-</span>
+                    <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
+                        <span class="text-[10px] opacity-30 font-bold uppercase">Moyenne</span>
+                        <span id="${i}_res" class="font-black text-xl opacity-20">-</span>
                     </div>
                 </div>`;
             });
+
             auth.onAuthStateChanged(u => { 
                 if(u) {
                     document.getElementById('authOverlay').classList.add('hidden-force');
                     db.collection("users").doc(u.uid).get().then(doc => {
-                        if(doc.exists && doc.data().scores) {
-                            doc.data().scores.forEach((s, i) => {
+                        if(doc.exists) {
+                            const d = doc.data();
+                            document.getElementById('edit-nom').value = d.nom || '';
+                            document.getElementById('edit-prenom').value = d.prenom || '';
+                            document.getElementById('edit-dob').value = d.dob || '';
+                            if(d.scores) d.scores.forEach((s, i) => {
                                 if(i < modules.length) {
                                     document.getElementById(`${i}_man_cb`).checked = s.man;
                                     document.getElementById(`${i}_man_val`).value = s.manV;
@@ -218,7 +306,15 @@
                     });
                 }
             });
+
+            document.getElementById('themeBtn').onclick = () => {
+                const n = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', n);
+                localStorage.setItem('theme', n);
+            };
+            
             setLang(localStorage.getItem('lang') || 'fr');
+            if(localStorage.getItem('theme')) document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
         });
 
         function toggleManual(i) {
