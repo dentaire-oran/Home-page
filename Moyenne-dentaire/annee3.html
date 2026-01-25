@@ -27,8 +27,8 @@
 </head>
 <body>
 
-    <div id="authOverlay" class="fixed inset-0 z-[300] bg-[#0f172a] flex items-center justify-center p-6">
-        <div class="glass p-8 rounded-3xl w-full max-w-sm shadow-2xl text-center">
+    <div id="authOverlay" class="fixed inset-0 z-[300] bg-[#0f172a] flex items-center justify-center p-6 text-center">
+        <div class="glass p-8 rounded-3xl w-full max-w-sm shadow-2xl">
             <h2 class="text-3xl font-bold mb-8 text-indigo-400">Dental Guide</h2>
             <div id="authStep1" class="space-y-4">
                 <input type="text" id="id-nom" placeholder="Nom" class="calc-input">
@@ -37,11 +37,11 @@
                 <button onclick="goToStep2()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Suivant</button>
                 <div class="flex items-center gap-2 my-2"><div class="h-px bg-white/10 flex-1"></div><span class="text-xs opacity-40">OU</span><div class="h-px bg-white/10 flex-1"></div></div>
                 <button onclick="loginGoogle()" class="w-full bg-white text-black p-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm"><i class="ph-bold ph-google-logo"></i> Google</button>
-                <button onclick="startGuestMode()" class="w-full text-xs opacity-60 hover:opacity-100 transition">Continuer en tant qu'invité</button>
+                <button onclick="startGuestMode()" class="w-full text-xs opacity-60 mt-4 underline">Continuer en tant qu'invité</button>
             </div>
             <div id="authStep2" class="hidden-force space-y-4">
                 <input type="password" id="auth-pass" placeholder="Mot de passe" class="calc-input">
-                <button onclick="performAuth()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Accéder</button>
+                <button onclick="performAuth()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Se connecter</button>
                 <button onclick="backToStep1()" class="w-full text-xs opacity-50">Retour</button>
             </div>
         </div>
@@ -72,12 +72,12 @@
         <div id="resultat" class="mt-10 mb-32"></div>
     </main>
 
-    <div id="profileModal" class="modal-overlay hidden-force"><div class="glass p-8 rounded-3xl w-full max-w-md"><h3 class="text-xl font-bold mb-6">Identité</h3><div class="space-y-4"><input type="text" id="edit-nom" placeholder="Nom" class="calc-input"><input type="text" id="edit-prenom" placeholder="Prénom" class="calc-input"><input type="text" id="edit-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)"><div class="flex gap-2"><button onclick="updateProfile()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Sauver</button><button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Fermer</button></div></div></div></div>
-    <div id="passModal" class="modal-overlay hidden-force"><div class="glass p-8 rounded-3xl w-full max-w-md"><h3 class="text-xl font-bold mb-6">Mot de passe</h3><div class="space-y-4"><input type="password" id="old-pass" placeholder="Ancien" class="calc-input"><input type="password" id="new-pass" placeholder="Nouveau" class="calc-input"><input type="password" id="confirm-pass" placeholder="Confirmer" class="calc-input"><div class="flex gap-2"><button onclick="changePassword()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Valider</button><button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Annuler</button></div></div></div></div>
+    <div id="profileModal" class="modal-overlay hidden-force"><div class="glass p-8 rounded-3xl w-full max-w-md text-center"><h3 class="text-xl font-bold mb-6">Identité</h3><div class="space-y-4"><input type="text" id="edit-nom" placeholder="Nom" class="calc-input"><input type="text" id="edit-prenom" placeholder="Prénom" class="calc-input"><input type="text" id="edit-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)"><div class="flex gap-2"><button onclick="updateProfile()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Sauver</button><button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Fermer</button></div></div></div></div>
+    <div id="passModal" class="modal-overlay hidden-force"><div class="glass p-8 rounded-3xl w-full max-w-md text-center"><h3 class="text-xl font-bold mb-6">Mot de passe</h3><div class="space-y-4"><input type="password" id="old-pass" placeholder="Ancien" class="calc-input"><input type="password" id="new-pass" placeholder="Nouveau" class="calc-input"><input type="password" id="confirm-pass" placeholder="Confirmer" class="calc-input"><div class="flex gap-2"><button onclick="changePassword()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Valider</button><button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Annuler</button></div></div></div></div>
 
     <div class="fixed bottom-6 right-6 flex gap-3 z-40">
-        <button onclick="calculer()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl flex items-center gap-2 transition active:scale-95"><i class="ph-bold ph-calculator"></i> Calculer</button>
-        <button id="cloudBtn" onclick="saveToCloud()" class="bg-emerald-600 text-white p-4 rounded-2xl shadow-xl transition active:scale-95"><i class="ph-bold ph-cloud-arrow-up text-xl"></i></button>
+        <button onclick="calculer()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition active:scale-95 flex items-center gap-2"><i class="ph-bold ph-calculator"></i> Calculer</button>
+        <button id="cloudBtn" onclick="saveToCloud()" class="bg-emerald-600 text-white p-4 rounded-2xl shadow-xl hover:scale-105 transition active:scale-95"><i class="ph-bold ph-cloud-arrow-up text-xl"></i></button>
     </div>
 
     <div id="overlay" class="fixed inset-0 bg-black/50 z-[90] hidden-force" onclick="toggleMenu()"></div>
@@ -123,23 +123,48 @@
         }
 
         async function saveToCloud() {
-            if(isGuest) return alert("Sauvegarde impossible en mode invité.");
-            const data = modules.map((_, i) => ({ man: document.getElementById(`${i}_man_cb`).checked, manV: document.getElementById(`${i}_man_val`).value, e1: document.getElementById(`${i}_e1`).value, e2: document.getElementById(`${i}_e2`).value, td: document.getElementById(`${i}_td`).value, tp: document.getElementById(`${i}_tp`).value }));
-            try { await db.collection("users").doc(auth.currentUser.uid).set({ scores: data }, { merge: true }); alert("Sauvegardé !"); } catch(e) { alert("Erreur de sauvegarde."); }
+            if(isGuest || !auth.currentUser) return alert("Sauvegarde impossible en mode invité.");
+            const data = modules.map((_, i) => ({ 
+                man: document.getElementById(`${i}_man_cb`).checked, 
+                manV: document.getElementById(`${i}_man_val`).value, 
+                e1: document.getElementById(`${i}_e1`).value, 
+                e2: document.getElementById(`${i}_e2`).value, 
+                td: document.getElementById(`${i}_td`).value, 
+                tp: document.getElementById(`${i}_tp`).value 
+            }));
+            try { 
+                await db.collection("users").doc(auth.currentUser.uid).set({ scores: data }, { merge: true }); 
+                alert("Données enregistrées dans le Cloud !"); 
+            } catch(e) { console.error(e); alert("Erreur Firestore : Vérifiez vos règles de sécurité."); }
         }
 
         async function loadFromCloud() {
+            if(!auth.currentUser) return;
             const doc = await db.collection("users").doc(auth.currentUser.uid).get();
-            if(doc.exists && doc.data().scores) { doc.data().scores.forEach((s, i) => { if(i < modules.length) { document.getElementById(`${i}_man_cb`).checked = s.man; document.getElementById(`${i}_man_val`).value = s.manV; document.getElementById(`${i}_e1`).value = s.e1; document.getElementById(`${i}_e2`).value = s.e2; document.getElementById(`${i}_td`).value = s.td; document.getElementById(`${i}_tp`).value = s.tp; toggleManual(i); } }); calculer(); }
+            if(doc.exists && doc.data().scores) { 
+                doc.data().scores.forEach((s, i) => { 
+                    if(i < modules.length) { 
+                        document.getElementById(`${i}_man_cb`).checked = s.man; 
+                        document.getElementById(`${i}_man_val`).value = s.manV; 
+                        document.getElementById(`${i}_e1`).value = s.e1; 
+                        document.getElementById(`${i}_e2`).value = s.e2; 
+                        document.getElementById(`${i}_td`).value = s.td; 
+                        document.getElementById(`${i}_tp`).value = s.tp; 
+                        toggleManual(i); 
+                    } 
+                }); 
+                calculer(); 
+            }
         }
 
-        function startGuestMode() { isGuest = true; document.getElementById('authOverlay').classList.add('hidden-force'); document.getElementById('profileBtn').style.display = 'none'; document.getElementById('securityBtn').style.display = 'none'; }
+        function startGuestMode() { isGuest = true; document.getElementById('authOverlay').classList.add('hidden-force'); }
         async function loginGoogle() { const provider = new firebase.auth.GoogleAuthProvider(); try { await auth.signInWithPopup(provider); } catch(e) { alert("Erreur Google"); } }
         function goToStep2() { const n = document.getElementById('id-nom').value, p = document.getElementById('id-prenom').value, d = document.getElementById('id-dob').value; if(!n || !p || d.length < 10) return alert("Champs incomplets"); userEmail = `${n.trim()}.${p.trim()}.${d.replace(/\//g,'')}@dental.app`.toLowerCase(); document.getElementById('authStep1').classList.add('hidden-force'); document.getElementById('authStep2').classList.remove('hidden-force'); }
+        function backToStep1() { document.getElementById('authStep2').classList.add('hidden-force'); document.getElementById('authStep1').classList.remove('hidden-force'); }
         function performAuth() { const pass = document.getElementById('auth-pass').value; auth.signInWithEmailAndPassword(userEmail, pass).catch(() => { auth.createUserWithEmailAndPassword(userEmail, pass).then(res => { db.collection("users").doc(res.user.uid).set({ nom: document.getElementById('id-nom').value, prenom: document.getElementById('id-prenom').value, dob: document.getElementById('id-dob').value }); }); }); }
         function logout() { auth.signOut().then(() => location.reload()); }
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('hidden-force'); }
-        function openModal(id) { document.getElementById(id).classList.remove('hidden-force'); }
+        function openModal(id) { if(isGuest) return alert("Indisponible en mode invité."); document.getElementById(id).classList.remove('hidden-force'); }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden-force')); }
 
         document.addEventListener('DOMContentLoaded', () => {
