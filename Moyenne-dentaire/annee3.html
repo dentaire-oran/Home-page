@@ -2,9 +2,9 @@
 <html lang="fr" data-theme="dark" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dental Guide Expert</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -12,312 +12,273 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <style>
-    [data-theme="dark"] {
-        --bg: #0f172a; --glass: rgba(30, 41, 59, 0.8); --border: rgba(255,255,255,0.08);
-        --text: #f8fafc; --primary: #6366f1; --sidebar: #1e1b4b;
-    }
-    [data-theme="light"] {
-        --bg: #f1f5f9; --glass: rgba(255, 255, 255, 0.9); --border: rgba(0,0,0,0.05);
-        --text: #1e293b; --primary: #4f46e5; --sidebar: #ffffff;
-    }
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; transition: 0.3s; }
+    :root { --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    [data-theme="dark"] { --bg: #0f172a; --glass: rgba(30, 41, 59, 0.7); --border: rgba(255,255,255,0.1); --text: #f8fafc; --primary: #6366f1; }
+    [data-theme="light"] { --bg: #f1f5f9; --glass: rgba(255, 255, 255, 0.8); --border: rgba(0,0,0,0.1); --text: #1e293b; --primary: #4f46e5; }
+    
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; transition: background var(--transition); overflow-x: hidden; }
     .glass { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); }
     
     #sidebar { 
-        position: fixed; top: 0; bottom: 0; width: 280px; z-index: 60;
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: var(--sidebar);
-        border-right: 1px solid var(--border);
+        position: fixed; top: 0; bottom: 0; width: 280px; z-index: 100;
+        transition: transform var(--transition); background: var(--glass);
     }
-    html[dir="ltr"] #sidebar { left: 0; transform: translateX(-100%); }
-    html[dir="rtl"] #sidebar { right: 0; transform: translateX(100%); }
-    
-    @media (min-width: 1024px) {
-        html[dir="ltr"] #sidebar { transform: translateX(0) !important; }
-        html[dir="rtl"] #sidebar { transform: translateX(0) !important; }
-        main { margin-left: 280px; }
-        html[dir="rtl"] main { margin-left: 0; margin-right: 280px; }
-    }
+    html[dir="ltr"] #sidebar { left: 0; transform: translateX(-100%); border-right: 1px solid var(--border); }
+    html[dir="rtl"] #sidebar { right: 0; transform: translateX(100%); border-left: 1px solid var(--border); }
     #sidebar.open { transform: translateX(0) !important; }
 
-    .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; transition: 0.2s; cursor: pointer; margin-bottom: 4px; }
+    .calc-input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 10px; border-radius: 10px; color: inherit; outline: none; }
+    .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
     .nav-link:hover { background: rgba(99, 102, 241, 0.1); }
-    .nav-link.active { background: var(--primary); color: white; }
+    .active { background: var(--primary) !important; color: white; }
     
-    .calc-input { width: 100%; background: rgba(0,0,0,0.05); border: 1px solid var(--border); padding: 10px; border-radius: 10px; color: inherit; outline: none; transition: 0.2s; }
-    .calc-input:focus { border-color: var(--primary); ring: 2px var(--primary); }
-    
-    .auth-overlay { position: fixed; inset: 0; z-index: 100; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
     .hidden-force { display: none !important; }
-    .anim-container { transition: all 0.3s ease; overflow: hidden; }
+    .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; padding: 20px; }
   </style>
 </head>
 <body>
 
-  <div id="authOverlay" class="auth-overlay">
+  <div id="authOverlay" class="fixed inset-0 z-[300] bg-[#0f172a] flex items-center justify-center p-6">
     <div class="glass p-8 rounded-3xl w-full max-w-sm shadow-2xl">
-        <h2 class="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Dental Guide</h2>
-        <p class="text-center text-xs opacity-50 mb-8">Espace de calcul sécurisé</p>
-        
+        <h2 class="text-3xl font-bold text-center mb-8 text-indigo-400">Dental Guide</h2>
         <div id="authStep1" class="space-y-4">
             <input type="text" id="id-nom" placeholder="Nom" class="calc-input">
             <input type="text" id="id-prenom" placeholder="Prénom" class="calc-input">
-            <div class="relative">
-                <input type="text" id="id-dob-display" placeholder="Date de naissance" class="calc-input" readonly onclick="openPicker()">
-                <input type="date" id="id-dob-picker" onchange="syncDate(this.value)" class="absolute opacity-0 w-full h-full inset-0 cursor-pointer">
-            </div>
-            <button onclick="goToStep2()" class="w-full bg-indigo-600 hover:bg-indigo-700 p-3 rounded-xl font-bold transition">Suivant</button>
-            <button onclick="startGuestMode()" class="w-full text-sm opacity-60 hover:opacity-100 transition">Continuer en mode Invité</button>
+            <input type="text" id="id-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)">
+            <button onclick="goToStep2()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Suivant</button>
         </div>
-
         <div id="authStep2" class="hidden-force space-y-4">
-            <input type="password" id="auth-pass" placeholder="Mot de passe (min 6 car.)" class="calc-input">
-            <button id="finalAuthBtn" onclick="performAuth()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Accéder à mon espace</button>
-            <button onclick="backToStep1()" class="w-full text-xs opacity-50">Retour aux identifiants</button>
+            <input type="password" id="auth-pass" placeholder="Mot de passe" class="calc-input">
+            <button onclick="performAuth()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Se connecter / S'inscrire</button>
+            <button onclick="backToStep1()" class="w-full text-xs opacity-50">Retour</button>
         </div>
     </div>
   </div>
 
   <aside id="sidebar">
     <div class="p-6 flex flex-col h-full">
-        <div class="text-2xl font-black mb-10 flex items-center gap-3">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <i class="ph-fill ph-tooth text-white"></i>
-            </div>
-            <span>Expert</span>
+        <div class="text-2xl font-bold mb-10 text-indigo-500 flex items-center gap-2">
+            <i class="ph-fill ph-tooth"></i> Expert 3.0
         </div>
-
-        <nav class="flex-1">
-            <div onclick="location.reload()" class="nav-link active"><i class="ph-bold ph-house-line text-xl"></i> Accueil</div>
-            <div onclick="openSettings()" class="nav-link"><i class="ph-bold ph-lock-key text-xl"></i> Mot de passe</div>
-            <div class="h-px bg-white/5 my-6"></div>
-            <p class="text-[10px] font-bold opacity-30 px-4 mb-4 tracking-widest uppercase">Préférences</p>
-            <div id="themeBtn" class="nav-link"><i class="ph-bold ph-palette text-xl"></i> Changer Thème</div>
-            <div onclick="setLang('fr')" class="nav-link"><i class="ph-bold ph-globe text-xl"></i> Français</div>
-            <div onclick="setLang('ar')" class="nav-link"><i class="ph-bold ph-translate text-xl"></i> Arabe (Bêta)</div>
+        <nav class="space-y-2 flex-1">
+            <div onclick="location.reload()" class="nav-link active"><i class="ph-bold ph-house"></i> Accueil</div>
+            <div onclick="openModal('profileModal')" class="nav-link"><i class="ph-bold ph-user-circle"></i> Mon Profil</div>
+            <div onclick="openModal('passModal')" class="nav-link"><i class="ph-bold ph-lock-key"></i> Mot de passe</div>
+            <div class="h-px bg-white/10 my-4"></div>
+            <div id="themeBtn" class="nav-link"><i class="ph-bold ph-palette"></i> Changer Thème</div>
+            <div onclick="setLang('fr')" class="nav-link">🇫🇷 Français</div>
+            <div onclick="setLang('ar')" class="nav-link">🇩🇿 Arabe</div>
         </nav>
-
-        <button onclick="logout()" class="nav-link text-red-400 hover:bg-red-500/10 mt-auto">
-            <i class="ph-bold ph-power text-xl"></i> <span id="logoutText">Déconnexion</span>
-        </button>
+        <button onclick="logout()" class="nav-link text-red-400 mt-auto"><i class="ph-bold ph-sign-out"></i> Déconnexion</button>
     </div>
   </aside>
 
-  <div class="lg:hidden fixed top-0 left-0 right-0 p-4 glass z-50 flex justify-between items-center px-6">
-      <button onclick="toggleMenu()" class="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5"><i class="ph-bold ph-list text-xl"></i></button>
-      <span class="font-bold tracking-tight">DENTAL GUIDE</span>
-      <button onclick="openSettings()" class="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5"><i class="ph-bold ph-user-circle text-xl"></i></button>
-  </div>
+  <header class="lg:hidden fixed top-0 w-full p-4 glass z-50 flex justify-between items-center">
+      <button onclick="toggleMenu()"><i class="ph-bold ph-list text-2xl"></i></button>
+      <span class="font-bold">DENTAL GUIDE</span>
+      <button onclick="openModal('profileModal')"><i class="ph-bold ph-user text-2xl"></i></button>
+  </header>
 
-  <main class="p-4 pt-24 lg:pt-12 lg:px-12">
-    <header class="mb-10">
-        <h1 class="text-4xl font-black mb-2 tracking-tight">Simulateur</h1>
-        <p class="opacity-50">Remplissez vos notes pour calculer votre moyenne annuelle.</p>
-    </header>
-
-    <div id="formContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
-    
-    <div id="resultat" class="mt-8 mb-32"></div>
-
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 lg:left-auto lg:right-10 lg:translate-x-0 z-40 flex gap-3">
-        <button onclick="calculer()" class="bg-indigo-600 hover:scale-105 active:scale-95 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl shadow-indigo-500/40 flex items-center gap-2 transition">
-            <i class="ph-bold ph-calculator text-xl"></i> Calculer
-        </button>
-        <button onclick="saveToCloud()" id="btnSave" class="bg-emerald-600 hover:scale-105 active:scale-95 text-white px-5 py-4 rounded-2xl font-bold shadow-2xl shadow-emerald-500/40 transition">
-            <i class="ph-bold ph-cloud-arrow-up text-xl"></i>
-        </button>
-    </div>
+  <main class="pt-24 lg:pt-10 lg:ml-[280px] p-6 max-w-5xl mx-auto">
+    <h1 class="text-4xl font-black mb-8">Simulateur 3ème Année</h1>
+    <div id="formContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    <div id="resultat" class="mt-10 mb-32"></div>
   </main>
 
-  <div id="settingsModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md hidden-force items-center justify-center p-6">
-      <div class="glass p-8 rounded-3xl w-full max-w-sm">
-          <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="ph-bold ph-shield-check"></i> Nouveau mot de passe</h3>
-          <input type="password" id="set-new-pass" placeholder="Minimum 6 caractères" class="calc-input mb-6">
-          <div class="flex gap-3">
-              <button onclick="updatePassword()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Mettre à jour</button>
-              <button onclick="closeSettings()" class="flex-1 bg-white/10 p-3 rounded-xl">Annuler</button>
+  <div id="profileModal" class="modal-overlay hidden-force">
+      <div class="glass p-8 rounded-3xl w-full max-w-md">
+          <h3 class="text-xl font-bold mb-6">Modifier l'identité</h3>
+          <div class="space-y-4">
+              <input type="text" id="edit-nom" placeholder="Nom" class="calc-input">
+              <input type="text" id="edit-prenom" placeholder="Prénom" class="calc-input">
+              <input type="text" id="edit-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)">
+              <div class="flex gap-2">
+                  <button onclick="updateProfile()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Enregistrer</button>
+                  <button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Fermer</button>
+              </div>
           </div>
       </div>
   </div>
 
-  <div id="overlay" class="fixed inset-0 bg-black/60 z-50 hidden-force" onclick="toggleMenu()"></div>
+  <div id="passModal" class="modal-overlay hidden-force">
+    <div class="glass p-8 rounded-3xl w-full max-w-md">
+        <h3 class="text-xl font-bold mb-6">Sécurité</h3>
+        <div class="space-y-4">
+            <input type="password" id="old-pass" placeholder="Ancien mot de passe" class="calc-input">
+            <input type="password" id="new-pass" placeholder="Nouveau mot de passe" class="calc-input">
+            <input type="password" id="confirm-pass" placeholder="Confirmer le nouveau" class="calc-input">
+            <div class="flex gap-2">
+                <button onclick="changePassword()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Modifier</button>
+                <button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Annuler</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="fixed bottom-6 right-6 flex gap-3 z-40">
+      <button onclick="calculer()" class="bg-indigo-600 px-8 py-4 rounded-2xl font-bold shadow-xl flex items-center gap-2">
+          <i class="ph-bold ph-calculator"></i> Calculer
+      </button>
+      <button onclick="saveToCloud()" class="bg-emerald-600 p-4 rounded-2xl shadow-xl">
+          <i class="ph-bold ph-cloud-arrow-up text-xl"></i>
+      </button>
+  </div>
+
+  <div id="overlay" class="fixed inset-0 bg-black/50 z-[90] hidden-force" onclick="toggleMenu()"></div>
 
   <script>
     const firebaseConfig = { apiKey: "AIzaSyCdD8hr6lLhaZOwIbx688i2aGbxCyn-PTY", authDomain: "dental-guide-e0e7b.firebaseapp.com", projectId: "dental-guide-e0e7b", storageBucket: "dental-guide-e0e7b.firebasestorage.app", messagingSenderId: "653289040762", appId: "1:653289040762:web:8f416fee145b3ca7ff04c3" };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.firestore();
 
-    const modules = [ 
-        { n: "OCE", c: 5, e1: true, e2: true, td: true, tp: true }, 
-        { n: "ODF", c: 5, e1: true, e2: true, td: true, tp: true },
-        { n: "Parodontologie", c: 5, e1: true, e2: true, td: true, tp: true },
-        { n: "Pathologie", c: 5, e1: true, e2: true, td: true, tp: true },
-        { n: "Prothèse", c: 5, e1: true, e2: true, td: true, tp: true },
-        { n: "Imagerie", c: 3, e1: true, e2: true, td: true, tp: true },
-        { n: "Anat-Path", c: 1, e1: true, e2: true, td: true, tp: true },
-        { n: "Anesthésie", c: 1, e1: true, e2: true, td: true, tp: true },
-        { n: "Pharmacologie", c: 1, e1: true, e2: true, td: true, tp: true },
-        { n: "Occlusodontie", c: 1, e1: true, e2: true, td: true, tp: true },
-        { n: "Oxyologie", c: 1, e1: true, e2: true, td: true, tp: true }
+    const modules = [
+        { n: "OCE", c: 5 }, { n: "ODF", c: 5 }, { n: "Parodontologie", c: 5 },
+        { n: "Pathologie", c: 5 }, { n: "Prothèse", c: 5 }, { n: "Imagerie", c: 3 },
+        { n: "Anat-Path", c: 1 }, { n: "Anesthésie", c: 1 }, { n: "Pharmacologie", c: 1 },
+        { n: "Occlusodontie", c: 1 }, { n: "Oxyologie", c: 1 }
     ];
 
-    let userEmail = "", isGuest = false;
+    let userEmail = "";
 
-    document.addEventListener('DOMContentLoaded', () => {
-        buildForm();
-        initTheme();
-        auth.onAuthStateChanged(user => {
-            if(user && !isGuest) { 
-                document.getElementById('authOverlay').classList.add('hidden-force');
-                loadFromCloud(); 
-            }
-        });
-    });
+    // FORMATAGE DATE AUTO (12/02/1998)
+    function formatDate(el) {
+        let v = el.value.replace(/\D/g, '').slice(0, 8);
+        if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2);
+        if (v.length >= 5) v = v.slice(0, 5) + '/' + v.slice(5);
+        el.value = v;
+    }
+
+    // RAISONNEMENT DE CALCUL (VOTRE CODE)
+    function getModuleMoyenne(i) {
+        let pts = 0, coefsCalc = 0, filled = false;
+        const e1 = getV(`${i}_e1`), e2 = getV(`${i}_e2`), td = getV(`${i}_td`), tp = getV(`${i}_tp`);
+        
+        if ([e1, e2, td, tp].some(v => !isNaN(v))) filled = true;
+        
+        let emdSum = 0, emdCount = 0;
+        if (!isNaN(e1)) { emdSum += e1; emdCount++; }
+        if (!isNaN(e2)) { emdSum += e2; emdCount++; }
+        
+        if (emdCount > 0) { pts += (emdSum / emdCount); coefsCalc++; }
+        if (!isNaN(td)) { pts += td * 2; coefsCalc += 2; } 
+        if (!isNaN(tp)) { pts += tp * 2; coefsCalc += 2; }
+        
+        return filled && coefsCalc > 0 ? (pts / coefsCalc) : NaN;
+    }
+
+    function getV(id) {
+        const val = document.getElementById(id).value;
+        return val === "" ? NaN : parseFloat(val.replace(',', '.'));
+    }
+
+    // AUTH ET PROFIL
+    function goToStep2() {
+        const n = document.getElementById('id-nom').value, p = document.getElementById('id-prenom').value, d = document.getElementById('id-dob').value;
+        if(!n || !p || d.length < 10) return alert("Identifiants incomplets");
+        userEmail = `${n.trim()}.${p.trim()}.${d.replace(/\//g,'')}@dental.app`.toLowerCase();
+        document.getElementById('authStep1').classList.add('hidden-force');
+        document.getElementById('authStep2').classList.remove('hidden-force');
+    }
+
+    async function performAuth() {
+        const pass = document.getElementById('auth-pass').value;
+        try {
+            const res = await auth.signInWithEmailAndPassword(userEmail, pass);
+            setupUser(res.user.uid);
+        } catch {
+            const res = await auth.createUserWithEmailAndPassword(userEmail, pass);
+            await db.collection("users").doc(res.user.uid).set({
+                nom: document.getElementById('id-nom').value,
+                prenom: document.getElementById('id-prenom').value,
+                dob: document.getElementById('id-dob').value
+            });
+            setupUser(res.user.uid);
+        }
+    }
+
+    async function updateProfile() {
+        const uid = auth.currentUser.uid;
+        const n = document.getElementById('edit-nom').value;
+        const p = document.getElementById('edit-prenom').value;
+        const d = document.getElementById('edit-dob').value;
+        await db.collection("users").doc(uid).update({ nom: n, prenom: p, dob: d });
+        alert("Profil mis à jour !");
+        closeModals();
+    }
+
+    async function changePassword() {
+        const oldP = document.getElementById('old-pass').value;
+        const newP = document.getElementById('new-pass').value;
+        const confP = document.getElementById('confirm-pass').value;
+
+        if(newP !== confP) return alert("Les mots de passe ne correspondent pas.");
+        
+        try {
+            const credential = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, oldP);
+            await auth.currentUser.reauthenticateWithCredential(credential);
+            await auth.currentUser.updatePassword(newP);
+            alert("Mot de passe changé !");
+            closeModals();
+        } catch (e) { alert("Erreur : Ancien mot de passe incorrect."); }
+    }
+
+    // UI & LOGIQUE
+    function setupUser(uid) {
+        document.getElementById('authOverlay').classList.add('hidden-force');
+        loadFromCloud();
+    }
 
     function buildForm() {
         const container = document.getElementById("formContainer");
         modules.forEach((m, i) => {
             container.innerHTML += `
-                <div class="glass p-5 rounded-3xl group hover:border-indigo-500/30 transition">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="font-bold text-lg">${m.n}</h3>
-                            <span class="text-[10px] opacity-40 font-bold tracking-widest uppercase">Coefficient ${m.c}</span>
-                        </div>
-                        <input type="checkbox" id="${i}_man" onchange="toggleMan(${i})" class="accent-indigo-500">
+                <div class="glass p-6 rounded-3xl">
+                    <h3 class="font-bold mb-4 text-indigo-300">${m.n} <span class="text-xs opacity-50">(Coef ${m.c})</span></h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" id="${i}_e1" placeholder="EMD 1" class="calc-input" oninput="updateRes(${i})">
+                        <input type="number" id="${i}_e2" placeholder="EMD 2" class="calc-input" oninput="updateRes(${i})">
+                        <input type="number" id="${i}_td" placeholder="TD (x2)" class="calc-input" oninput="updateRes(${i})">
+                        <input type="number" id="${i}_tp" placeholder="TP (x2)" class="calc-input" oninput="updateRes(${i})">
                     </div>
-                    <div id="${i}_grid" class="grid grid-cols-2 gap-3">
-                        <input type="number" id="${i}_e1" placeholder="EMD1" class="calc-input text-sm" oninput="updateUI(${i})">
-                        <input type="number" id="${i}_e2" placeholder="EMD2" class="calc-input text-sm" oninput="updateUI(${i})">
-                        <input type="number" id="${i}_td" placeholder="TD" class="calc-input text-sm" oninput="updateUI(${i})">
-                        <input type="number" id="${i}_tp" placeholder="TP" class="calc-input text-sm" oninput="updateUI(${i})">
-                    </div>
-                    <div id="${i}_man_val_wrap" class="hidden-force">
-                        <input type="number" id="${i}_man_val" placeholder="Note finale" class="calc-input text-center font-bold" oninput="updateUI(${i})">
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
-                        <span class="text-xs opacity-30 font-bold">MOYENNE</span>
-                        <span id="${i}_res" class="font-black text-xl opacity-20">-</span>
-                    </div>
+                    <div class="mt-4 text-right font-black text-xl opacity-20" id="${i}_res">-</div>
                 </div>`;
         });
     }
 
-    function toggleMan(i) {
-        const isMan = document.getElementById(`${i}_man`).checked;
-        document.getElementById(`${i}_grid`).classList.toggle('hidden-force', isMan);
-        document.getElementById(`${i}_man_val_wrap`).classList.toggle('hidden-force', !isMan);
-        updateUI(i);
-    }
-
-    function getV(id) {
-        const val = document.getElementById(id).value;
-        return val === "" ? NaN : parseFloat(val.replace(',','.'));
-    }
-
-    function calcModule(i) {
-        if(document.getElementById(`${i}_man`).checked) return getV(`${i}_man_val`);
-        const e1 = getV(`${i}_e1`), e2 = getV(`${i}_e2`), td = getV(`${i}_td`), tp = getV(`${i}_tp`);
-        let pts = 0, div = 0, filled = false;
-        let emds = [];
-        if(!isNaN(e1)) emds.push(e1); if(!isNaN(e2)) emds.push(e2);
-        if(emds.length > 0) { pts += (emds.reduce((a,b)=>a+b,0)/emds.length); div++; filled=true; }
-        if(!isNaN(td)) { pts += td*2; div+=2; filled=true; }
-        if(!isNaN(tp)) { pts += tp*2; div+=2; filled=true; }
-        return filled ? (pts/div) : NaN;
-    }
-
-    function updateUI(i) {
-        const m = calcModule(i);
+    function updateRes(i) {
+        const m = getModuleMoyenne(i);
         const el = document.getElementById(`${i}_res`);
         if(!isNaN(m)) {
             el.innerText = m.toFixed(2);
-            el.className = `font-black text-xl ${m < 10 ? 'text-red-400' : 'text-emerald-400'}`;
-        } else { el.innerText = "-"; el.className = "font-black text-xl opacity-20"; }
+            el.style.opacity = "1";
+            el.style.color = m >= 10 ? "#34d399" : "#f87171";
+        } else { el.innerText = "-"; el.style.opacity = "0.2"; }
     }
 
     function calculer() {
-        let total = 0, coefs = 0, any = false;
+        let total = 0, coefs = 0;
         modules.forEach((m, i) => {
-            const res = calcModule(i);
-            if(!isNaN(res)) { total += res * m.c; coefs += m.c; any = true; }
+            const res = getModuleMoyenne(i);
+            if(!isNaN(res)) { total += res * m.c; coefs += m.c; }
         });
-        if(!any) return alert("Saisissez au moins une note.");
         const moy = total / coefs;
         document.getElementById('resultat').innerHTML = `
-            <div class="glass p-10 rounded-[40px] text-center border-t-8 ${moy >= 10 ? 'border-emerald-500' : 'border-red-500'}">
-                <p class="text-xs font-bold opacity-40 uppercase tracking-[0.2em] mb-4">Moyenne Générale Annuelle</p>
-                <div class="text-7xl font-black mb-4">${moy.toFixed(2)}</div>
-                <div class="inline-block px-6 py-2 rounded-full font-bold ${moy >= 10 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}">
-                    ${moy >= 10 ? 'ADMIS(E)' : 'AJOURNÉ(E)'}
-                </div>
+            <div class="glass p-10 rounded-[40px] text-center border-t-4 ${moy >= 10 ? 'border-emerald-500' : 'border-red-500'}">
+                <p class="text-sm opacity-50 mb-2 uppercase tracking-widest">Moyenne Générale</p>
+                <div class="text-7xl font-black text-white">${moy.toFixed(2)}</div>
             </div>`;
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    async function saveToCloud() {
-        if(isGuest) return alert("Le mode invité ne supporte pas la sauvegarde.");
-        const btn = document.getElementById('btnSave');
-        btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i>';
-        const data = modules.map((_, i) => ({
-            man: document.getElementById(`${i}_man`).checked,
-            manV: document.getElementById(`${i}_man_val`).value,
-            e1: document.getElementById(`${i}_e1`).value, e2: document.getElementById(`${i}_e2`).value,
-            td: document.getElementById(`${i}_td`).value, tp: document.getElementById(`${i}_tp`).value
-        }));
-        try {
-            await db.collection("users").doc(auth.currentUser.uid).set({ scores: data });
-            btn.innerHTML = '<i class="ph-bold ph-check"></i>';
-            setTimeout(() => btn.innerHTML = '<i class="ph-bold ph-cloud-arrow-up text-xl"></i>', 2000);
-        } catch(e) { alert("Erreur cloud"); }
-    }
-
-    async function loadFromCloud() {
-        const doc = await db.collection("users").doc(auth.currentUser.uid).get();
-        if(doc.exists) {
-            const s = doc.data().scores;
-            s.forEach((d, i) => {
-                if(i >= modules.length) return;
-                document.getElementById(`${i}_man`).checked = d.man;
-                document.getElementById(`${i}_man_val`).value = d.manV;
-                document.getElementById(`${i}_e1`).value = d.e1; document.getElementById(`${i}_e2`).value = d.e2;
-                document.getElementById(`${i}_td`).value = d.td; document.getElementById(`${i}_tp`).value = d.tp;
-                toggleMan(i);
-            });
-            calculer();
-        }
-    }
-
+    // HELPERS
     function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('hidden-force'); }
-    function openSettings() { document.getElementById('settingsModal').classList.remove('hidden-force'); document.getElementById('settingsModal').classList.add('flex'); }
-    function closeSettings() { document.getElementById('settingsModal').classList.add('hidden-force'); }
-    function logout() { auth.signOut().then(() => location.reload()); }
-    function startGuestMode() { isGuest = true; document.getElementById('authOverlay').classList.add('hidden-force'); document.getElementById('logoutText').innerText = "Quitter Invité"; }
-    function goToStep2() {
-        const n = document.getElementById('id-nom').value.trim(), p = document.getElementById('id-prenom').value.trim(), d = document.getElementById('id-dob-display').value;
-        if(!n || !p || !d) return alert("Complétez tous les champs.");
-        userEmail = `${n}.${p}.${d.replace(/\//g,'')}@dentaire.app`.toLowerCase();
-        document.getElementById('authStep1').classList.add('hidden-force');
-        document.getElementById('authStep2').classList.remove('hidden-force');
-    }
-    function backToStep1() { document.getElementById('authStep2').classList.add('hidden-force'); document.getElementById('authStep1').classList.remove('hidden-force'); }
-    function syncDate(v) { if(v) { const [y,m,d] = v.split('-'); document.getElementById('id-dob-display').value = `${d}/${m}/${y}`; } }
-    function openPicker() { document.getElementById('id-dob-picker').showPicker(); }
-
-    async function performAuth() {
-        const pass = document.getElementById('auth-pass').value;
-        if(pass.length < 6) return alert("Mot de passe : 6 caractères min.");
-        try { await auth.signInWithEmailAndPassword(userEmail, pass); }
-        catch { 
-            try { await auth.createUserWithEmailAndPassword(userEmail, pass); }
-            catch(e) { alert("Erreur d'accès."); }
-        }
-    }
-
-    async function updatePassword() {
-        const p = document.getElementById('set-new-pass').value;
-        if(p.length < 6) return alert("Trop court.");
-        try { await auth.currentUser.updatePassword(p); alert("Modifié !"); closeSettings(); }
-        catch { alert("Reconnectez-vous pour cette action."); }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden-force'); if(id === 'profileModal') loadProfileData(); }
+    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden-force')); }
+    async function loadProfileData() {
+        const doc = await db.collection("users").doc(auth.currentUser.uid).get();
+        const d = doc.data();
+        document.getElementById('edit-nom').value = d.nom;
+        document.getElementById('edit-prenom').value = d.prenom;
+        document.getElementById('edit-dob').value = d.dob;
     }
 
     function initTheme() {
@@ -329,7 +290,35 @@
             localStorage.setItem('theme', n);
         };
     }
-    function setLang(l) { document.documentElement.dir = (l === 'ar' ? 'rtl' : 'ltr'); alert("Langue changée."); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        buildForm();
+        initTheme();
+        auth.onAuthStateChanged(u => u && setupUser(u.uid));
+    });
+
+    async function saveToCloud() {
+        const data = modules.map((_, i) => ({
+            e1: document.getElementById(`${i}_e1`).value, e2: document.getElementById(`${i}_e2`).value,
+            td: document.getElementById(`${i}_td`).value, tp: document.getElementById(`${i}_tp`).value
+        }));
+        await db.collection("users").doc(auth.currentUser.uid).update({ scores: data });
+        alert("Sauvegardé !");
+    }
+
+    async function loadFromCloud() {
+        const doc = await db.collection("users").doc(auth.currentUser.uid).get();
+        if(doc.exists && doc.data().scores) {
+            doc.data().scores.forEach((s, i) => {
+                document.getElementById(`${i}_e1`).value = s.e1; document.getElementById(`${i}_e2`).value = s.e2;
+                document.getElementById(`${i}_td`).value = s.td; document.getElementById(`${i}_tp`).value = s.tp;
+                updateRes(i);
+            });
+            calculer();
+        }
+    }
+
+    function logout() { auth.signOut().then(() => location.reload()); }
   </script>
 </body>
 </html>
