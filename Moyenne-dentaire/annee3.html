@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dental Guide Expert 8.7</title>
+    <title>Dental Guide Expert 8.8</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase -->
@@ -261,7 +261,7 @@
             }
 
             if(type !== 'loading') {
-                setTimeout(() => t.classList.remove('show'), 3000);
+                setTimeout(() => t.classList.remove('show'), 5000); // Extended to 5s for reading errors
             }
         }
 
@@ -385,7 +385,13 @@
             } catch(e) { 
                 console.error(e);
                 cloudIcon.className = "ph-bold ph-cloud-slash text-red-500 text-xl";
-                if(manual) showToast("Erreur de synchronisation", "error");
+                // Show specific error if permission denied
+                if(e.code === 'permission-denied' || e.message.includes('Missing or insufficient permissions')) {
+                    showToast("Erreur: Permissions refusées (Voir console)", "error");
+                    alert("Erreur de permissions Firestore :\nVeuillez vérifier les règles de sécurité dans la console Firebase.\nL'utilisateur doit pouvoir lire/écrire son propre document.");
+                } else {
+                    showToast("Erreur de synchronisation", "error");
+                }
             } finally {
                 isSaving = false;
             }
@@ -593,13 +599,9 @@
 
             auth.onAuthStateChanged(u => { 
                 if(u) {
-                    // 1. Hide Auth Overlay immediately
                     document.getElementById('authOverlay').classList.add('hidden-force');
-                    
-                    // 2. Show Loading Indicator
                     showToast("Chargement des notes...", "loading");
 
-                    // 3. Fetch Data
                     db.collection("users").doc(u.uid).get().then(doc => {
                         if(doc.exists) {
                             const d = doc.data();
@@ -622,24 +624,36 @@
                                         if(s.man) toggleManual(i); 
                                         updateRes(i);
                                         
-                                        // Check if any field has value
                                         if(s.manV || s.e1 || s.e2 || s.td || s.tp) hasData = true;
                                     }
                                 });
                             }
 
-                            // 4. Show Result Message
                             if(hasData) {
                                 showToast("Notes restaurées avec succès ✅");
                             } else {
                                 showToast("Aucune note sauvegardée trouvée ℹ️");
                             }
                         } else {
-                            showToast("Profil vide", "error");
+                            showToast("Aucun profil en base (Première connexion ?)", "error");
                         }
                     }).catch(err => {
                         console.error(err);
-                        showToast("Erreur de chargement Cloud", "error");
+                        // Improved Error Handling
+                        let msg = "Erreur de chargement Cloud";
+                        if(err.code === 'permission-denied') {
+                            msg = "Permissions refusées (Règles Firestore)";
+                        } else if (err.message) {
+                            msg = "Erreur: " + err.message;
+                        }
+                        showToast(msg, "error");
+                        
+                        // Extra help alert for permission issues
+                        if(err.code === 'permission-denied') {
+                            setTimeout(() => {
+                                alert("ATTENTION : Les règles de sécurité Firestore bloquent l'accès.\n\n1. Allez dans la console Firebase.\n2. Firestore Database > Règles.\n3. Remplacez le code par celui fourni dans la description/chat.");
+                            }, 1000);
+                        }
                     });
                 }
             });
