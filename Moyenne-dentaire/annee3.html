@@ -35,14 +35,13 @@
                 <input type="text" id="id-prenom" placeholder="Prénom" class="calc-input">
                 <input type="text" id="id-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)">
                 <button onclick="goToStep2()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Suivant</button>
-                <div class="flex items-center gap-2 my-4"><div class="h-px bg-white/10 flex-1"></div><span class="text-xs opacity-40">OU</span><div class="h-px bg-white/10 flex-1"></div></div>
-                <button onclick="loginGoogle()" class="w-full bg-white text-black p-3 rounded-xl font-bold flex items-center justify-center gap-2">
-                    <i class="ph-bold ph-google-logo"></i> Continuer avec Google
-                </button>
+                <div class="flex items-center gap-2 my-2"><div class="h-px bg-white/10 flex-1"></div><span class="text-xs opacity-40">OU</span><div class="h-px bg-white/10 flex-1"></div></div>
+                <button onclick="loginGoogle()" class="w-full bg-white text-black p-3 rounded-xl font-bold flex items-center justify-center gap-2 text-sm"><i class="ph-bold ph-google-logo"></i> Google</button>
+                <button onclick="startGuestMode()" class="w-full text-xs opacity-60 hover:opacity-100 transition">Continuer en tant qu'invité</button>
             </div>
             <div id="authStep2" class="hidden-force space-y-4">
                 <input type="password" id="auth-pass" placeholder="Mot de passe" class="calc-input">
-                <button onclick="performAuth()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Se connecter</button>
+                <button onclick="performAuth()" class="w-full bg-indigo-600 p-3 rounded-xl font-bold">Accéder</button>
                 <button onclick="backToStep1()" class="w-full text-xs opacity-50">Retour</button>
             </div>
         </div>
@@ -50,13 +49,11 @@
 
     <aside id="sidebar">
         <div class="p-6 flex flex-col h-full">
-            <div class="text-2xl font-bold mb-10 text-indigo-500 flex items-center gap-2">
-                <i class="ph-fill ph-tooth"></i> Expert 3.0
-            </div>
+            <div class="text-2xl font-bold mb-10 text-indigo-500 flex items-center gap-2"><i class="ph-fill ph-tooth"></i> Expert 3.0</div>
             <nav class="space-y-2 flex-1">
                 <div onclick="location.reload()" class="flex items-center gap-3 p-3 rounded-xl bg-indigo-600 text-white cursor-pointer"><i class="ph-bold ph-house"></i> <span data-key="home">Accueil</span></div>
-                <div onclick="openModal('profileModal')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 cursor-pointer"><i class="ph-bold ph-user-circle"></i> <span data-key="profile">Mon Profil</span></div>
-                <div onclick="openModal('passModal')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 cursor-pointer"><i class="ph-bold ph-lock-key"></i> <span data-key="password">Sécurité</span></div>
+                <div id="profileBtn" onclick="openModal('profileModal')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 cursor-pointer"><i class="ph-bold ph-user-circle"></i> <span data-key="profile">Mon Profil</span></div>
+                <div id="securityBtn" onclick="openModal('passModal')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 cursor-pointer"><i class="ph-bold ph-lock-key"></i> <span data-key="password">Sécurité</span></div>
                 <div class="h-px bg-white/10 my-4"></div>
                 <div id="themeBtn" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 cursor-pointer"><i class="ph-bold ph-palette"></i> <span data-key="theme">Thème</span></div>
                 <div onclick="setLang('fr')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 cursor-pointer">🇫🇷 Français</div>
@@ -75,39 +72,12 @@
         <div id="resultat" class="mt-10 mb-32"></div>
     </main>
 
-    <div id="profileModal" class="modal-overlay hidden-force">
-        <div class="glass p-8 rounded-3xl w-full max-w-md">
-            <h3 class="text-xl font-bold mb-6">Modifier l'identité</h3>
-            <div class="space-y-4">
-                <input type="text" id="edit-nom" placeholder="Nom" class="calc-input">
-                <input type="text" id="edit-prenom" placeholder="Prénom" class="calc-input">
-                <input type="text" id="edit-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)">
-                <div class="flex gap-2">
-                    <button onclick="updateProfile()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Enregistrer</button>
-                    <button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Fermer</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="passModal" class="modal-overlay hidden-force">
-        <div class="glass p-8 rounded-3xl w-full max-w-md">
-            <h3 class="text-xl font-bold mb-6">Changer le mot de passe</h3>
-            <div class="space-y-4">
-                <input type="password" id="old-pass" placeholder="Ancien mot de passe" class="calc-input">
-                <input type="password" id="new-pass" placeholder="Nouveau mot de passe" class="calc-input">
-                <input type="password" id="confirm-pass" placeholder="Confirmer le nouveau" class="calc-input">
-                <div class="flex gap-2">
-                    <button onclick="changePassword()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Valider</button>
-                    <button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Annuler</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="profileModal" class="modal-overlay hidden-force"><div class="glass p-8 rounded-3xl w-full max-w-md"><h3 class="text-xl font-bold mb-6">Identité</h3><div class="space-y-4"><input type="text" id="edit-nom" placeholder="Nom" class="calc-input"><input type="text" id="edit-prenom" placeholder="Prénom" class="calc-input"><input type="text" id="edit-dob" placeholder="JJ/MM/AAAA" class="calc-input" maxlength="10" oninput="formatDate(this)"><div class="flex gap-2"><button onclick="updateProfile()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Sauver</button><button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Fermer</button></div></div></div></div>
+    <div id="passModal" class="modal-overlay hidden-force"><div class="glass p-8 rounded-3xl w-full max-w-md"><h3 class="text-xl font-bold mb-6">Mot de passe</h3><div class="space-y-4"><input type="password" id="old-pass" placeholder="Ancien" class="calc-input"><input type="password" id="new-pass" placeholder="Nouveau" class="calc-input"><input type="password" id="confirm-pass" placeholder="Confirmer" class="calc-input"><div class="flex gap-2"><button onclick="changePassword()" class="flex-1 bg-indigo-600 p-3 rounded-xl font-bold">Valider</button><button onclick="closeModals()" class="flex-1 bg-white/10 p-3 rounded-xl">Annuler</button></div></div></div></div>
 
     <div class="fixed bottom-6 right-6 flex gap-3 z-40">
-        <button onclick="calculer()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl flex items-center gap-2 hover:scale-105 transition"><i class="ph-bold ph-calculator"></i> Calculer</button>
-        <button onclick="saveToCloud()" class="bg-emerald-600 text-white p-4 rounded-2xl shadow-xl hover:scale-105 transition"><i class="ph-bold ph-cloud-arrow-up text-xl"></i></button>
+        <button onclick="calculer()" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl flex items-center gap-2 transition active:scale-95"><i class="ph-bold ph-calculator"></i> Calculer</button>
+        <button id="cloudBtn" onclick="saveToCloud()" class="bg-emerald-600 text-white p-4 rounded-2xl shadow-xl transition active:scale-95"><i class="ph-bold ph-cloud-arrow-up text-xl"></i></button>
     </div>
 
     <div id="overlay" class="fixed inset-0 bg-black/50 z-[90] hidden-force" onclick="toggleMenu()"></div>
@@ -116,185 +86,68 @@
         const firebaseConfig = { apiKey: "AIzaSyCdD8hr6lLhaZOwIbx688i2aGbxCyn-PTY", authDomain: "dental-guide-e0e7b.firebaseapp.com", projectId: "dental-guide-e0e7b", storageBucket: "dental-guide-e0e7b.firebasestorage.app", messagingSenderId: "653289040762", appId: "1:653289040762:web:8f416fee145b3ca7ff04c3" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(), db = firebase.firestore();
+        let userEmail = "", isGuest = false;
 
-        const modules = [
-            { n: "OCE", c: 5 }, { n: "ODF", c: 5 }, { n: "Parodontologie", c: 5 },
-            { n: "Pathologie", c: 5 }, { n: "Prothèse", c: 5 }, { n: "Imagerie", c: 3 },
-            { n: "Anat-Path", c: 1 }, { n: "Anesthésie", c: 1 }, { n: "Pharmacologie", c: 1 },
-            { n: "Occlusodontie", c: 1 }, { n: "Oxyologie", c: 1 }
-        ];
+        const modules = [ { n: "OCE", c: 5 }, { n: "ODF", c: 5 }, { n: "Parodontologie", c: 5 }, { n: "Pathologie", c: 5 }, { n: "Prothèse", c: 5 }, { n: "Imagerie", c: 3 }, { n: "Anat-Path", c: 1 }, { n: "Anesthésie", c: 1 }, { n: "Pharmacologie", c: 1 }, { n: "Occlusodontie", c: 1 }, { n: "Oxyologie", c: 1 } ];
+        const translations = { fr: { home: "Accueil", profile: "Mon Profil", password: "Sécurité", theme: "Thème", logout: "Déconnexion", pageTitle: "Calcul Moyenne" }, ar: { home: "الرئيسية", profile: "حسابي", password: "الأمان", theme: "المظهر", logout: "خروج", pageTitle: "حساب المعدل" } };
 
-        const translations = {
-            fr: { home: "Accueil", profile: "Mon Profil", password: "Sécurité", theme: "Thème", logout: "Déconnexion", pageTitle: "Calcul Moyenne" },
-            ar: { home: "الرئيسية", profile: "حسابي", password: "الأمان", theme: "المظهر", logout: "خروج", pageTitle: "حساب المعدل" }
-        };
-
-        function formatDate(el) {
-            let v = el.value.replace(/\D/g, '').slice(0, 8);
-            if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2);
-            if (v.length >= 5) v = v.slice(0, 5) + '/' + v.slice(5);
-            el.value = v;
-        }
-
-        function setLang(l) {
-            const isAr = l === 'ar';
-            document.documentElement.dir = isAr ? 'rtl' : 'ltr';
-            document.documentElement.lang = l;
-            localStorage.setItem('lang', l);
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.getAttribute('data-key');
-                if(translations[l][key]) el.textContent = translations[l][key];
-            });
-        }
-
-        function toggleManual(i) {
-            const isMan = document.getElementById(`${i}_man_cb`).checked;
-            document.getElementById(`${i}_auto`).classList.toggle('hidden-force', isMan);
-            document.getElementById(`${i}_man`).classList.toggle('hidden-force', !isMan);
-            updateRes(i);
-        }
+        function formatDate(el) { let v = el.value.replace(/\D/g, '').slice(0, 8); if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2); if (v.length >= 5) v = v.slice(0, 5) + '/' + v.slice(5); el.value = v; }
+        function setLang(l) { document.documentElement.dir = (l === 'ar' ? 'rtl' : 'ltr'); localStorage.setItem('lang', l); document.querySelectorAll('[data-key]').forEach(el => { const key = el.getAttribute('data-key'); if(translations[l][key]) el.textContent = translations[l][key]; }); }
+        function toggleManual(i) { const isMan = document.getElementById(`${i}_man_cb`).checked; document.getElementById(`${i}_auto`).classList.toggle('hidden-force', isMan); document.getElementById(`${i}_man`).classList.toggle('hidden-force', !isMan); updateRes(i); }
+        function getV(id) { const v = document.getElementById(id).value; return v === "" ? NaN : parseFloat(v.replace(',','.')); }
 
         function getModuleMoyenne(i) {
-            if(document.getElementById(`${i}_man_cb`).checked) {
-                const val = parseFloat(document.getElementById(`${i}_man_val`).value);
-                return isNaN(val) ? NaN : val;
-            }
+            if(document.getElementById(`${i}_man_cb`).checked) return getV(`${i}_man_val`);
             let pts = 0, coefsCalc = 0, filled = false;
             const e1 = getV(`${i}_e1`), e2 = getV(`${i}_e2`), td = getV(`${i}_td`), tp = getV(`${i}_tp`);
-            let emdSum = 0, emdCount = 0;
-            if(!isNaN(e1)) { emdSum += e1; emdCount++; }
-            if(!isNaN(e2)) { emdSum += e2; emdCount++; }
-            if(emdCount > 0) { pts += (emdSum / emdCount); coefsCalc++; filled = true; }
+            let emds = []; if(!isNaN(e1)) emds.push(e1); if(!isNaN(e2)) emds.push(e2);
+            if(emds.length > 0) { pts += (emds.reduce((a,b)=>a+b,0)/emds.length); coefsCalc++; filled = true; }
             if(!isNaN(td)) { pts += td * 2; coefsCalc += 2; filled = true; }
             if(!isNaN(tp)) { pts += tp * 2; coefsCalc += 2; filled = true; }
             return filled ? (pts / coefsCalc) : NaN;
         }
 
-        function getV(id) {
-            const v = document.getElementById(id).value;
-            return v === "" ? NaN : parseFloat(v.replace(',','.'));
-        }
-
         function updateRes(i) {
-            const m = getModuleMoyenne(i);
-            const el = document.getElementById(`${i}_res`);
-            if(!isNaN(m)) {
-                el.innerText = m.toFixed(2);
-                el.style.opacity = "1";
-                el.style.color = m < 5 ? "#f87171" : (m < 10 ? "#fbbf24" : "#34d399");
-            } else { el.innerText = "-"; el.style.opacity = "0.2"; }
+            const m = getModuleMoyenne(i); const el = document.getElementById(`${i}_res`);
+            if(!isNaN(m)) { el.innerText = m.toFixed(2); el.style.opacity = "1"; el.style.color = m < 5 ? "#f87171" : (m < 10 ? "#fbbf24" : "#34d399"); }
+            else { el.innerText = "-"; el.style.opacity = "0.2"; }
         }
 
         function calculer() {
-            let total = 0, coefs = 0, under5 = [], under10 = [], any = false;
-            modules.forEach((mod, i) => {
-                const res = getModuleMoyenne(i);
-                if(!isNaN(res)) {
-                    any = true;
-                    total += res * mod.c;
-                    coefs += mod.c;
-                    if(res < 5) under5.push(mod.n);
-                    else if(res < 10) under10.push(mod.n);
-                }
-            });
-
-            if(!any) return alert("Entrez au moins une note.");
+            let total = 0, coefs = 0, u5 = [], u10 = [], any = false;
+            modules.forEach((mod, i) => { const res = getModuleMoyenne(i); if(!isNaN(res)) { any = true; total += res * mod.c; coefs += mod.c; if(res < 5) u5.push(mod.n); else if(res < 10) u10.push(mod.n); } });
+            if(!any) return alert("Saisissez une note.");
             const moy = total / coefs;
-            let html = `
-                <div class="glass p-8 rounded-[40px] text-center border-t-8 ${moy >= 10 ? 'border-emerald-500' : 'border-red-500'}">
-                    <p class="text-sm opacity-50 mb-2 uppercase tracking-widest">Moyenne Générale</p>
-                    <div class="text-7xl font-black mb-6">${moy.toFixed(2)}</div>
-                    <div class="space-y-2 text-left bg-black/20 p-4 rounded-2xl">
-            `;
-            if(under5.length > 0) html += `<p class="text-red-400 text-sm">❌ <b>Eliminatoire (<5):</b> ${under5.join(', ')}</p>`;
-            if(under10.length > 0) html += `<p class="text-yellow-400 text-sm">⚠️ <b>À compenser (<10):</b> ${under10.join(', ')}</p>`;
-            if(under5.length === 0 && moy >= 10) html += `<p class="text-emerald-400 text-center font-bold text-lg">🎉 ANNÉE VALIDÉE !</p>`;
-            html += `</div></div>`;
-            document.getElementById('resultat').innerHTML = html;
+            document.getElementById('resultat').innerHTML = `<div class="glass p-8 rounded-[40px] text-center border-t-8 ${moy >= 10 ? 'border-emerald-500' : 'border-red-500'}"><div class="text-7xl font-black mb-6">${moy.toFixed(2)}</div><div class="text-left bg-black/20 p-4 rounded-2xl">${u5.length?`<p class="text-red-400 text-sm">❌ <b>Eliminatoire:</b> ${u5.join(', ')}</p>`:''} ${u10.length?`<p class="text-yellow-400 text-sm">⚠️ <b>À compenser:</b> ${u10.join(', ')}</p>`:''} ${(!u5.length && moy>=10)?'<p class="text-emerald-400 text-center font-bold">ANNÉE VALIDÉE !</p>':''}</div></div>`;
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
-        // AUTH & DATABASE
-        async function loginGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try { await auth.signInWithPopup(provider); } catch(e) { alert("Erreur Google Auth"); }
-        }
-
         async function saveToCloud() {
-            const data = modules.map((_, i) => ({
-                man: document.getElementById(`${i}_man_cb`).checked,
-                manVal: document.getElementById(`${i}_man_val`).value,
-                e1: document.getElementById(`${i}_e1`).value, e2: document.getElementById(`${i}_e2`).value,
-                td: document.getElementById(`${i}_td`).value, tp: document.getElementById(`${i}_tp`).value
-            }));
-            await db.collection("users").doc(auth.currentUser.uid).set({ scores: data }, { merge: true });
-            alert("Sauvegardé !");
+            if(isGuest) return alert("Sauvegarde impossible en mode invité.");
+            const data = modules.map((_, i) => ({ man: document.getElementById(`${i}_man_cb`).checked, manV: document.getElementById(`${i}_man_val`).value, e1: document.getElementById(`${i}_e1`).value, e2: document.getElementById(`${i}_e2`).value, td: document.getElementById(`${i}_td`).value, tp: document.getElementById(`${i}_tp`).value }));
+            try { await db.collection("users").doc(auth.currentUser.uid).set({ scores: data }, { merge: true }); alert("Sauvegardé !"); } catch(e) { alert("Erreur de sauvegarde."); }
         }
 
         async function loadFromCloud() {
             const doc = await db.collection("users").doc(auth.currentUser.uid).get();
-            if(doc.exists && doc.data().scores) {
-                doc.data().scores.forEach((s, i) => {
-                    document.getElementById(`${i}_man_cb`).checked = s.man;
-                    document.getElementById(`${i}_man_val`).value = s.manVal;
-                    document.getElementById(`${i}_e1`).value = s.e1; document.getElementById(`${i}_e2`).value = s.e2;
-                    document.getElementById(`${i}_td`).value = s.td; document.getElementById(`${i}_tp`).value = s.tp;
-                    toggleManual(i);
-                });
-                calculer();
-            }
+            if(doc.exists && doc.data().scores) { doc.data().scores.forEach((s, i) => { if(i < modules.length) { document.getElementById(`${i}_man_cb`).checked = s.man; document.getElementById(`${i}_man_val`).value = s.manV; document.getElementById(`${i}_e1`).value = s.e1; document.getElementById(`${i}_e2`).value = s.e2; document.getElementById(`${i}_td`).value = s.td; document.getElementById(`${i}_tp`).value = s.tp; toggleManual(i); } }); calculer(); }
         }
 
+        function startGuestMode() { isGuest = true; document.getElementById('authOverlay').classList.add('hidden-force'); document.getElementById('profileBtn').style.display = 'none'; document.getElementById('securityBtn').style.display = 'none'; }
+        async function loginGoogle() { const provider = new firebase.auth.GoogleAuthProvider(); try { await auth.signInWithPopup(provider); } catch(e) { alert("Erreur Google"); } }
+        function goToStep2() { const n = document.getElementById('id-nom').value, p = document.getElementById('id-prenom').value, d = document.getElementById('id-dob').value; if(!n || !p || d.length < 10) return alert("Champs incomplets"); userEmail = `${n.trim()}.${p.trim()}.${d.replace(/\//g,'')}@dental.app`.toLowerCase(); document.getElementById('authStep1').classList.add('hidden-force'); document.getElementById('authStep2').classList.remove('hidden-force'); }
+        function performAuth() { const pass = document.getElementById('auth-pass').value; auth.signInWithEmailAndPassword(userEmail, pass).catch(() => { auth.createUserWithEmailAndPassword(userEmail, pass).then(res => { db.collection("users").doc(res.user.uid).set({ nom: document.getElementById('id-nom').value, prenom: document.getElementById('id-prenom').value, dob: document.getElementById('id-dob').value }); }); }); }
+        function logout() { auth.signOut().then(() => location.reload()); }
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('hidden-force'); }
         function openModal(id) { document.getElementById(id).classList.remove('hidden-force'); }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden-force')); }
-        function logout() { auth.signOut().then(() => location.reload()); }
-        function goToStep2() { 
-            const n = document.getElementById('id-nom').value, p = document.getElementById('id-prenom').value, d = document.getElementById('id-dob').value;
-            if(!n || !p || d.length < 10) return alert("Champs incomplets");
-            userEmail = `${n.trim()}.${p.trim()}.${d.replace(/\//g,'')}@dental.app`.toLowerCase();
-            document.getElementById('authStep1').classList.add('hidden-force');
-            document.getElementById('authStep2').classList.remove('hidden-force');
-        }
-        function backToStep1() { document.getElementById('authStep2').classList.add('hidden-force'); document.getElementById('authStep1').classList.remove('hidden-force'); }
-
-        async function performAuth() {
-            const pass = document.getElementById('auth-pass').value;
-            try { await auth.signInWithEmailAndPassword(userEmail, pass); }
-            catch { 
-                await auth.createUserWithEmailAndPassword(userEmail, pass);
-                await db.collection("users").doc(auth.currentUser.uid).set({ nom: document.getElementById('id-nom').value, prenom: document.getElementById('id-prenom').value, dob: document.getElementById('id-dob').value });
-            }
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById("formContainer");
-            modules.forEach((m, i) => {
-                container.innerHTML += `
-                    <div class="glass p-6 rounded-3xl group">
-                        <div class="flex justify-between items-start mb-4">
-                            <div><h3 class="font-bold text-indigo-300">${m.n}</h3><span class="text-[10px] opacity-40 uppercase">Coef ${m.c}</span></div>
-                            <label class="text-[10px] opacity-60 flex items-center gap-1 cursor-pointer"><input type="checkbox" id="${i}_man_cb" onchange="toggleManual(${i})"> MANUEL</label>
-                        </div>
-                        <div id="${i}_auto" class="grid grid-cols-2 gap-2">
-                            <input type="number" id="${i}_e1" placeholder="EMD1" class="calc-input text-xs" oninput="updateRes(${i})">
-                            <input type="number" id="${i}_e2" placeholder="EMD2" class="calc-input text-xs" oninput="updateRes(${i})">
-                            <input type="number" id="${i}_td" placeholder="TD (x2)" class="calc-input text-xs" oninput="updateRes(${i})">
-                            <input type="number" id="${i}_tp" placeholder="TP (x2)" class="calc-input text-xs" oninput="updateRes(${i})">
-                        </div>
-                        <div id="${i}_man" class="hidden-force">
-                            <input type="number" id="${i}_man_val" placeholder="Note Finale" class="calc-input text-center font-bold" oninput="updateRes(${i})">
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center"><span class="text-[10px] opacity-30 font-bold tracking-widest">MOYENNE</span><span id="${i}_res" class="font-black text-xl opacity-20">-</span></div>
-                    </div>`;
-            });
+            modules.forEach((m, i) => { container.innerHTML += `<div class="glass p-6 rounded-3xl group"><div class="flex justify-between items-start mb-4"><div><h3 class="font-bold text-indigo-300">${m.n}</h3><span class="text-[10px] opacity-40">Coef ${m.c}</span></div><label class="text-[10px] opacity-60 flex items-center gap-1 cursor-pointer"><input type="checkbox" id="${i}_man_cb" onchange="toggleManual(${i})"> MANUEL</label></div><div id="${i}_auto" class="grid grid-cols-2 gap-2"><input type="number" id="${i}_e1" placeholder="EMD1" class="calc-input text-xs" oninput="updateRes(${i})"><input type="number" id="${i}_e2" placeholder="EMD2" class="calc-input text-xs" oninput="updateRes(${i})"><input type="number" id="${i}_td" placeholder="TD (x2)" class="calc-input text-xs" oninput="updateRes(${i})"><input type="number" id="${i}_tp" placeholder="TP (x2)" class="calc-input text-xs" oninput="updateRes(${i})"></div><div id="${i}_man" class="hidden-force"><input type="number" id="${i}_man_val" placeholder="Note" class="calc-input text-center font-bold" oninput="updateRes(${i})"></div><div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center"><span class="text-[10px] opacity-30 font-bold">MOYENNE</span><span id="${i}_res" class="font-black text-xl opacity-20">-</span></div></div>`; });
             auth.onAuthStateChanged(u => { if(u) { document.getElementById('authOverlay').classList.add('hidden-force'); loadFromCloud(); } });
             setLang(localStorage.getItem('lang') || 'fr');
-            document.getElementById('themeBtn').onclick = () => {
-                const n = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', n);
-                localStorage.setItem('theme', n);
-            };
+            document.getElementById('themeBtn').onclick = () => { const n = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', n); localStorage.setItem('theme', n); };
         });
     </script>
 </body>
