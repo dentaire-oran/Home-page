@@ -1,334 +1,561 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr" data-theme="dark" dir="ltr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Dental Guide - Expert</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css" />
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#1e1b4b"/>
+  <title>Dental Guide Expert</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-    <style>
-        :root { --font: 'Manrope', sans-serif; --radius: 12px; --transition: all 0.3s ease; --success: #2ad4a5; --danger: #ff647c; --warning: #ffc94a; }
-        [data-theme="dark"] { --bg: #101223; --header-bg: rgba(20, 24, 40, 0.9); --sidebar-bg: rgba(20, 24, 40, 0.9); --card-bg: rgba(30, 35, 60, 0.85); --text-title: #f8faff; --text-color: #d0d8ff; --text-secondary: #95a0d0; --border-color: rgba(80, 90, 160, 0.3); --primary: #4a8cff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { font-family: var(--font); background: var(--bg); color: var(--text-color); }
-        body { min-height: 100vh; overflow-x: hidden; }
-        header { position: fixed; top: 0; width: 100%; height: 64px; background: var(--header-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); display: flex; justify-content: center; align-items: center; z-index: 20; }
-        .nav-toggle { position: fixed; top: 12px; left: 12px; z-index: 30; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: none; align-items: center; justify-content: center; }
-        .sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100%; background: var(--sidebar-bg); padding: 80px 24px; transform: translateX(-100%); transition: var(--transition); z-index: 25; border-right: 1px solid var(--border-color); }
-        .sidebar.open { transform: translateX(0); }
-        .main-container { padding: 96px 20px; max-width: 800px; margin: auto; }
-        .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); padding: 20px; margin-bottom: 20px; }
-        input { width: 100%; background: var(--bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; color: var(--text-color); margin-bottom: 12px; font-family: var(--font); }
-        .btn { color: white; border: none; border-radius: 50px; padding: 12px 24px; font-weight: 600; cursor: pointer; background: var(--primary); display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); }
-        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .date-input-container { position: relative; width: 100%; }
-        .calendar-icon { position: absolute; right: 12px; top: 12px; cursor: pointer; color: var(--primary); font-size: 1.4rem; }
-        #settings-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; }
-        .alert { padding: 12px; margin: 12px 0; border-radius: 8px; font-weight: 600; border: 1px solid transparent; }
-        .alert.success { background: rgba(42,212,165,0.1); color: var(--success); border-color: var(--success); }
-        .alert.warning { background: rgba(255,201,74,0.1); color: var(--warning); border-color: var(--warning); }
-        .alert.danger { background: rgba(255,100,124,0.1); color: var(--danger); border-color: var(--danger); }
-    </style>
+  <style>
+    :root { --transition-speed: 0.5s; }
+    [data-theme="dark"] {
+        --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+        --glass-bg: rgba(30, 41, 59, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --btn-hover: rgba(255, 255, 255, 0.1);
+        --sidebar-bg: rgba(15, 23, 42, 0.95);
+        --input-bg: rgba(0, 0, 0, 0.3);
+        --success: #2ad4a5; --danger: #ff647c; --warning: #ffc94a;
+        --primary: #6366f1;
+    }
+    [data-theme="light"] {
+        --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #fae8ff 100%);
+        --glass-bg: rgba(255, 255, 255, 0.8);
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --btn-hover: rgba(0, 0, 0, 0.05);
+        --sidebar-bg: rgba(255, 255, 255, 0.95);
+        --input-bg: rgba(255, 255, 255, 0.6);
+        --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+        --primary: #4f46e5;
+    }
+    body { background: var(--bg-gradient); color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; transition: background 0.5s ease; }
+    .glass { background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); transition: all 0.3s ease; }
+    .text-gradient { background-clip: text; -webkit-background-clip: text; color: transparent; background-image: linear-gradient(to right, #818cf8, #c084fc, #f472b6); }
+    [data-theme="light"] .text-gradient { background-image: linear-gradient(to right, #4f46e5, #9333ea, #db2777); }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .nav-link { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.85rem 1.25rem; border-radius: 0.75rem; font-weight: 500; color: var(--text-main); transition: all 0.2s ease; cursor: pointer; }
+    .nav-link:hover { background: var(--btn-hover); transform: translateX(4px); }
+    .nav-link.active { background: rgba(99, 102, 241, 0.15); color: var(--primary); font-weight: 600; border: 1px solid var(--glass-border); }
+    .calc-input { width: 100%; background: var(--input-bg); border: 1px solid var(--glass-border); color: var(--text-main); border-radius: 0.5rem; padding: 0.6rem; outline: none; transition: 0.2s; }
+    .calc-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
+    .anim-container { overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease-out; max-height: 500px; opacity: 1; }
+    .anim-container.is-hidden { max-height: 0 !important; opacity: 0; pointer-events: none; margin: 0; }
+    #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    html[dir="ltr"] #sidebar { left: 0; transform: translateX(0); border-right: 1px solid var(--glass-border); }
+    html[dir="rtl"] #sidebar { right: 0; transform: translateX(0); border-left: 1px solid var(--glass-border); }
+    @media (max-width: 1024px) { 
+        html[dir="ltr"] #sidebar { transform: translateX(-100%); } 
+        html[dir="rtl"] #sidebar { transform: translateX(100%); }
+        #sidebar.open { transform: translateX(0); } 
+    }
+    .auth-overlay { position: fixed; inset: 0; z-index: 100; background: var(--bg-gradient); display: flex; align-items: center; justify-content: center; padding: 1rem; transition: opacity 0.3s, visibility 0.3s; }
+    .auth-card { width: 100%; max-width: 420px; padding: 2rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .btn-primary { background: var(--primary); color: white; padding: 0.75rem; border-radius: 0.75rem; font-weight: 600; width: 100%; transition: 0.2s; display: flex; justify-content: center; items-center; gap: 0.5rem; }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .btn-google { background: white; color: #333; padding: 0.75rem; border-radius: 0.75rem; font-weight: 600; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: 0.2s; }
+    .btn-google:hover { background: #f1f5f9; }
+    .btn-guest { background: transparent; border: 1px solid var(--glass-border); color: var(--text-muted); padding: 0.75rem; border-radius: 0.75rem; font-weight: 500; width: 100%; transition: 0.2s; font-size: 0.9rem; }
+    .btn-guest:hover { background: var(--btn-hover); color: var(--text-main); }
+    .theme-toggle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--glass-bg); border: 1px solid var(--glass-border); }
+    [data-theme="dark"] .ph-sun { display: none; }
+    [data-theme="light"] .ph-moon { display: none; }
+    .hidden-force { display: none !important; }
+  </style>
 </head>
 <body>
 
-    <div id="auth-overlay">
-        <div class="card" style="width: 100%; max-width: 400px;">
-            <h3 style="margin-bottom:20px;"><i class="ph-light ph-user-circle"></i> Identification</h3>
-            <div id="step-id">
-                <input type="text" id="id-nom" placeholder="Nom">
-                <input type="text" id="id-prenom" placeholder="Prénom">
-                <div class="date-input-container">
-                    <input type="text" id="id-dob-display" placeholder="Date de naissance (JJ/MM/AAAA)">
-                    <i class="ph-light ph-calendar calendar-icon" onclick="openPicker()"></i>
-                    <input type="date" id="id-dob-picker" onchange="syncDate(this.value)" style="position:absolute; opacity:0; pointer-events:none; width:0; height:0;">
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card glass relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+        <h2 class="text-3xl font-bold text-center mb-6 text-gradient">Dental Guide</h2>
+        
+        <div id="authStep1">
+            <p class="text-center text-sm mb-6 opacity-80">Espace étudiant & Calcul de Moyenne</p>
+            <div class="space-y-4">
+                <input type="text" id="id-nom" placeholder="Nom" class="calc-input">
+                <input type="text" id="id-prenom" placeholder="Prénom" class="calc-input">
+                <div class="relative">
+                    <input type="text" id="id-dob-display" placeholder="Date de naissance (JJ/MM/AAAA)" class="calc-input">
+                    <button onclick="openPicker()" class="absolute right-3 top-2.5 text-xl opacity-60 hover:opacity-100"><i class="ph-bold ph-calendar"></i></button>
+                    <input type="date" id="id-dob-picker" onchange="syncDate(this.value)" class="absolute opacity-0 pointer-events-none w-0 h-0">
                 </div>
-                <button class="btn" style="width:100%" onclick="checkUserExists()">Suivant</button>
-            </div>
-            <div id="step-pw" style="display:none;">
-                <p id="status-msg" style="margin-bottom:12px; font-weight:700; color:var(--primary);"></p>
-                <div style="position:relative;">
-                    <input type="password" id="auth-pass" placeholder="Mot de passe">
-                    <i class="ph-light ph-eye" onclick="togglePass('auth-pass')" style="position:absolute; right:12px; top:12px; cursor:pointer;"></i>
+                <button onclick="goToStep2()" class="btn-primary shadow-lg shadow-indigo-500/30">
+                    <span>Connexion / Inscription</span> <i class="ph-bold ph-arrow-right"></i>
+                </button>
+                <div class="relative py-2">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                    <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 opacity-50">Ou</span></div>
                 </div>
-                <button class="btn" id="final-btn" style="width:100%" onclick="finalAuth()"></button>
+                <button onclick="loginGoogle()" class="btn-google">
+                    <i class="ph-bold ph-google-logo text-lg text-red-500"></i> Google
+                </button>
+                <button onclick="startGuestMode()" class="btn-guest">
+                    Continuer sans compte (Invité)
+                </button>
             </div>
-            <div style="margin: 20px 0; text-align: center; font-size: 0.8rem; color: var(--text-secondary);">OU</div>
-            <button class="btn" style="width:100%; background:#fff; color:#444;" onclick="loginGoogle()">
-                <i class="ph-light ph-google-logo"></i> Continuer avec Google
+        </div>
+
+        <div id="authStep2" class="hidden-force space-y-4">
+            <button onclick="backToStep1()" class="text-xs opacity-60 hover:opacity-100 flex items-center gap-1 mb-2"><i class="ph-bold ph-arrow-left"></i> Retour</button>
+            <h3 class="text-xl font-semibold text-center mb-4">Sécurité</h3>
+            <p class="text-xs text-center opacity-60 mb-4">Entrez un mot de passe pour sécuriser vos notes.</p>
+            <div class="relative">
+                <input type="password" id="auth-pass" placeholder="Mot de passe" class="calc-input">
+                <button onclick="togglePass('auth-pass')" class="absolute right-3 top-3 opacity-60"><i class="ph-bold ph-eye"></i></button>
+            </div>
+            <button id="finalAuthBtn" onclick="performAuth()" class="btn-primary shadow-lg shadow-indigo-500/30">Accéder à mon espace</button>
+        </div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden-force items-center justify-center p-4">
+      <div class="auth-card glass relative">
+          <button onclick="closeSettings()" class="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full"><i class="ph-bold ph-x"></i></button>
+          <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="ph-duotone ph-gear"></i> Paramètres</h3>
+          <div class="space-y-4">
+              <p class="text-sm opacity-70">Modifier le mot de passe</p>
+              <input type="password" id="set-new-pass" placeholder="Nouveau mot de passe" class="calc-input">
+              <button onclick="updatePassword()" class="btn-primary">Mettre à jour</button>
+          </div>
+      </div>
+  </div>
+
+  <aside id="sidebar" class="fixed inset-y-0 z-40 w-72 glass flex flex-col justify-between" style="background: var(--sidebar-bg);">
+    <div class="p-6 pt-24 overflow-y-auto flex-1">
+      <h2 class="text-2xl font-bold text-gradient mb-8 flex items-center gap-2"><i class="ph-fill ph-tooth"></i> Dental Guide</h2>
+      <div class="space-y-2">
+        <a href="#" class="nav-link active"><i class="ph-duotone ph-calculator text-xl"></i> <span>Simulateur</span></a>
+        <button onclick="openSettings()" class="nav-link"><i class="ph-duotone ph-gear text-xl"></i> <span>Paramètres</span></button>
+        <div class="h-px bg-white/10 my-4"></div>
+        <div class="flex items-center justify-between px-2">
+            <div class="flex gap-2">
+                <button onclick="setLang('fr')" class="text-xs font-bold px-2 py-1 rounded hover:bg-white/10 transition">FR</button>
+                <button onclick="setLang('ar')" class="text-xs font-bold px-2 py-1 rounded hover:bg-white/10 transition">AR</button>
+            </div>
+            <button id="themeBtn" class="theme-toggle">
+                <i class="ph-fill ph-moon"></i><i class="ph-fill ph-sun"></i>
             </button>
         </div>
+      </div>
+    </div>
+    <div class="p-6 border-t border-white/10">
+        <button onclick="logout()" class="nav-link text-red-400 hover:text-red-500 hover:bg-red-500/10"><i class="ph-bold ph-sign-out text-xl"></i> <span id="logoutText">Déconnexion</span></button>
+    </div>
+  </aside>
+
+  <div id="overlay" class="fixed inset-0 bg-black/40 z-30 hidden-force backdrop-blur-sm" onclick="toggleMenu()"></div>
+  
+  <button onclick="toggleMenu()" class="fixed top-6 left-6 z-50 p-3 rounded-xl glass hover:bg-white/20 transition lg:hidden shadow-lg">
+    <i class="ph-bold ph-list text-2xl"></i>
+  </button>
+
+  <main class="lg:pl-72 pt-24 pb-32 px-4 sm:px-8 max-w-7xl mx-auto transition-all duration-300">
+    <header class="mb-12 text-center lg:text-left">
+        <h1 class="text-4xl sm:text-5xl font-bold text-gradient mb-2 animate-float">Calcul de Moyenne</h1>
+        <p class="text-lg opacity-70">Expert • Sauvegarde Cloud • Multi-appareils</p>
+    </header>
+
+    <div id="formContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+
+    <div class="fixed bottom-0 left-0 lg:left-72 right-0 p-4 glass border-t border-white/10 flex justify-center gap-4 z-20 backdrop-blur-xl">
+        <button onclick="calculer()" class="btn-primary w-auto px-8 shadow-xl shadow-indigo-500/20"><i class="ph-bold ph-calculator"></i> Calculer</button>
+        <button onclick="saveToCloud()" id="btnSave" class="px-6 py-3 rounded-xl font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition flex items-center gap-2"><i class="ph-bold ph-cloud-arrow-up"></i> <span class="hidden sm:inline">Sauvegarder</span></button>
     </div>
 
-    <header><h1><i class="ph-light ph-tooth"></i> Dental Guide</h1></header>
-    <button class="nav-toggle" id="menu-btn"><i class="ph-light ph-list"></i></button>
+    <div id="resultat" class="mt-10 mb-20"></div>
+  </main>
 
-    <nav class="sidebar" id="sidebar">
-        <div style="display:flex; flex-direction:column; gap:10px;">
-            <button class="btn" onclick="openSettings()"><i class="ph-light ph-gear"></i> Paramètres</button>
-            <button class="btn" style="background:var(--danger)" onclick="auth.signOut().then(()=>location.reload())">Déconnexion</button>
-        </div>
-    </nav>
+  <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCdD8hr6lLhaZOwIbx688i2aGbxCyn-PTY",
+        authDomain: "dental-guide-e0e7b.firebaseapp.com",
+        projectId: "dental-guide-e0e7b",
+        storageBucket: "dental-guide-e0e7b.firebasestorage.app",
+        messagingSenderId: "653289040762",
+        appId: "1:653289040762:web:8f416fee145b3ca7ff04c3",
+        measurementId: "G-F86248GZR0"
+    };
 
-    <main class="main-container">
-        <div id="form"></div>
-        <div id="action-btns" style="display:none; gap:10px; justify-content:center; margin-top:20px;">
-            <button class="btn" onclick="calculer()"><i class="ph-light ph-calculator"></i>Calculer</button>
-            <button class="btn" id="save-btn" onclick="saveResults()"><i class="ph-light ph-floppy-disk"></i>Sauvegarder</button>
-        </div>
-        <div id="resultat" style="margin-top:30px;"></div>
-    </main>
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    <div id="settings-modal">
-        <div class="card" style="width: 90%; max-width: 400px;">
-            <h3>Modifier le mot de passe</h3>
-            <input type="password" id="old-p" placeholder="Ancien mot de passe">
-            <input type="password" id="new-p" placeholder="Nouveau mot de passe">
-            <input type="password" id="conf-p" placeholder="Confirmer">
-            <button class="btn" style="width:100%" onclick="updatePassword()">Valider</button>
-            <button class="btn" style="width:100%; margin-top:10px; background:#666;" onclick="document.getElementById('settings-modal').style.display='none'">Fermer</button>
-        </div>
-    </div>
+    const modules = [ 
+        { id: "oce", display: "OCE", coef: 5, icon: "tooth", e1: true, e2: true, td: true, tp: true }, 
+        { id: "odf", display: "ODF", coef: 5, icon: "align-center-horizontal-simple", e1: true, e2: true, td: true, tp: true },
+        { id: "paro", display: "Parodontologie", coef: 5, icon: "microscope", e1: true, e2: true, td: true, tp: true },
+        { id: "patho", display: "Pathologie", coef: 5, icon: "first-aid-kit", e1: true, e2: true, td: true, tp: true },
+        { id: "prothese", display: "Prothèse", coef: 5, icon: "cube", e1: true, e2: true, td: true, tp: true }, 
+        { id: "imagerie", display: "Imagerie", coef: 3, icon: "x-ray", e1: true, e2: true, td: true, tp: true },
+        { id: "anatpath", display: "Anat-Path", coef: 1, icon: "brain", e1: true, e2: true, td: true, tp: true }, 
+        { id: "anesth", display: "Anesthésie", coef: 1, icon: "syringe", e1: true, e2: true, td: true, tp: true },
+        { id: "pharmaco", display: "Pharmacologie", coef: 1, icon: "pills", e1: true, e2: true, td: true, tp: true },
+        { id: "occluso", display: "Occlusodontie", coef: 1, icon: "tooth", e1: true, e2: true, td: true, tp: true },
+        { id: "oxyologie", display: "Oxyologie", coef: 1, icon: "lungs", e1: true, e2: true, td: true, tp: true }
+    ];
 
-    <script>
-        // CONFIGURATION FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyCdD8hr6lLhaZOwIbx688i2aGbxCyn-PTY",
-            authDomain: "dental-guide-e0e7b.firebaseapp.com",
-            projectId: "dental-guide-e0e7b",
-            storageBucket: "dental-guide-e0e7b.firebasestorage.app",
-            messagingSenderId: "653289040762",
-            appId: "1:653289040762:web:8f416fee145b3ca7ff04c3",
-            measurementId: "G-F86248GZR0"
-        };
+    let userEmail = "";
+    let isGuest = false;
 
-        // Initialisation
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        let isNew = true, userEmail = "", domReady = false;
-
-        const modules = [
-            { n: "Oc", c: 5, i: "tooth" }, { n: "Odf", c: 5, i: "align-center-horizontal-simple" },
-            { n: "Paro", c: 5, i: "microscope" }, { n: "Patho", c: 5, i: "first-aid-kit" },
-            { n: "Prothèse", c: 5, i: "cube" }, { n: "Imagerie", c: 3, i: "x-ray" },
-            { n: "Anat-Path", c: 1, i: "brain" }, { n: "Anesthésie", c: 1, i: "syringe" },
-            { n: "Pharmaco", c: 1, i: "pills" }, { n: "Occlusodontie", c: 1, i: "tooth" },
-            { n: "Oxyologie", c: 1, i: "lungs" }
-        ];
-
-        // --- AUTH STATE ---
+    document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        buildForm();
+        
         auth.onAuthStateChanged((user) => {
-            const overlay = document.getElementById('auth-overlay');
-            const menuBtn = document.getElementById('menu-btn');
-            const actBtns = document.getElementById('action-btns');
-            
+            const overlay = document.getElementById('authOverlay');
             if (user) {
-                overlay.style.display = 'none';
-                if(menuBtn) menuBtn.style.display = 'flex';
-                if(actBtns) actBtns.style.display = 'flex';
-                if(domReady) loadResults();
-            } else {
-                overlay.style.display = 'flex';
-                if(menuBtn) menuBtn.style.display = 'none';
-                if(actBtns) actBtns.style.display = 'none';
+                isGuest = false;
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                document.getElementById('logoutText').innerText = "Déconnexion";
+                loadFromCloud();
+            } else if (!isGuest) {
+                overlay.style.opacity = '1';
+                overlay.style.pointerEvents = 'all';
+                document.getElementById('formContainer').querySelectorAll('input').forEach(i => i.value = '');
             }
         });
+    });
 
-        // --- DATE MANAGEMENT ---
-        function openPicker() {
-            const p = document.getElementById('id-dob-picker');
-            try { p.showPicker(); } catch(e) { p.click(); }
-        }
+    function startGuestMode() {
+        isGuest = true;
+        const overlay = document.getElementById('authOverlay');
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none';
+        document.getElementById('logoutText').innerText = "Quitter le mode Invité";
+        alert("Mode Invité activé. Vos notes ne seront pas sauvegardées si vous quittez la page.");
+    }
 
-        function syncDate(val) {
-            if(!val) return;
-            const [y, m, d] = val.split('-');
-            document.getElementById('id-dob-display').value = `${d}/${m}/${y}`;
-        }
-
-        function validateDateStrict(str) {
-            const parts = str.split(/[\/\-.]/);
-            if(parts.length !== 3) return null;
-            const d = parseInt(parts[0]), m = parseInt(parts[1]), y = parseInt(parts[2]);
-            const date = new Date(y, m - 1, d);
-            const isValid = date.getFullYear() === y && (date.getMonth() + 1) === m && date.getDate() === d;
-            if(!isValid || y < 1920 || y > 2026) return null;
-            return `${d.toString().padStart(2, '0')}${m.toString().padStart(2, '0')}${y}`;
-        }
-
-        // --- AUTH LOGIC ---
-        async function checkUserExists() {
-            const nom = document.getElementById('id-nom').value.trim().replace(/[<>]/g, "");
-            const prenom = document.getElementById('id-prenom').value.trim().replace(/[<>]/g, "");
-            const dateCode = validateDateStrict(document.getElementById('id-dob-display').value.trim());
-
-            if(!nom || !prenom || !dateCode) return alert("Vérifiez vos informations et la date (JJ/MM/AAAA).");
-
-            userEmail = `${nom}.${prenom}.${dateCode}@dentaire.app`.toLowerCase().replace(/\s/g, '');
-            try {
-                const methods = await auth.fetchSignInMethodsForEmail(userEmail);
-                document.getElementById('step-id').style.display = 'none';
-                document.getElementById('step-pw').style.display = 'block';
-                isNew = methods.length === 0;
-                document.getElementById('status-msg').innerText = isNew ? "Nouveau compte !" : "Bienvenue !";
-                document.getElementById('final-btn').innerText = isNew ? "Créer l'espace" : "Se connecter";
-            } catch(e) { alert("Erreur : " + e.message); }
-        }
-
-        async function finalAuth() {
-            const p = document.getElementById('auth-pass').value;
-            if(p.length < 6) return alert("6 caractères minimum.");
-            try {
-                if(isNew) await auth.createUserWithEmailAndPassword(userEmail, p);
-                else await auth.signInWithEmailAndPassword(userEmail, p);
-            } catch(e) { alert(e.message); }
-        }
-
-        async function loginGoogle() {
-            try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-            catch(e) { alert(e.message); }
-        }
-
-        // --- MATH LOGIC ---
-        function getM(i) {
-            const parseVal = (id) => {
-                const el = document.getElementById(id);
-                if(!el || el.value === "") return null;
-                const n = parseFloat(el.value);
-                return (!isNaN(n) && n >= 0 && n <= 20) ? n : null;
-            };
-
-            if(document.getElementById(`${i}_man`).checked) {
-                const val = parseVal(`${i}_mv`);
-                return val !== null ? { m: val, f: true } : { m: 0, f: false };
-            } else {
-                const e1 = parseVal(`${i}_e1`), e2 = parseVal(`${i}_e2`), 
-                      td = parseVal(`${i}_td`), tp = parseVal(`${i}_tp`);
-                
-                let pts = 0, co = 0, emd = 0, emdC = 0, f = false;
-                if(e1 !== null) { emd += e1; emdC++; f=true; }
-                if(e2 !== null) { emd += e2; emdC++; f=true; }
-                if(emdC > 0) { pts += (emd/emdC); co++; }
-                if(td !== null) { pts += td; co++; f=true; }
-                if(tp !== null) { pts += (tp*2); co += 2; f=true; }
-                return { m: co > 0 ? pts/co : 0, f: f };
-            }
-        }
-
-        function calculer() {
-            let p = 0, c = 0, u5 = [], u10 = [];
-            modules.forEach((m, i) => {
-                const r = getM(i);
-                if(r.f) {
-                    p += r.m * m.c; c += m.c;
-                    if(r.m < 4.999) u5.push(m.n);
-                    else if(r.m < 9.999) u10.push(m.n);
-                }
-            });
-            const res = document.getElementById("resultat");
-            if(c === 0) { res.innerHTML = `<div class="alert warning">Aucune note valide (0-20).</div>`; return; }
-            const moy = (p/c).toFixed(3);
-            let html = `<div class="card"><h2>Moyenne : ${moy}</h2></div>`;
-            if(moy >= 10 && u5.length === 0) html += `<div class="alert success">🎉 Année validée !</div>`;
-            else {
-                if(moy < 10) html += `<div class="alert danger">Moyenne insuffisante.</div>`;
-                if(u5.length > 0) html += `<div class="alert danger">Éliminatoire (<5) : ${u5.join(', ')}</div>`;
-                if(u10.length > 0) html += `<div class="alert warning">À compenser : ${u10.join(', ')}</div>`;
-            }
-            res.innerHTML = html;
-        }
-
-        // --- DATABASE ---
-        async function saveResults() {
-            const u = auth.currentUser; if(!u) return;
-            const btn = document.getElementById('save-btn');
-            btn.disabled = true;
-            const data = {};
-            modules.forEach((_, i) => {
-                data[i] = { 
-                    man: document.getElementById(`${i}_man`).checked, 
-                    mv: document.getElementById(`${i}_mv`).value || "",
-                    e1: document.getElementById(`${i}_e1`).value || "", 
-                    e2: document.getElementById(`${i}_e2`).value || "",
-                    td: document.getElementById(`${i}_td`).value || "", 
-                    tp: document.getElementById(`${i}_tp`).value || ""
-                };
-            });
-            try {
-                await db.collection("users").doc(u.uid).set({ scores: data, updated: Date.now() });
-                alert("Données sauvegardées !");
-            } catch(e) { alert("Erreur lors de la sauvegarde."); }
-            finally { btn.disabled = false; }
-        }
-
-        async function loadResults() {
-            const u = auth.currentUser; if(!u) return;
-            try {
-                const doc = await db.collection("users").doc(u.uid).get();
-                if(doc.exists && doc.data().scores) {
-                    const d = doc.data().scores;
-                    Object.keys(d).forEach(i => {
-                        const row = d[i];
-                        const manCheck = document.getElementById(`${i}_man`);
-                        if(manCheck) {
-                            manCheck.checked = row.man;
-                            const fields = ['mv','e1','e2','td','tp'];
-                            fields.forEach(f => {
-                                const el = document.getElementById(`${i}_${f}`);
-                                if(el) el.value = row[f] || "";
-                            });
-                            toggleM(i);
-                        }
-                    });
-                    calculer();
-                }
-            } catch(e) { console.log("Nouveau profil"); }
-        }
-
-        // --- UTILS ---
-        function togglePass(id) { const x = document.getElementById(id); x.type = x.type === "password" ? "text" : "password"; }
-        function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
-        function toggleM(i) {
-            const isM = document.getElementById(`${i}_man`).checked;
-            document.getElementById(`${i}_fields`).style.display = isM ? 'none' : 'block';
-            document.getElementById(`${i}_mv`).style.display = isM ? 'block' : 'none';
-            upd(i);
-        }
-        function upd(i) {
-            const r = getM(i);
-            const resEl = document.getElementById(`${i}_res`);
-            if(resEl) resEl.innerText = r.f ? `Moyenne : ${r.m.toFixed(2)}` : "";
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById("form");
-            modules.forEach((m, i) => {
-                const div = document.createElement("div"); div.className = "card";
-                div.innerHTML = `<h3><i class="ph-light ph-${m.i}"></i> ${m.n}</h3>
-                <label style="font-size:0.8rem; cursor:pointer;"><input type="checkbox" id="${i}_man" onchange="toggleM(${i})"> Saisie directe</label>
-                <div id="${i}_fields">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                        <input type="number" step="0.01" placeholder="EMD1" id="${i}_e1" oninput="upd(${i})"> 
-                        <input type="number" step="0.01" placeholder="EMD2" id="${i}_e2" oninput="upd(${i})">
-                        <input type="number" step="0.01" placeholder="TD" id="${i}_td" oninput="upd(${i})"> 
-                        <input type="number" step="0.01" placeholder="TP" id="${i}_tp" oninput="upd(${i})">
+    function buildForm() {
+        const container = document.getElementById("formContainer");
+        modules.forEach((mod, i) => {
+            const div = document.createElement('div');
+            div.className = "glass p-5 rounded-2xl relative group hover:border-indigo-500/30 transition-colors";
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500/20 transition">
+                            <i class="ph-duotone ph-${mod.icon} text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg leading-tight">${mod.display}</h3>
+                            <span class="text-xs opacity-60 font-medium bg-white/5 px-2 py-0.5 rounded">Coef ${mod.coef}</span>
+                        </div>
                     </div>
+                    <label class="cursor-pointer">
+                        <input type="checkbox" id="${i}_manual" onchange="toggleManual(${i})" class="hidden peer">
+                        <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/30 peer-checked:bg-indigo-500 peer-checked:text-white transition hover:bg-white/10">
+                            <i class="ph-bold ph-pencil-simple"></i>
+                        </div>
+                    </label>
                 </div>
-                <input type="number" step="0.01" id="${i}_mv" placeholder="Moyenne" style="display:none; margin-top:10px;" oninput="upd(${i})">
-                <div id="${i}_res" style="font-weight:800; color:var(--primary); margin-top:5px;"></div>`;
-                container.appendChild(div);
-            });
-            document.getElementById('menu-btn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
-            domReady = true;
-            if(auth.currentUser) loadResults();
+
+                <div id="${i}_detailed" class="grid grid-cols-2 gap-3 anim-container">
+                    ${mod.e1 ? `<input type="number" step="0.01" id="${i}_e1" placeholder="EMD 1" class="calc-input text-sm" oninput="updateUI(${i})">` : ''}
+                    ${mod.e2 ? `<input type="number" step="0.01" id="${i}_e2" placeholder="EMD 2" class="calc-input text-sm" oninput="updateUI(${i})">` : ''}
+                    ${mod.td ? `<input type="number" step="0.01" id="${i}_td" placeholder="TD" class="calc-input text-sm" oninput="updateUI(${i})">` : ''}
+                    ${mod.tp ? `<input type="number" step="0.01" id="${i}_tp" placeholder="TP" class="calc-input text-sm" oninput="updateUI(${i})">` : ''}
+                </div>
+
+                <div id="${i}_manual_wrap" class="anim-container is-hidden">
+                    <input type="number" step="0.01" id="${i}_manual_val" placeholder="Moyenne générale" class="calc-input font-bold text-center text-lg" oninput="updateUI(${i})">
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-white/5 flex justify-between items-center">
+                    <span class="text-xs opacity-50 uppercase tracking-wider font-semibold">Moyenne</span>
+                    <span id="${i}_res" class="font-bold text-xl text-white/20">-</span>
+                </div>
+            `;
+            container.appendChild(div);
         });
-    </script>
+    }
+
+    function toggleManual(i) {
+        const isMan = document.getElementById(`${i}_manual`).checked;
+        const det = document.getElementById(`${i}_detailed`);
+        const man = document.getElementById(`${i}_manual_wrap`);
+        
+        if (isMan) {
+            det.classList.add('is-hidden');
+            man.classList.remove('is-hidden');
+        } else {
+            det.classList.remove('is-hidden');
+            man.classList.add('is-hidden');
+        }
+        updateUI(i);
+    }
+
+    function getVal(id) {
+        const el = document.getElementById(id);
+        if (!el || el.value === "") return NaN;
+        let v = parseFloat(el.value.replace(',', '.'));
+        return (v >= 0 && v <= 20) ? v : NaN;
+    }
+
+    function calcModule(i) {
+        const isMan = document.getElementById(`${i}_manual`).checked;
+        if (isMan) {
+            const v = getVal(`${i}_manual_val`);
+            return isNaN(v) ? null : v;
+        }
+        
+        const e1 = getVal(`${i}_e1`), e2 = getVal(`${i}_e2`);
+        const td = getVal(`${i}_td`), tp = getVal(`${i}_tp`);
+        let pts = 0, div = 0, filled = false;
+
+        let emdSum = 0, emdCnt = 0;
+        if (!isNaN(e1)) { emdSum += e1; emdCnt++; filled = true; }
+        if (!isNaN(e2)) { emdSum += e2; emdCnt++; filled = true; }
+        if (emdCnt > 0) { pts += (emdSum/emdCnt); div++; }
+
+        if (!isNaN(td)) { pts += td * 2; div += 2; filled = true; } 
+        if (!isNaN(tp)) { pts += tp * 2; div += 2; filled = true; }
+
+        return (filled && div > 0) ? (pts / div) : null;
+    }
+
+    function updateUI(i) {
+        const m = calcModule(i);
+        const el = document.getElementById(`${i}_res`);
+        if (m !== null) {
+            el.innerText = m.toFixed(2);
+            el.style.color = m < 10 ? (m < 5 ? 'var(--danger)' : 'var(--warning)') : 'var(--success)';
+            el.style.opacity = '1';
+        } else {
+            el.innerText = '-';
+            el.style.color = '';
+            el.style.opacity = '0.2';
+        }
+    }
+
+    function calculer() {
+        let total = 0, coefs = 0, u5 = [], u10 = [], anyData = false;
+        
+        modules.forEach((mod, i) => {
+            const m = calcModule(i);
+            if (m !== null) {
+                anyData = true;
+                total += m * mod.coef;
+                coefs += mod.coef;
+                if (m < 5) u5.push(mod.display);
+                else if (m < 10) u10.push(mod.display);
+            }
+        });
+
+        const resDiv = document.getElementById('resultat');
+        if (!anyData) {
+            resDiv.innerHTML = `<div class="p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 text-yellow-200 text-center">Veuillez saisir des notes.</div>`;
+            return;
+        }
+
+        const mg = total / coefs;
+        let html = `
+            <div class="glass p-8 rounded-3xl text-center border-t-4 ${mg >= 10 ? 'border-green-500' : 'border-red-500'} animate-float">
+                <p class="text-sm opacity-60 uppercase tracking-widest mb-2">Moyenne Générale</p>
+                <h2 class="text-7xl font-bold mb-6 text-gradient">${mg.toFixed(2)}</h2>
+        `;
+        
+        if (mg >= 10 && u5.length === 0) {
+            html += `<div class="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-green-500/20 text-green-400 border border-green-500/30 font-bold"><i class="ph-fill ph-confetti"></i> Année Validée</div>`;
+        } else {
+            html += `<div class="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-bold mb-6"><i class="ph-bold ph-warning"></i> Non Validé</div>
+                     <div class="text-left space-y-3 bg-black/20 p-6 rounded-xl max-w-lg mx-auto">`;
+            if (u5.length) html += `<div class="text-red-300 text-sm flex gap-2"><i class="ph-fill ph-x-circle mt-1"></i> <span><strong>Éliminatoire (<5):</strong> ${u5.join(', ')}</span></div>`;
+            if (u10.length) html += `<div class="text-yellow-300 text-sm flex gap-2"><i class="ph-fill ph-warning-circle mt-1"></i> <span><strong>À rattraper:</strong> ${u10.join(', ')}</span></div>`;
+            html += `</div>`;
+        }
+        html += `</div>`;
+        
+        resDiv.innerHTML = html;
+        resDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function saveToCloud() {
+        if (isGuest) {
+            alert("Fonctionnalité indisponible en mode Invité. Connectez-vous pour sauvegarder.");
+            return;
+        }
+        const u = auth.currentUser;
+        if (!u) return;
+        const btn = document.getElementById('btnSave');
+        const icon = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i>';
+        
+        const data = {};
+        modules.forEach((_, i) => {
+            data[i] = {
+                manual: document.getElementById(`${i}_manual`).checked,
+                manualVal: document.getElementById(`${i}_manual_val`).value,
+                e1: document.getElementById(`${i}_e1`)?.value || "",
+                e2: document.getElementById(`${i}_e2`)?.value || "",
+                td: document.getElementById(`${i}_td`)?.value || "",
+                tp: document.getElementById(`${i}_tp`)?.value || ""
+            };
+        });
+
+        try {
+            await db.collection("users").doc(u.uid).set({ scores: data, lastUpdate: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+            btn.innerHTML = '<i class="ph-bold ph-check"></i>';
+            setTimeout(() => btn.innerHTML = icon, 2000);
+        } catch (e) {
+            alert("Erreur de sauvegarde");
+            btn.innerHTML = icon;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function loadFromCloud() {
+        if (isGuest) return;
+        const u = auth.currentUser;
+        if (!u) return;
+        try {
+            const doc = await db.collection("users").doc(u.uid).get();
+            if (doc.exists && doc.data().scores) {
+                const s = doc.data().scores;
+                Object.keys(s).forEach(i => {
+                    if (i >= modules.length) return;
+                    const d = s[i];
+                    document.getElementById(`${i}_manual`).checked = d.manual;
+                    toggleManual(i);
+                    if(d.manualVal) document.getElementById(`${i}_manual_val`).value = d.manualVal;
+                    if(d.e1) document.getElementById(`${i}_e1`).value = d.e1;
+                    if(d.e2) document.getElementById(`${i}_e2`).value = d.e2;
+                    if(d.td) document.getElementById(`${i}_td`).value = d.td;
+                    if(d.tp) document.getElementById(`${i}_tp`).value = d.tp;
+                    updateUI(i);
+                });
+                calculer();
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function openPicker() { const p = document.getElementById('id-dob-picker'); try{p.showPicker()}catch{p.click()} }
+    function syncDate(v) { if(v){ const [y,m,d]=v.split('-'); document.getElementById('id-dob-display').value=`${d}/${m}/${y}`; } }
+    
+    function goToStep2() {
+        const nom = document.getElementById('id-nom').value.trim().replace(/[^a-zA-Z]/g, "").toLowerCase();
+        const prenom = document.getElementById('id-prenom').value.trim().replace(/[^a-zA-Z]/g, "").toLowerCase();
+        const dobRaw = document.getElementById('id-dob-display').value;
+        const dobParts = dobRaw.split(/[\/\-.]/);
+        
+        if (!nom || !prenom || dobParts.length !== 3) {
+            alert("Veuillez remplir correctement tous les champs.");
+            return;
+        }
+        
+        const dob = `${dobParts[0].padStart(2,'0')}${dobParts[1].padStart(2,'0')}${dobParts[2]}`;
+        userEmail = `${nom}.${prenom}.${dob}@dentaire.app`;
+        
+        document.getElementById('authStep1').classList.add('hidden-force');
+        document.getElementById('authStep2').classList.remove('hidden-force');
+    }
+
+    function backToStep1() {
+        document.getElementById('authStep2').classList.add('hidden-force');
+        document.getElementById('authStep1').classList.remove('hidden-force');
+    }
+
+    async function performAuth() {
+        const pass = document.getElementById('auth-pass').value;
+        const btn = document.getElementById('finalAuthBtn');
+        
+        if (pass.length < 6) return alert("Mot de passe trop court (min 6).");
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Traitement...';
+
+        try {
+            // Tentative de connexion standard
+            await auth.signInWithEmailAndPassword(userEmail, pass);
+            // Si réussite, le onAuthStateChanged se chargera du reste (fermer la fenêtre)
+        } catch (loginError) {
+            // Si le mot de passe est faux, on arrête là
+            if (loginError.code === 'auth/wrong-password') {
+                alert("Mot de passe incorrect pour ce compte.");
+                btn.disabled = false;
+                btn.innerText = 'Accéder à mon espace';
+                return;
+            }
+
+            // Pour toute autre erreur (compte inexistant, identifiants invalides, etc.), on tente de créer le compte
+            try {
+                await auth.createUserWithEmailAndPassword(userEmail, pass);
+                // Si réussite, onAuthStateChanged s'occupe de tout
+            } catch (createError) {
+                // Si l'erreur est "email already in use", c'est qu'on a raté le cas du login ci-dessus (rare)
+                if (createError.code === 'auth/email-already-in-use') {
+                    alert("Ce compte existe déjà mais le mot de passe est incorrect.");
+                } else {
+                    alert("Erreur: " + createError.message);
+                }
+                btn.disabled = false;
+                btn.innerText = 'Accéder à mon espace';
+            }
+        }
+    }
+
+    function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert(e.message)); }
+    function logout() { auth.signOut().then(() => location.reload()); }
+    function togglePass(id) { const el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; }
+    
+    function toggleMenu() { 
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('overlay');
+        sb.classList.toggle('open');
+        ov.classList.toggle('hidden-force');
+    }
+
+    async function updatePassword() {
+        if(isGuest) return alert("Action impossible en mode invité");
+        const newP = document.getElementById('set-new-pass').value;
+        if(newP.length < 6) return alert("Trop court.");
+        try { await auth.currentUser.updatePassword(newP); alert("Mot de passe mis à jour !"); closeSettings(); }
+        catch(e) { alert("Erreur: Connectez-vous à nouveau pour changer le mot de passe."); }
+    }
+    
+    function openSettings() { 
+        const m = document.getElementById('settingsModal');
+        m.classList.remove('hidden-force');
+        m.classList.add('flex');
+    }
+    function closeSettings() { 
+        const m = document.getElementById('settingsModal');
+        m.classList.add('hidden-force');
+        m.classList.remove('flex');
+    }
+
+    function setLang(l) {
+        document.documentElement.setAttribute('lang', l);
+        document.documentElement.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+        if(l==='ar') alert("Traduction arabe en cours / Arabic coming soon");
+    }
+
+    function initTheme() {
+        const t = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+        document.getElementById('themeBtn').onclick = () => {
+            const curr = document.documentElement.getAttribute('data-theme');
+            const next = curr === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        };
+    }
+  </script>
 </body>
 </html>
