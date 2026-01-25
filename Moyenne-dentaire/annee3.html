@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dental Guide Expert 8.6</title>
+    <title>Dental Guide Expert 8.7</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase -->
@@ -21,12 +21,12 @@
             --bg: #f2f2f7; --glass: rgba(255, 255, 255, 0.9); --text: #1c1c1e; --primary: #007aff; --border: rgba(0,0,0,0.05); --card: #ffffff; --input-bg: rgba(0, 0, 0, 0.05); 
         }
         
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; transition: background var(--transition); padding-bottom: 40px; /* Reduced padding since navbar is hidden */ }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; transition: background var(--transition); padding-bottom: 40px; }
         
         .glass { background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); }
         .one-ui-card { background: var(--card); border-radius: 24px; border: 1px solid var(--border); transition: transform 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         
-        /* Sidebar Styles */
+        /* Sidebar */
         #sidebar { position: fixed; top: 0; bottom: 0; width: 280px; z-index: 100; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: var(--glass); border-right: 1px solid var(--border); }
         html[dir="ltr"] #sidebar { left: 0; transform: translateX(-100%); }
         html[dir="rtl"] #sidebar { right: 0; transform: translateX(100%); border-right: none; border-left: 1px solid var(--border); }
@@ -42,17 +42,14 @@
         .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
-        /* Floating Action Bar - Hidden by default, slides up */
+        /* Floating Action Bar */
         .oneui-navbar { 
-            position: fixed; bottom: -100px; /* Start hidden below screen */
-            left: 50%; transform: translateX(-50%) translateY(0);
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%) translateY(0);
             width: 90%; max-width: 400px; height: 72px; padding: 0 8px;
             border-radius: 36px; display: flex; align-items: center; justify-content: space-between;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1000; border: 1px solid var(--border);
             transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
-        /* Class to show navbar */
         .oneui-navbar.visible { bottom: 24px; }
 
         /* Toast */
@@ -93,7 +90,6 @@
                 <p class="text-xs opacity-50 mt-1">Connexion sécurisée</p>
             </div>
             
-            <!-- Step 1: Credentials -->
             <div id="authStep1" class="space-y-3">
                 <input type="text" id="id-nom" placeholder="Nom" class="calc-input text-left">
                 <input type="text" id="id-prenom" placeholder="Prénom" class="calc-input text-left">
@@ -119,7 +115,6 @@
                 <button onclick="startGuestMode()" class="w-full text-xs opacity-50 py-3 underline mt-2">Mode Invité</button>
             </div>
 
-            <!-- Step 2: Password -->
             <div id="authStep2" class="hidden-force space-y-3">
                 <div class="text-xs text-center opacity-60 mb-2 bg-black/20 p-2 rounded-lg" id="display-email"></div>
                 <input type="password" id="auth-pass" placeholder="Mot de passe" class="calc-input">
@@ -242,13 +237,8 @@
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('.oneui-navbar');
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            
-            // Si on scrolle vers le bas de plus de 50px, on affiche la barre
-            if (scrollTop > 50) {
-                nav.classList.add('visible');
-            } else {
-                nav.classList.remove('visible');
-            }
+            if (scrollTop > 50) nav.classList.add('visible');
+            else nav.classList.remove('visible');
         });
 
         // --- Core Functions ---
@@ -462,21 +452,16 @@
             document.getElementById('authStep1').classList.remove('hidden-force'); 
         }
         
-        // Google Sign In
         function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // Demander l'email et le profil
             provider.addScope('email');
             provider.addScope('profile');
             
             auth.signInWithPopup(provider)
                 .then((result) => {
-                    // User signed in.
                     const user = result.user;
-                    // Check if doc exists, if not create minimal profile
                     db.collection("users").doc(user.uid).get().then((doc) => {
                         if (!doc.exists) {
-                            // Try to extract name from Google
                             const nameParts = user.displayName ? user.displayName.split(' ') : ['Utilisateur', 'Google'];
                             db.collection("users").doc(user.uid).set({
                                 nom: nameParts[0],
@@ -608,13 +593,21 @@
 
             auth.onAuthStateChanged(u => { 
                 if(u) {
+                    // 1. Hide Auth Overlay immediately
                     document.getElementById('authOverlay').classList.add('hidden-force');
+                    
+                    // 2. Show Loading Indicator
+                    showToast("Chargement des notes...", "loading");
+
+                    // 3. Fetch Data
                     db.collection("users").doc(u.uid).get().then(doc => {
                         if(doc.exists) {
                             const d = doc.data();
                             document.getElementById('edit-nom').value = d.nom || '';
                             document.getElementById('edit-prenom').value = d.prenom || '';
                             document.getElementById('edit-dob').value = d.dob || '';
+                            
+                            let hasData = false;
                             
                             if(d.scores && Array.isArray(d.scores)) {
                                 d.scores.forEach((s, i) => {
@@ -625,13 +618,29 @@
                                         document.getElementById(`${i}_e2`).value = s.e2 || '';
                                         document.getElementById(`${i}_td`).value = s.td || ''; 
                                         document.getElementById(`${i}_tp`).value = s.tp || '';
+                                        
                                         if(s.man) toggleManual(i); 
                                         updateRes(i);
+                                        
+                                        // Check if any field has value
+                                        if(s.manV || s.e1 || s.e2 || s.td || s.tp) hasData = true;
                                     }
                                 });
                             }
+
+                            // 4. Show Result Message
+                            if(hasData) {
+                                showToast("Notes restaurées avec succès ✅");
+                            } else {
+                                showToast("Aucune note sauvegardée trouvée ℹ️");
+                            }
+                        } else {
+                            showToast("Profil vide", "error");
                         }
-                    }).catch(err => console.error(err));
+                    }).catch(err => {
+                        console.error(err);
+                        showToast("Erreur de chargement Cloud", "error");
+                    });
                 }
             });
 
