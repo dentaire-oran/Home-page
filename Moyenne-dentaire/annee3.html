@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dental Guide Expert 9.0 (Ultimate Fix)</title>
+    <title>Dental Guide Expert 9.1 (Clear Cache Fix)</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase -->
@@ -218,13 +218,20 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // --- FIX OFFLINE ERROR ---
-        // Enable persistence but ensure we handle "Failed to get document because client is offline" gracefully
+        // --- FIX CACHE CORRUPTION ---
+        // Clear IndexedDB to fix "Offline" bugs when internet is actually working
+        if (window.indexedDB) {
+            const req = indexedDB.deleteDatabase("firebase-firestore");
+            req.onsuccess = function () { console.log("Cache Firebase nettoyé"); };
+            req.onerror = function () { console.log("Impossible de nettoyer le cache"); };
+        }
+
+        // Initialize Persistence AFTER clearing
         db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
             if (err.code == 'failed-precondition') {
-                console.log("Persistence failed: Multiple tabs open");
+                console.log("Persistence: Multiple tabs open");
             } else if (err.code == 'unimplemented') {
-                console.log("Persistence not supported by browser");
+                console.log("Persistence: Not supported");
             }
         });
 
@@ -304,7 +311,7 @@
 
         function openModal(id) { 
             if(isGuest) return showToast("Fonction indisponible en mode Invité", "error"); 
-            document.getElementById(id).classList.add('active'); 
+            document.getElementById(id').classList.add('active'); 
         }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); }
 
@@ -607,15 +614,13 @@
                     document.getElementById('authOverlay').classList.add('hidden-force');
                     showToast("Chargement des notes...", "loading");
 
-                    // --- ULTIMATE FIX: Retry Logic & Source Handling ---
-                    
                     const loadUserData = async () => {
                         try {
-                            // Try to get from Server first to ensure fresh data
+                            // Force server request first
                             let doc = await db.collection("users").doc(u.uid).get({ source: 'server' });
                             
+                            // If server fails (e.g. permissions or real offline), try cache
                             if (!doc.exists) {
-                                // Fallback to cache if server says doc doesn't exist (maybe offline)
                                 doc = await db.collection("users").doc(u.uid).get({ source: 'cache' });
                             }
 
@@ -651,17 +656,15 @@
                                     showToast("Aucune note sauvegardée trouvée ℹ️");
                                 }
                             } else {
-                                // Doc really doesn't exist
                                 showToast("Profil vide (Première utilisation ?)", "error");
                             }
                         } catch (err) {
-                            console.error("Erreur critique de chargement:", err);
-                            
-                            // Specific handling for "Offline" error
+                            console.error("Erreur de chargement:", err);
                             if (err.message && err.message.includes('offline')) {
-                                showToast("Hors ligne. Vérifiez votre connexion Internet.", "error");
+                                showToast("Mode Hors Ligne (Cache bloqué). Utilisation limitée.", "warning");
+                                // Allow the app to continue anyway
                             } else {
-                                showToast("Impossible de charger les données.", "error");
+                                showToast("Erreur de chargement des données", "error");
                             }
                         }
                     };
