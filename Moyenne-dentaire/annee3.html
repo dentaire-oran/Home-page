@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dental Guide Expert 8.9 (Fix Offline)</title>
+    <title>Dental Guide Expert 9.0 (Ultimate Fix)</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase -->
@@ -219,11 +219,7 @@
         const db = firebase.firestore();
 
         // --- FIX OFFLINE ERROR ---
-        // Force Firestore to try getting fresh data from server first, fallback to cache if offline.
-        // This prevents the "client is offline" error when cache is empty but internet is available.
-        db.settings({
-            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
-        });
+        // Enable persistence but ensure we handle "Failed to get document because client is offline" gracefully
         db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
             if (err.code == 'failed-precondition') {
                 console.log("Persistence failed: Multiple tabs open");
@@ -400,11 +396,7 @@
             } catch(e) { 
                 console.error(e);
                 cloudIcon.className = "ph-bold ph-cloud-slash text-red-500 text-xl";
-                if(e.code === 'permission-denied' || e.message.includes('Missing or insufficient permissions')) {
-                    showToast("Erreur: Permissions refusées", "error");
-                } else {
-                    showToast("Erreur de synchronisation", "error");
-                }
+                if(manual) showToast("Erreur de synchronisation", "error");
             } finally {
                 isSaving = false;
             }
@@ -615,51 +607,66 @@
                     document.getElementById('authOverlay').classList.add('hidden-force');
                     showToast("Chargement des notes...", "loading");
 
-                    // --- FIX OFFLINE: Use get() with source 'server' to bypass cache if empty ---
-                    db.collection("users").doc(u.uid).get({ source: 'server' }).then(doc => {
-                        if(doc.exists) {
-                            const d = doc.data();
-                            document.getElementById('edit-nom').value = d.nom || '';
-                            document.getElementById('edit-prenom').value = d.prenom || '';
-                            document.getElementById('edit-dob').value = d.dob || '';
+                    // --- ULTIMATE FIX: Retry Logic & Source Handling ---
+                    
+                    const loadUserData = async () => {
+                        try {
+                            // Try to get from Server first to ensure fresh data
+                            let doc = await db.collection("users").doc(u.uid).get({ source: 'server' });
                             
-                            let hasData = false;
-                            
-                            if(d.scores && Array.isArray(d.scores)) {
-                                d.scores.forEach((s, i) => {
-                                    if(i < modules.length) {
-                                        document.getElementById(`${i}_man_cb`).checked = s.man;
-                                        document.getElementById(`${i}_man_val`).value = s.manV || '';
-                                        document.getElementById(`${i}_e1`).value = s.e1 || ''; 
-                                        document.getElementById(`${i}_e2`).value = s.e2 || '';
-                                        document.getElementById(`${i}_td`).value = s.td || ''; 
-                                        document.getElementById(`${i}_tp`).value = s.tp || '';
-                                        
-                                        if(s.man) toggleManual(i); 
-                                        updateRes(i);
-                                        
-                                        if(s.manV || s.e1 || s.e2 || s.td || s.tp) hasData = true;
-                                    }
-                                });
+                            if (!doc.exists) {
+                                // Fallback to cache if server says doc doesn't exist (maybe offline)
+                                doc = await db.collection("users").doc(u.uid).get({ source: 'cache' });
                             }
 
-                            if(hasData) {
-                                showToast("Notes restaurées avec succès ✅");
+                            if (doc.exists) {
+                                const d = doc.data();
+                                document.getElementById('edit-nom').value = d.nom || '';
+                                document.getElementById('edit-prenom').value = d.prenom || '';
+                                document.getElementById('edit-dob').value = d.dob || '';
+                                
+                                let hasData = false;
+                                
+                                if(d.scores && Array.isArray(d.scores)) {
+                                    d.scores.forEach((s, i) => {
+                                        if(i < modules.length) {
+                                            document.getElementById(`${i}_man_cb`).checked = s.man;
+                                            document.getElementById(`${i}_man_val`).value = s.manV || '';
+                                            document.getElementById(`${i}_e1`).value = s.e1 || ''; 
+                                            document.getElementById(`${i}_e2`).value = s.e2 || '';
+                                            document.getElementById(`${i}_td`).value = s.td || ''; 
+                                            document.getElementById(`${i}_tp`).value = s.tp || '';
+                                            
+                                            if(s.man) toggleManual(i); 
+                                            updateRes(i);
+                                            
+                                            if(s.manV || s.e1 || s.e2 || s.td || s.tp) hasData = true;
+                                        }
+                                    });
+                                }
+
+                                if(hasData) {
+                                    showToast("Notes restaurées avec succès ✅");
+                                } else {
+                                    showToast("Aucune note sauvegardée trouvée ℹ️");
+                                }
                             } else {
-                                showToast("Aucune note sauvegardée trouvée ℹ️");
+                                // Doc really doesn't exist
+                                showToast("Profil vide (Première utilisation ?)", "error");
                             }
-                        } else {
-                            showToast("Profil vide (Première utilisation ?)", "error");
+                        } catch (err) {
+                            console.error("Erreur critique de chargement:", err);
+                            
+                            // Specific handling for "Offline" error
+                            if (err.message && err.message.includes('offline')) {
+                                showToast("Hors ligne. Vérifiez votre connexion Internet.", "error");
+                            } else {
+                                showToast("Impossible de charger les données.", "error");
+                            }
                         }
-                    }).catch(err => {
-                        console.error(err);
-                        let msg = "Erreur de chargement Cloud";
-                        if(err.code === 'permission-denied') msg = "Permissions refusées (Firestore Rules)";
-                        else if (err.code === 'failed-precondition') msg = "Erreur: Configuration Firebase incorrecte";
-                        else if (err.message) msg = err.message;
-                        
-                        showToast(msg, "error");
-                    });
+                    };
+
+                    loadUserData();
                 }
             });
 
