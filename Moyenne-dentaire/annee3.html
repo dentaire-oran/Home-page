@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dental Guide Expert 9.1 (Clear Cache Fix)</title>
+    <title>Dental Guide Expert 9.2 (Safe Fix)</title>
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase -->
@@ -218,15 +218,10 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // --- FIX CACHE CORRUPTION ---
-        // Clear IndexedDB to fix "Offline" bugs when internet is actually working
-        if (window.indexedDB) {
-            const req = indexedDB.deleteDatabase("firebase-firestore");
-            req.onsuccess = function () { console.log("Cache Firebase nettoyé"); };
-            req.onerror = function () { console.log("Impossible de nettoyer le cache"); };
-        }
-
-        // Initialize Persistence AFTER clearing
+        // --- SAFE CACHE HANDLING ---
+        // 1. We DISABLED the automatic cache clearing on load to prevent login issues.
+        // 2. We enable persistence for Firestore normally.
+        
         db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
             if (err.code == 'failed-precondition') {
                 console.log("Persistence: Multiple tabs open");
@@ -616,10 +611,10 @@
 
                     const loadUserData = async () => {
                         try {
-                            // Force server request first
+                            // Try Server first
                             let doc = await db.collection("users").doc(u.uid).get({ source: 'server' });
                             
-                            // If server fails (e.g. permissions or real offline), try cache
+                            // Fallback to cache if needed
                             if (!doc.exists) {
                                 doc = await db.collection("users").doc(u.uid).get({ source: 'cache' });
                             }
@@ -661,8 +656,7 @@
                         } catch (err) {
                             console.error("Erreur de chargement:", err);
                             if (err.message && err.message.includes('offline')) {
-                                showToast("Mode Hors Ligne (Cache bloqué). Utilisation limitée.", "warning");
-                                // Allow the app to continue anyway
+                                showToast("Mode Hors Ligne. Les notes locales sont utilisées.", "warning");
                             } else {
                                 showToast("Erreur de chargement des données", "error");
                             }
