@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dental Guide Expert 9.2 (Safe Fix)</title>
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { --transition: 0.3s ease; --primary: #3e82f7; --danger: #ef4444; --success: #22c55e; --warning: #eab308; }
+        
+        [data-theme="dark"] { 
+            --bg: #000000; --glass: rgba(28, 28, 30, 0.85); --text: #f8fafc; --border: rgba(255,255,255,0.1); --card: #1c1c1e; --input-bg: rgba(120, 120, 128, 0.16); 
+        }
+        [data-theme="light"] { 
+            --bg: #f2f2f7; --glass: rgba(255, 255, 255, 0.9); --text: #1c1c1e; --primary: #007aff; --border: rgba(0,0,0,0.05); --card: #ffffff; --input-bg: rgba(0, 0, 0, 0.05); 
+        }
+        
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; transition: background var(--transition); padding-bottom: 40px; }
+        
+        .glass { background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); }
+        .one-ui-card { background: var(--card); border-radius: 24px; border: 1px solid var(--border); transition: transform 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        /* Sidebar */
+        #sidebar { position: fixed; top: 0; bottom: 0; width: 280px; z-index: 100; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: var(--glass); border-right: 1px solid var(--border); }
+        html[dir="ltr"] #sidebar { left: 0; transform: translateX(-100%); }
+        html[dir="rtl"] #sidebar { right: 0; transform: translateX(100%); border-right: none; border-left: 1px solid var(--border); }
+        #sidebar.open { transform: translateX(0) !important; }
+
+        /* Inputs */
+        .calc-input { width: 100%; background: var(--input-bg); border: 1px solid transparent; padding: 12px; border-radius: 16px; color: inherit; outline: none; font-size: 14px; transition: 0.2s; text-align: center; font-weight: 500; }
+        .calc-input:focus { background: var(--bg); border-color: var(--primary); }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* UI Helpers */
+        .hidden-force { display: none !important; }
+        .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* Floating Action Bar */
+        .oneui-navbar { 
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%) translateY(0);
+            width: 90%; max-width: 400px; height: 72px; padding: 0 8px;
+            border-radius: 36px; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1000; border: 1px solid var(--border);
+            transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .oneui-navbar.visible { bottom: 24px; }
+
+        /* Toast */
+        #toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; z-index: 1001; width: max-content; max-width: 90%; text-align: center; }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* Animations */
+        @keyframes pulse-soft { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .saving-anim { animation: pulse-soft 1.5s infinite; }
+        
+        /* Google Button */
+        .google-btn {
+            width: 100%; background: white; color: #333; border: 1px solid #ddd; 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 12px; border-radius: 16px; font-weight: 600; transition: 0.2s; cursor: pointer;
+        }
+        .google-btn:hover { background: #f9f9f9; }
+        [data-theme="dark"] .google-btn { background: #2c2c2e; color: white; border-color: #444; }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="glass px-6 py-3 rounded-full text-sm font-semibold shadow-2xl flex items-center gap-2">
+        <i id="toast-icon" class="ph-bold text-lg"></i> 
+        <span id="toast-msg">Message</span>
+    </div>
+
+    <!-- Auth Overlay -->
+    <div id="authOverlay" class="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-center p-4">
+        <div class="glass p-8 rounded-[32px] w-full max-w-sm border border-white/10 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-500 text-3xl">
+                    <i class="ph-fill ph-tooth"></i>
+                </div>
+                <h2 class="text-2xl font-bold">Dental Guide</h2>
+                <p class="text-xs opacity-50 mt-1">Connexion sécurisée</p>
+            </div>
+            
+            <div id="authStep1" class="space-y-3">
+                <input type="text" id="id-nom" placeholder="Nom" class="calc-input text-left">
+                <input type="text" id="id-prenom" placeholder="Prénom" class="calc-input text-left">
+                <input type="tel" id="id-dob" placeholder="Date naissance (JJ/MM/AAAA)" class="calc-input text-left" maxlength="10" oninput="formatDate(this)">
+                <button onclick="goToStep2()" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-2xl font-bold transition mt-2">Continuer avec Email</button>
+                
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-white/10"></div>
+                    <span class="flex-shrink-0 mx-4 text-xs opacity-40">ou</span>
+                    <div class="flex-grow border-t border-white/10"></div>
+                </div>
+
+                <button onclick="signInWithGoogle()" class="google-btn w-full">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Continuer avec Google
+                </button>
+
+                <button onclick="startGuestMode()" class="w-full text-xs opacity-50 py-3 underline mt-2">Mode Invité</button>
+            </div>
+
+            <div id="authStep2" class="hidden-force space-y-3">
+                <div class="text-xs text-center opacity-60 mb-2 bg-black/20 p-2 rounded-lg" id="display-email"></div>
+                <input type="password" id="auth-pass" placeholder="Mot de passe" class="calc-input">
+                <button onclick="performAuth()" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-2xl font-bold transition">Se connecter</button>
+                <button onclick="backToStep1()" class="w-full text-xs opacity-50 py-3">Retour</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <div class="p-6 flex flex-col h-full">
+            <div class="text-2xl font-black mb-8 text-blue-500 flex items-center gap-2">
+                <i class="ph-fill ph-tooth"></i> Expert 3.0
+            </div>
+            <nav class="space-y-1 flex-1">
+                <div onclick="location.reload()" class="flex items-center gap-3 p-3 rounded-xl bg-blue-600/10 text-blue-500 cursor-pointer font-semibold"><i class="ph-bold ph-house"></i> <span data-key="home">Accueil</span></div>
+                <div onclick="openModal('profileModal')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition"><i class="ph-bold ph-user-circle"></i> <span data-key="profile">Mon Profil</span></div>
+                <div onclick="openModal('passModal')" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition"><i class="ph-bold ph-lock-key"></i> <span data-key="password">Sécurité</span></div>
+                <div id="themeBtn" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition"><i class="ph-bold ph-palette"></i> <span data-key="theme">Thème</span></div>
+                <div class="h-px bg-white/10 my-4 mx-2"></div>
+                <div onclick="setLang('fr')" class="p-3 flex items-center gap-3 rounded-xl hover:bg-white/5 cursor-pointer"><span class="text-xl">🇫🇷</span> Français</div>
+                <div onclick="setLang('ar')" class="p-3 flex items-center gap-3 rounded-xl hover:bg-white/5 cursor-pointer"><span class="text-xl">🇩🇿</span> Arabe</div>
+            </nav>
+            <button onclick="logout()" class="flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-500/10 mt-4 transition font-semibold"><i class="ph-bold ph-sign-out"></i> <span data-key="logout">Déconnexion</span></button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="pt-6 lg:mr-0 p-6 max-w-4xl mx-auto transition-all duration-300" id="mainContent">
+        <header class="flex justify-between items-center mb-8">
+            <button onclick="toggleMenu()" class="p-3 glass rounded-full active:scale-90 transition"><i class="ph-bold ph-list text-xl"></i></button>
+            <h1 class="text-xl font-black tracking-tight" data-key="pageTitle">Simulateur de Notes</h1>
+            <div class="w-10 flex justify-end">
+                <i id="cloud-status-icon" class="ph-bold ph-cloud-check text-green-500 text-xl opacity-50"></i>
+            </div>
+        </header>
+
+        <div id="formContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Cards injected via JS -->
+        </div>
+        
+        <div id="resultat" class="mt-8 mb-24"></div>
+    </main>
+
+    <!-- Modals -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="glass p-6 rounded-[32px] w-full max-w-md text-center shadow-2xl">
+            <h3 class="text-xl font-bold mb-6">Modifier Profil</h3>
+            <div class="space-y-4">
+                <input type="text" id="edit-nom" placeholder="Nom" class="calc-input">
+                <input type="text" id="edit-prenom" placeholder="Prénom" class="calc-input">
+                <div class="flex gap-3 mt-6">
+                    <button onclick="updateProfile()" class="flex-1 bg-blue-600 text-white p-4 rounded-2xl font-bold hover:bg-blue-500 transition">Sauvegarder</button>
+                    <button onclick="closeModals()" class="flex-1 bg-white/10 p-4 rounded-2xl hover:bg-white/20 transition">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="passModal" class="modal-overlay">
+        <div class="glass p-6 rounded-[32px] w-full max-w-md text-center shadow-2xl">
+            <h3 class="text-xl font-bold mb-6">Changer le mot de passe</h3>
+            <div class="space-y-4">
+                <input type="password" id="old-pass" placeholder="Ancien mot de passe" class="calc-input">
+                <input type="password" id="new-pass" placeholder="Nouveau" class="calc-input">
+                <input type="password" id="confirm-pass" placeholder="Confirmer" class="calc-input">
+                <div class="flex gap-3 mt-6">
+                    <button onclick="changePassword()" class="flex-1 bg-blue-600 text-white p-4 rounded-2xl font-bold hover:bg-blue-500 transition">Valider</button>
+                    <button onclick="closeModals()" class="flex-1 bg-white/10 p-4 rounded-2xl hover:bg-white/20 transition">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Bar -->
+    <nav class="oneui-navbar glass">
+        <button onclick="toggleMenu()" class="w-12 h-12 rounded-full hover:bg-white/5 flex items-center justify-center transition active:scale-90"><i class="ph-bold ph-squares-four text-xl opacity-70"></i></button>
+        <button onclick="calculer()" class="flex-1 mx-3 bg-blue-600 text-white h-12 rounded-full font-bold shadow-lg shadow-blue-900/50 active:scale-95 transition flex items-center justify-center gap-2"><i class="ph-bold ph-calculator"></i> Calculer</button>
+        <button onclick="saveToCloud(true)" class="w-12 h-12 rounded-full hover:bg-white/5 flex items-center justify-center transition active:scale-90"><i class="ph-bold ph-cloud-arrow-up text-xl opacity-70"></i></button>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black/60 z-[90] hidden-force backdrop-blur-sm" onclick="toggleMenu()"></div>
+
+    <script>
+        // --- Configuration ---
+        const firebaseConfig = { 
+            apiKey: "AIzaSyCdD8hr6lLhaZOwIbx688i2aGbxCyn-PTY", 
+            authDomain: "dental-guide-e0e7b.firebaseapp.com", 
+            projectId: "dental-guide-e0e7b", 
+            storageBucket: "dental-guide-e0e7b.firebasestorage.app", 
+            messagingSenderId: "653289040762", 
+            appId: "1:653289040762:web:8f416fee145b3ca7ff04c3" 
+        };
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (e) { console.error("Firebase init error:", e); }
+        
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- SAFE CACHE HANDLING ---
+        // 1. We DISABLED the automatic cache clearing on load to prevent login issues.
+        // 2. We enable persistence for Firestore normally.
+        
+        db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+            if (err.code == 'failed-precondition') {
+                console.log("Persistence: Multiple tabs open");
+            } else if (err.code == 'unimplemented') {
+                console.log("Persistence: Not supported");
+            }
+        });
+
+        let isGuest = false;
+        let saveTimeout;
+
+        // --- Data & Translations ---
+        const modules = [ 
+            { n: "OCE", c: 5 }, { n: "ODF", c: 5 }, { n: "Parodontologie", c: 5 }, 
+            { n: "Pathologie", c: 5 }, { n: "Prothèse", c: 5 }, { n: "Imagerie", c: 3 }, 
+            { n: "Anat-Path", c: 1 }, { n: "Anesthésie", c: 1 }, { n: "Pharmacologie", c: 1 }, 
+            { n: "Occlusodontie", c: 1 }, { n: "Oxyologie", c: 1 } 
+        ];
+
+        const translations = { 
+            fr: { home: "Accueil", profile: "Mon Profil", password: "Sécurité", theme: "Thème", logout: "Déconnexion", pageTitle: "Simulateur" }, 
+            ar: { home: "الرئيسية", profile: "حسابي", password: "الأمان", theme: "المظهر", logout: "خروج", pageTitle: "حساب المعدل" } 
+        };
+
+        // --- Scroll Logic for Navbar ---
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.oneui-navbar');
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            if (scrollTop > 50) nav.classList.add('visible');
+            else nav.classList.remove('visible');
+        });
+
+        // --- Core Functions ---
+
+        function showToast(msg, type='success') {
+            const t = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const txt = document.getElementById('toast-msg');
+            
+            txt.innerText = msg;
+            t.className = "glass px-6 py-3 rounded-full text-sm font-semibold shadow-2xl flex items-center gap-2 show border border-white/10";
+            
+            if(type === 'error') {
+                icon.className = "ph-bold ph-x-circle text-red-500 text-lg";
+                t.style.borderColor = "rgba(239, 68, 68, 0.3)";
+            } else if (type === 'loading') {
+                icon.className = "ph-bold ph-spinner animate-spin text-blue-500 text-lg";
+            } else {
+                icon.className = "ph-bold ph-check-circle text-green-500 text-lg";
+            }
+
+            if(type !== 'loading') {
+                setTimeout(() => t.classList.remove('show'), 5000);
+            }
+        }
+
+        function formatDate(el) {
+            let v = el.value.replace(/\D/g, '').slice(0, 8);
+            if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2);
+            if (v.length >= 5) v = v.slice(0, 5) + '/' + v.slice(5);
+            el.value = v;
+        }
+
+        function setLang(l) { 
+            document.documentElement.dir = (l === 'ar' ? 'rtl' : 'ltr'); 
+            localStorage.setItem('lang', l); 
+            document.querySelectorAll('[data-key]').forEach(el => { 
+                const key = el.getAttribute('data-key'); 
+                if(translations[l][key]) el.textContent = translations[l][key]; 
+            });
+            const main = document.getElementById('mainContent');
+            if(window.innerWidth >= 1024) {
+                main.style.paddingLeft = l === 'ar' ? '0' : '2rem'; 
+                main.style.paddingRight = l === 'ar' ? '2rem' : '0';
+            }
+        }
+
+        function toggleMenu() { 
+            document.getElementById('sidebar').classList.toggle('open'); 
+            document.getElementById('overlay').classList.toggle('hidden-force'); 
+        }
+
+        function openModal(id) { 
+            if(isGuest) return showToast("Fonction indisponible en mode Invité", "error"); 
+            document.getElementById(id').classList.add('active'); 
+        }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); }
+
+        // --- Calculation & UI Logic ---
+
+        function getV(id) { 
+            const el = document.getElementById(id);
+            if(!el) return NaN;
+            const v = el.value.trim(); 
+            if(v === "") return NaN; 
+            return parseFloat(v.replace(',','.'));
+        }
+
+        function getModuleMoyenne(i) {
+            if(document.getElementById(`${i}_man_cb`).checked) return getV(`${i}_man_val`);
+            
+            const e1 = getV(`${i}_e1`), e2 = getV(`${i}_e2`), td = getV(`${i}_td`), tp = getV(`${i}_tp`);
+            let pts = 0, coefs = 0, filled = false;
+            
+            let emds = [e1, e2].filter(v => !isNaN(v));
+            if(emds.length > 0) { 
+                pts += (emds.reduce((a,b)=>a+b,0) / emds.length); 
+                coefs += 1; 
+                filled = true; 
+            }
+            if(!isNaN(td)) { pts += td * 2; coefs += 2; filled = true; }
+            if(!isNaN(tp)) { pts += tp * 2; coefs += 2; filled = true; }
+            
+            return filled ? (pts / coefs) : NaN;
+        }
+
+        function updateRes(i) {
+            const m = getModuleMoyenne(i); 
+            const el = document.getElementById(`${i}_res`);
+            const isMan = document.getElementById(`${i}_man_cb`).checked;
+            
+            if(!isNaN(m)) { 
+                el.innerText = m.toFixed(2); 
+                el.style.opacity = "1"; 
+                if(isMan) el.style.color = "var(--primary)";
+                else el.style.color = m < 5 ? "var(--danger)" : (m < 10 ? "var(--warning)" : "var(--success)");
+            } else { 
+                el.innerText = "-"; 
+                el.style.opacity = "0.3"; 
+            }
+            debouncedSave();
+        }
+
+        function toggleManual(i) {
+            const isMan = document.getElementById(`${i}_man_cb`).checked;
+            document.getElementById(`${i}_auto`).classList.toggle('hidden-force', isMan);
+            document.getElementById(`${i}_man`).classList.toggle('hidden-force', !isMan);
+            updateRes(i);
+        }
+
+        let isSaving = false;
+        function debouncedSave() {
+            if(isGuest || !auth.currentUser) return;
+            clearTimeout(saveTimeout);
+            
+            const cloudIcon = document.getElementById('cloud-status-icon');
+            cloudIcon.className = "ph-bold ph-cloud-arrow-up text-blue-500 text-xl saving-anim";
+            
+            saveTimeout = setTimeout(() => {
+                saveToCloud(false);
+            }, 1500);
+        }
+
+        async function saveToCloud(manual=false) {
+            if(isGuest || !auth.currentUser) return;
+            if(isSaving && !manual) return; 
+            
+            isSaving = true;
+            const cloudIcon = document.getElementById('cloud-status-icon');
+
+            const data = modules.map((_, i) => ({ 
+                man: document.getElementById(`${i}_man_cb`).checked, 
+                manV: document.getElementById(`${i}_man_val`).value, 
+                e1: document.getElementById(`${i}_e1`).value, 
+                e2: document.getElementById(`${i}_e2`).value, 
+                td: document.getElementById(`${i}_td`).value, 
+                tp: document.getElementById(`${i}_tp`).value 
+            }));
+
+            try { 
+                await db.collection("users").doc(auth.currentUser.uid).update({ scores: data }); 
+                cloudIcon.className = "ph-bold ph-cloud-check text-green-500 text-xl";
+                if(manual) showToast("Données synchronisées");
+            } catch(e) { 
+                console.error(e);
+                cloudIcon.className = "ph-bold ph-cloud-slash text-red-500 text-xl";
+                if(manual) showToast("Erreur de synchronisation", "error");
+            } finally {
+                isSaving = false;
+            }
+        }
+
+        function calculer() {
+            let total = 0, coefs = 0, u5 = [], u10 = [], any = false;
+            
+            modules.forEach((mod, i) => { 
+                const res = getModuleMoyenne(i); 
+                if(!isNaN(res)) { 
+                    any = true; 
+                    total += res * mod.c; 
+                    coefs += mod.c; 
+                    if(res < 5) u5.push(mod.n); 
+                    else if(res < 10) u10.push(mod.n); 
+                } 
+            });
+
+            if(!any) return showToast("Veuillez saisir au moins une note", "error");
+
+            const moy = total / coefs;
+            const isAdmis = moy >= 10 && u5.length === 0;
+
+            const container = document.getElementById('resultat');
+            container.innerHTML = `
+                <div class="glass p-8 rounded-[32px] text-center shadow-2xl animate-in fade-in zoom-in duration-500 border border-white/10">
+                    <div class="mb-2 text-sm opacity-60 uppercase tracking-widest font-bold">Moyenne Générale</div>
+                    <div class="text-7xl font-black mb-6 tracking-tighter ${moy >= 10 ? 'text-blue-500' : 'text-red-500'}">${moy.toFixed(3)}</div>
+                    
+                    <div class="text-left bg-black/20 dark:bg-white/5 p-6 rounded-3xl space-y-3 border border-white/5">
+                        ${u5.length ? `<div class="text-red-500 font-semibold flex items-center gap-2"><i class="ph-bold ph-x-circle"></i> Éliminatoire (<5) : ${u5.join(', ')}</div>` : ''}
+                        ${u10.length ? `<div class="text-yellow-500 font-semibold flex items-center gap-2"><i class="ph-bold ph-warning"></i> À compenser (<10) : ${u10.join(', ')}</div>` : ''}
+                        ${isAdmis ? '<div class="text-green-500 text-center font-black text-xl mt-2 bg-green-500/10 p-3 rounded-2xl">✨ ANNÉE VALIDÉE ! ✨</div>' : '<div class="text-red-500 text-center font-bold mt-2 bg-red-500/10 p-3 rounded-2xl">ANNÉE NON VALIDÉE</div>'}
+                    </div>
+                </div>`;
+            
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // --- Auth & Account ---
+
+        function startGuestMode() { 
+            isGuest = true; 
+            document.getElementById('authOverlay').classList.add('hidden-force'); 
+            showToast("Mode Invité activé");
+        }
+
+        function goToStep2() { 
+            const nom = document.getElementById('id-nom').value.trim();
+            const prenom = document.getElementById('id-prenom').value.trim();
+            
+            if(!nom || !prenom) return showToast("Nom et Prénom requis", "error");
+            
+            document.getElementById('authStep1').classList.add('hidden-force'); 
+            document.getElementById('authStep2').classList.remove('hidden-force'); 
+            
+            const email = `${nom.toLowerCase()}.${prenom.toLowerCase()}@dental.app`;
+            document.getElementById('display-email').innerText = email;
+        }
+
+        function backToStep1() { 
+            document.getElementById('authStep2').classList.add('hidden-force'); 
+            document.getElementById('authStep1').classList.remove('hidden-force'); 
+        }
+        
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    db.collection("users").doc(user.uid).get().then((doc) => {
+                        if (!doc.exists) {
+                            const nameParts = user.displayName ? user.displayName.split(' ') : ['Utilisateur', 'Google'];
+                            db.collection("users").doc(user.uid).set({
+                                nom: nameParts[0],
+                                prenom: nameParts.slice(1).join(' ') || '',
+                                email: user.email,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    });
+                    showToast("Connexion Google réussie");
+                })
+                .catch((error) => {
+                    console.error(error);
+                    showToast("Erreur connexion Google", "error");
+                });
+        }
+
+        function performAuth() {
+            const nom = document.getElementById('id-nom').value.trim();
+            const prenom = document.getElementById('id-prenom').value.trim();
+            const dob = document.getElementById('id-dob').value.trim();
+            const pass = document.getElementById('auth-pass').value;
+            
+            if(!pass) return showToast("Mot de passe requis", "error");
+
+            const email = `${nom.toLowerCase()}.${prenom.toLowerCase()}@dental.app`;
+            
+            showToast("Connexion en cours...", "loading");
+
+            auth.signInWithEmailAndPassword(email, pass)
+                .then(() => {})
+                .catch((error) => {
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                        auth.createUserWithEmailAndPassword(email, pass)
+                            .then((res) => {
+                                db.collection("users").doc(res.user.uid).set({ 
+                                    nom, prenom, dob, 
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+                                });
+                            })
+                            .catch((err) => {
+                                showToast("Erreur création compte: " + err.message, "error");
+                            });
+                    } else {
+                        showToast("Erreur: " + error.message, "error");
+                    }
+                });
+        }
+
+        async function updateProfile() {
+            const u = auth.currentUser;
+            if(!u) return;
+            const data = { 
+                nom: document.getElementById('edit-nom').value, 
+                prenom: document.getElementById('edit-prenom').value, 
+                dob: document.getElementById('edit-dob').value 
+            };
+            try {
+                await db.collection("users").doc(u.uid).update(data);
+                showToast("Profil mis à jour"); 
+                closeModals();
+            } catch(e) {
+                showToast("Erreur mise à jour", "error");
+            }
+        }
+
+        async function changePassword() {
+            const user = auth.currentUser;
+            const oldP = document.getElementById('old-pass').value;
+            const newP = document.getElementById('new-pass').value;
+            const confP = document.getElementById('confirm-pass').value;
+            
+            if(newP !== confP) return showToast("Les mots de passe ne correspondent pas", "error");
+            if(newP.length < 6) return showToast("Mot de passe trop court (min 6)", "error");
+
+            try {
+                const cred = firebase.auth.EmailAuthProvider.credential(user.email, oldP);
+                await user.reauthenticateWithCredential(cred);
+                await user.updatePassword(newP);
+                showToast("Mot de passe changé avec succès"); 
+                closeModals();
+                document.getElementById('old-pass').value = '';
+                document.getElementById('new-pass').value = '';
+                document.getElementById('confirm-pass').value = '';
+            } catch(e) {
+                showToast("Ancien mot de passe incorrect", "error");
+            }
+        }
+
+        function logout() { 
+            auth.signOut().then(() => { 
+                location.reload(); 
+            }); 
+        }
+
+        // --- Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById("formContainer");
+            
+            modules.forEach((m, i) => {
+                container.innerHTML += `
+                <div class="one-ui-card p-5 relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-bold text-sm tracking-tight">${m.n} <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 opacity-50 ml-1">COEF ${m.c}</span></span>
+                        <label class="text-[10px] opacity-50 flex items-center gap-2 cursor-pointer uppercase font-bold hover:opacity-100 transition">
+                            Manuel <input type="checkbox" id="${i}_man_cb" onchange="toggleManual(${i})" class="accent-blue-500">
+                        </label>
+                    </div>
+                    
+                    <div id="${i}_auto" class="grid grid-cols-2 gap-2">
+                        <input type="number" step="0.01" id="${i}_e1" placeholder="EMD1" class="calc-input text-xs" oninput="updateRes(${i})">
+                        <input type="number" step="0.01" id="${i}_e2" placeholder="EMD2" class="calc-input text-xs" oninput="updateRes(${i})">
+                        <input type="number" step="0.01" id="${i}_td" placeholder="TD (x2)" class="calc-input text-xs" oninput="updateRes(${i})">
+                        <input type="number" step="0.01" id="${i}_tp" placeholder="TP (x2)" class="calc-input text-xs" oninput="updateRes(${i})">
+                    </div>
+                    
+                    <div id="${i}_man" class="hidden-force">
+                        <input type="number" step="0.01" id="${i}_man_val" placeholder="Note Finale" class="calc-input text-center font-bold text-lg py-4" oninput="updateRes(${i})">
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
+                        <span class="text-[10px] opacity-30 font-bold uppercase tracking-wider">Moyenne</span>
+                        <span id="${i}_res" class="font-black text-lg opacity-20">-</span>
+                    </div>
+                </div>`;
+            });
+
+            auth.onAuthStateChanged(u => { 
+                if(u) {
+                    document.getElementById('authOverlay').classList.add('hidden-force');
+                    showToast("Chargement des notes...", "loading");
+
+                    const loadUserData = async () => {
+                        try {
+                            // Try Server first
+                            let doc = await db.collection("users").doc(u.uid).get({ source: 'server' });
+                            
+                            // Fallback to cache if needed
+                            if (!doc.exists) {
+                                doc = await db.collection("users").doc(u.uid).get({ source: 'cache' });
+                            }
+
+                            if (doc.exists) {
+                                const d = doc.data();
+                                document.getElementById('edit-nom').value = d.nom || '';
+                                document.getElementById('edit-prenom').value = d.prenom || '';
+                                document.getElementById('edit-dob').value = d.dob || '';
+                                
+                                let hasData = false;
+                                
+                                if(d.scores && Array.isArray(d.scores)) {
+                                    d.scores.forEach((s, i) => {
+                                        if(i < modules.length) {
+                                            document.getElementById(`${i}_man_cb`).checked = s.man;
+                                            document.getElementById(`${i}_man_val`).value = s.manV || '';
+                                            document.getElementById(`${i}_e1`).value = s.e1 || ''; 
+                                            document.getElementById(`${i}_e2`).value = s.e2 || '';
+                                            document.getElementById(`${i}_td`).value = s.td || ''; 
+                                            document.getElementById(`${i}_tp`).value = s.tp || '';
+                                            
+                                            if(s.man) toggleManual(i); 
+                                            updateRes(i);
+                                            
+                                            if(s.manV || s.e1 || s.e2 || s.td || s.tp) hasData = true;
+                                        }
+                                    });
+                                }
+
+                                if(hasData) {
+                                    showToast("Notes restaurées avec succès ✅");
+                                } else {
+                                    showToast("Aucune note sauvegardée trouvée ℹ️");
+                                }
+                            } else {
+                                showToast("Profil vide (Première utilisation ?)", "error");
+                            }
+                        } catch (err) {
+                            console.error("Erreur de chargement:", err);
+                            if (err.message && err.message.includes('offline')) {
+                                showToast("Mode Hors Ligne. Les notes locales sont utilisées.", "warning");
+                            } else {
+                                showToast("Erreur de chargement des données", "error");
+                            }
+                        }
+                    };
+
+                    loadUserData();
+                }
+            });
+
+            document.getElementById('themeBtn').onclick = () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+            };
+            
+            const savedLang = localStorage.getItem('lang') || 'fr';
+            setLang(savedLang);
+            if(localStorage.getItem('theme')) {
+                document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
+            }
+        });
+    </script>
+</body>
+</html>
